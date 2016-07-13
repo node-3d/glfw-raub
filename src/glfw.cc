@@ -1,5 +1,4 @@
 #include "common.h"
-#include "atb.h"
 
 // Includes
 #include <cstdio>
@@ -314,71 +313,67 @@ static int jsKeyCode[]={
 void APIENTRY keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) {
   const char *actionNames = "keyup\0  keydown\0keypress";
 
-  if(!TwEventKeyGLFW(key,action)) {
-    Nan::HandleScope scope;
+  Nan::HandleScope scope;
 
-    Local<Array> evt=Nan::New<Array>(7);
-    evt->Set(JS_STR("type"), JS_STR( &actionNames[action << 3] ));
-    evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
-    evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
-    evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
-    evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
+  Local<Array> evt=Nan::New<Array>(7);
+  evt->Set(JS_STR("type"), JS_STR( &actionNames[action << 3] ));
+  evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
+  evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
+  evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
+  evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
 
-    int which=key, charCode=key;
+  int which=key, charCode=key;
 
-    if(key>=GLFW_KEY_ESCAPE && key<=GLFW_KEY_LAST)
-      key=jsKeyCode[key-GLFW_KEY_ESCAPE];
-    else if(key==GLFW_KEY_SEMICOLON)  key=186;    // ;
-    else if(key==GLFW_KEY_EQUAL)  key=187;        // =
-    else if(key==GLFW_KEY_COMMA)  key=188;        // ,
-    else if(key==GLFW_KEY_MINUS)  key=189;        // -
-    else if(key==GLFW_KEY_PERIOD)  key=190;       // .
-    else if(key==GLFW_KEY_SLASH)  key=191;        // /
-    else if(key==GLFW_KEY_GRAVE_ACCENT)  key=192; // `
-    else if(key==GLFW_KEY_LEFT_BRACKET)  key=219; // [
-    else if(key==GLFW_KEY_BACKSLASH)  key=220;    /* \ */
-    else if(key==GLFW_KEY_RIGHT_BRACKET)  key=221;// ]
-    else if(key==GLFW_KEY_APOSTROPHE)  key=222;   // '
+  if(key>=GLFW_KEY_ESCAPE && key<=GLFW_KEY_LAST)
+    key=jsKeyCode[key-GLFW_KEY_ESCAPE];
+  else if(key==GLFW_KEY_SEMICOLON)  key=186;    // ;
+  else if(key==GLFW_KEY_EQUAL)  key=187;        // =
+  else if(key==GLFW_KEY_COMMA)  key=188;        // ,
+  else if(key==GLFW_KEY_MINUS)  key=189;        // -
+  else if(key==GLFW_KEY_PERIOD)  key=190;       // .
+  else if(key==GLFW_KEY_SLASH)  key=191;        // /
+  else if(key==GLFW_KEY_GRAVE_ACCENT)  key=192; // `
+  else if(key==GLFW_KEY_LEFT_BRACKET)  key=219; // [
+  else if(key==GLFW_KEY_BACKSLASH)  key=220;    /* \ */
+  else if(key==GLFW_KEY_RIGHT_BRACKET)  key=221;// ]
+  else if(key==GLFW_KEY_APOSTROPHE)  key=222;   // '
 
-    evt->Set(JS_STR("which"),JS_INT(which));
-    evt->Set(JS_STR("keyCode"),JS_INT(key));
-    evt->Set(JS_STR("charCode"),JS_INT(charCode));
+  evt->Set(JS_STR("which"),JS_INT(which));
+  evt->Set(JS_STR("keyCode"),JS_INT(key));
+  evt->Set(JS_STR("charCode"),JS_INT(charCode));
 
-    Local<Value> argv[2] = {
-      JS_STR(&actionNames[action << 3]), // event name
-      evt
-    };
+  Local<Value> argv[2] = {
+    JS_STR(&actionNames[action << 3]), // event name
+    evt
+  };
 
-    CallEmitter(2, argv);
-  }
+  CallEmitter(2, argv);
 }
 
 void APIENTRY cursorPosCB(GLFWwindow* window, double x, double y) {
-  if(!TwEventMousePosGLFW(x,y)) {
-    int w,h;
-    glfwGetWindowSize(window, &w, &h);
-    if(x<0 || x>=w) return;
-    if(y<0 || y>=h) return;
+  int w,h;
+  glfwGetWindowSize(window, &w, &h);
+  if(x<0 || x>=w) return;
+  if(y<0 || y>=h) return;
 
-    lastX=x;
-    lastY=y;
+  lastX=x;
+  lastY=y;
 
-    Nan::HandleScope scope;
+  Nan::HandleScope scope;
 
-    Local<Array> evt=Nan::New<Array>(5);
-    evt->Set(JS_STR("type"),JS_STR("mousemove"));
-    evt->Set(JS_STR("pageX"),JS_NUM(x));
-    evt->Set(JS_STR("pageY"),JS_NUM(y));
-    evt->Set(JS_STR("x"),JS_NUM(x));
-    evt->Set(JS_STR("y"),JS_NUM(y));
+  Local<Array> evt=Nan::New<Array>(5);
+  evt->Set(JS_STR("type"),JS_STR("mousemove"));
+  evt->Set(JS_STR("pageX"),JS_NUM(x));
+  evt->Set(JS_STR("pageY"),JS_NUM(y));
+  evt->Set(JS_STR("x"),JS_NUM(x));
+  evt->Set(JS_STR("y"),JS_NUM(y));
 
-    Local<Value> argv[2] = {
-      JS_STR("mousemove"), // event name
-      evt
-    };
+  Local<Value> argv[2] = {
+    JS_STR("mousemove"), // event name
+    evt
+  };
 
-    CallEmitter(2, argv);
-  }
+  CallEmitter(2, argv);
 }
 
 void APIENTRY cursorEnterCB(GLFWwindow* window, int entered) {
@@ -397,43 +392,39 @@ void APIENTRY cursorEnterCB(GLFWwindow* window, int entered) {
 }
 
 void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
-   if(!TwEventMouseButtonGLFW(button,action)) {
-    Nan::HandleScope scope;
-    Local<Array> evt=Nan::New<Array>(7);
-    evt->Set(JS_STR("type"),JS_STR(action ? "mousedown" : "mouseup"));
-    evt->Set(JS_STR("button"),JS_INT(button));
-    evt->Set(JS_STR("which"),JS_INT(button));
-    evt->Set(JS_STR("x"),JS_INT(lastX));
-    evt->Set(JS_STR("y"),JS_INT(lastY));
-    evt->Set(JS_STR("pageX"),JS_INT(lastX));
-    evt->Set(JS_STR("pageY"),JS_INT(lastY));
+  Nan::HandleScope scope;
+  Local<Array> evt=Nan::New<Array>(7);
+  evt->Set(JS_STR("type"),JS_STR(action ? "mousedown" : "mouseup"));
+  evt->Set(JS_STR("button"),JS_INT(button));
+  evt->Set(JS_STR("which"),JS_INT(button));
+  evt->Set(JS_STR("x"),JS_INT(lastX));
+  evt->Set(JS_STR("y"),JS_INT(lastY));
+  evt->Set(JS_STR("pageX"),JS_INT(lastX));
+  evt->Set(JS_STR("pageY"),JS_INT(lastY));
 
-    Local<Value> argv[2] = {
-      JS_STR(action ? "mousedown" : "mouseup"), // event name
-      evt
-    };
+  Local<Value> argv[2] = {
+    JS_STR(action ? "mousedown" : "mouseup"), // event name
+    evt
+  };
 
-    CallEmitter(2, argv);
-  }
+  CallEmitter(2, argv);
 }
 
 void APIENTRY scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
-  if(!TwEventMouseWheelGLFW(yoffset)) {
-    Nan::HandleScope scope;
+  Nan::HandleScope scope;
 
-    Local<Array> evt=Nan::New<Array>(3);
-    evt->Set(JS_STR("type"),JS_STR("mousewheel"));
-    evt->Set(JS_STR("wheelDeltaX"),JS_NUM(xoffset*120));
-    evt->Set(JS_STR("wheelDeltaY"),JS_NUM(yoffset*120));
-    evt->Set(JS_STR("wheelDelta"),JS_NUM(yoffset*120));
+  Local<Array> evt=Nan::New<Array>(3);
+  evt->Set(JS_STR("type"),JS_STR("mousewheel"));
+  evt->Set(JS_STR("wheelDeltaX"),JS_NUM(xoffset*120));
+  evt->Set(JS_STR("wheelDeltaY"),JS_NUM(yoffset*120));
+  evt->Set(JS_STR("wheelDelta"),JS_NUM(yoffset*120));
 
-    Local<Value> argv[2] = {
-      JS_STR("mousewheel"), // event name
-      evt
-    };
+  Local<Value> argv[2] = {
+    JS_STR("mousewheel"), // event name
+    evt
+  };
 
-    CallEmitter(2, argv);
-  }
+  CallEmitter(2, argv);
 }
 
 int APIENTRY windowCloseCB() {
@@ -654,7 +645,6 @@ NAN_METHOD(glfw_CreateWindow) {
 
   // input callbacks
   glfwSetKeyCallback( window, keyCB);
-  // TODO glfwSetCharCallback(window, TwEventCharGLFW);
   glfwSetMouseButtonCallback( window, mouseButtonCB );
   glfwSetCursorPosCallback( window, cursorPosCB );
   glfwSetCursorEnterCallback( window, cursorEnterCB );
@@ -926,7 +916,6 @@ NAN_METHOD(ExtensionSupported) {
 
 // make sure we close everything when we exit
 void AtExit() {
-  TwTerminate();
   glfwTerminate();
 }
 
@@ -1279,10 +1268,6 @@ NAN_MODULE_INIT(init)
 
   JS_GLFW_CONSTANT(CONNECTED);
   JS_GLFW_CONSTANT(DISCONNECTED);
-
-  // init AntTweakBar
-  atb::AntTweakBar::Initialize(target);
-  atb::Bar::Initialize(target);
 
   // test scene
   JS_GLFW_SET_METHOD(testScene);

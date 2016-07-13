@@ -14,10 +14,7 @@ GLEW is used to find OpenGL extensions in a cross-platform manner.
 - GLFW (http://www.glfw.org/)
 GLFW is a simple multi-platform framework for opening a window, creating an OpenGL context, and managing input.
 
-- AntTweakBar (http://www.antisphere.com/Wiki/tools:anttweakbar)
-AntTweakBar allows programmers to quickly add a light and intuitive graphical user interface into graphic applications to interactively tweak parameters on-screen. 
-
-All of these libraries are cross-platform. node-glfw provides a Javascript wrapper to access native methods in GLFW and AntTweakBar. See example of usage in node-webgl/test/cube.js.
+All of these libraries are cross-platform. node-glfw provides a Javascript wrapper to access native methods in GLFW.
 
 Once dependent libraries are installed, do
 ```
@@ -30,7 +27,7 @@ Installation (Mac)
 -------------------------
 Use Homebrew
 ```
-brew install pkg-config glfw3 anttweakbar glew
+brew install pkg-config glfw3 glew
 ```
 
 Installation (Linux)
@@ -38,14 +35,6 @@ Installation (Linux)
 Use apt-get or similar package manager
 ```
 sudo apt-get install libxrandr-dev libxinerama-dev libxcursor-dev libfreeimage-dev libglew-dev libxi-dev
-```
-
-Download AntTweakBar
-```
-cd AntTweakBar/src
-make
-sudo cp ../include/* /usr/local/include
-sudo cp ../liblibAntTweakBar.* /usr/local/lib
 ```
 
 Download GLFW3 (do not use ```apt-get install libglfw-dev```, it is wrong version)
@@ -65,7 +54,7 @@ Windows dependencies are bundled with this package, so `npm install node-glfw` s
 
 Notes
 -----
-- node-glfw is a just a platform binding so don't expect samples here. You should install node-webgl, which contains lots of tests and examples using node-glfw features including AntTweakBar. See node-webgl/test/cube.js for an example of using AntTweakBar with your webgl code.
+- node-glfw is a just a platform binding so don't expect samples here. You should install node-webgl, which contains lots of tests and examples using node-glfw features.
 - run ```node test/test.js``` to see a colored triangle with mouse tracking in the command-line. This indicates all is installed correctly.
 
 

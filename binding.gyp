@@ -6,7 +6,6 @@
     # Replace gyp platform with node platform, blech
     ['platform == "mac"', {'variables': {
       'platform': 'darwin',
-      'ANTTWEAKBAR_ROOT': '/usr/local/Cellar/anttweakbar/1.16',
     }}],
     ['platform == "win"', {'variables': {'platform': 'win32'}}],
   ],
@@ -17,7 +16,6 @@
         'VERSION=0.4.6',
       ],
       'sources': [
-        'src/atb.cc',
         'src/glfw.cc'
       ],
       'include_dirs': [
@@ -27,14 +25,14 @@
       'conditions': [
         ['OS=="linux"', {
           'libraries': [
-            '-lAntTweakBar', '<!@(pkg-config --libs glfw3 glew)',
+            '<!@(pkg-config --libs glfw3 glew)',
             '-lXrandr','-lXinerama','-lXxf86vm','-lXcursor','-lXi',
             '-lrt','-lm'
             ]
         }],
         ['OS=="mac"', {
-          'include_dirs': [ '<!@(pkg-config glfw3 glew --cflags-only-I | sed s/-I//g)','-I<(ANTTWEAKBAR_ROOT)/include'],
-          'libraries': [ '<!@(pkg-config --libs glfw3 glew)', '-L<(ANTTWEAKBAR_ROOT)/lib', '-lAntTweakBar', '-framework OpenGL'],
+          'include_dirs': [ '<!@(pkg-config glfw3 glew --cflags-only-I | sed s/-I//g)'],
+          'libraries': [ '<!@(pkg-config --libs glfw3 glew)', '-framework OpenGL'],
           'library_dirs': ['/usr/local/lib'],
         }],
         ['OS=="win"', {
@@ -46,7 +44,6 @@
               ],
             'libraries': [
               'FreeImage.lib',
-              'AntTweakBar64.lib',
               'glfw3dll.lib',
               'glew32.lib',
               'opengl32.lib'
@@ -63,14 +60,6 @@
                 'AdditionalOptions' : ['/OPT:REF','/OPT:ICF','/LTCG']
               },
             },
-            'conditions': [
-              ['target_arch=="ia32"', {
-                'libraries': ['AntTweakBar.lib']
-              }],
-              ['target_arch=="x64"', {
-                'libraries': ['AntTweakBar64.lib']
-              }]
-            ]
           },
         ],
       ],
