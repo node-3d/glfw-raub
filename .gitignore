@@ -8,3 +8,4 @@ build
 Debug
 node-glfw.iml
 node_modules
+bin_*
