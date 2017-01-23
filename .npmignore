@@ -1,0 +1,11 @@
+node_glfw.node
+.cproject,.project
+.cproject
+.project
+.lock-wscript
+build
+.DS_Store
+Debug
+node-glfw.iml
+node_modules
+bin_*

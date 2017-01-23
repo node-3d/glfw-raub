@@ -1,9 +1,9 @@
 {
-  "name": "node-glfw",
+  "name": "node-glfw-raub",
   "version": "0.4.6",
-  "description": "A NodeJS wrapper around GLFW 3.x library",
+  "description": "A NodeJS wrapper around GLFW 3.x library. Fork of https://github.com/mikeseven/node-glfw.git .",
   "main": "index.js",
-  "author": "Mikael Bourges-Sevenier <mikeseven@gmail.com>",
+  "author": "Luis Blanco <raubtierxxx@gmail.com>",
   "keywords": [
     "glfw",
     "opengl",
@@ -12,15 +12,15 @@
   ],
   "maintainers": [
     {
-      "name": "Mikael Bourges-Sevenier",
-      "email": "mikeseven@gmail.com",
-      "twitter": "msevenier"
+      "name": "Luis Blanco",
+      "email": "raubtierxxx@gmail.com",
+      "skype": "rauber666"
     }
   ],
   "license" : "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mikeseven/node-glfw.git"
+    "url": "https://github.com/raub/node-glfw.git"
   },
   "directories": {
     "src": "src",
