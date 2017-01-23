@@ -1,11 +1,11 @@
-node_glfw.node
+.idea
 .cproject,.project
 .cproject
 .project
 .lock-wscript
-build
+build*
 .DS_Store
 Debug
-node-glfw.iml
 node_modules
 bin_*
+*.log
