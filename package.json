@@ -4,15 +4,10 @@
 	"description": "GLFW for nodejs. Fork of https://github.com/peoronoob/node-glfw .",
 	"main": "index.js",
 	"author": "Luis Blanco <raubtierxxx@gmail.com>",
-	"keywords": [
-		"glfw",
-		"opengl",
-		"3d",
-		"graphics"
-	],
+	"keywords": [ "glfw", "opengl", "3d", "graphics" ],
 	"maintainers": [
 		{
-			"name": "Luis Blanco",
+			"name" : "Luis Blanco",
 			"email": "raubtierxxx@gmail.com",
 			"skype": "rauber666"
 		}
@@ -20,11 +15,11 @@
 	"license" : "BSD-3-Clause",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/raub/node-glfw.git"
+		"url" : "https://github.com/raub/node-glfw.git"
 	},
 	"directories": {
-		"src": "src",
-		"lib": "lib",
+		"src" : "src",
+		"lib" : "lib",
 		"test": "test"
 	},
 	"engines": {
@@ -34,6 +29,7 @@
 		"install": "node-gyp rebuild"
 	},
 	"dependencies": {
-		"nan": "^2.1.0"
+		"nan": "^2.1.0",
+		"node-deps-opengl-raub": "0.1.2"
 	}
 }
