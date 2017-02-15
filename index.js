@@ -2,6 +2,8 @@
 
 const os = require('os');
 
+require('node-deps-opengl-raub');
+
 const addonPaths = {
 	win32 : './bin_win32/glfw' ,
 	linux : './bin_linux/glfw' ,

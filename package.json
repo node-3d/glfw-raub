@@ -1,6 +1,6 @@
 {
 	"name": "node-glfw-raub",
-	"version": "0.4.7",
+	"version": "0.4.8",
 	"description": "GLFW for nodejs. Fork of https://github.com/peoronoob/node-glfw .",
 	"main": "index.js",
 	"author": "Luis Blanco <raubtierxxx@gmail.com>",
@@ -22,14 +22,11 @@
 		"lib" : "lib",
 		"test": "test"
 	},
-	"engines": {
-		"node": ">=3.0.0"
-	},
 	"scripts": {
 		"install": "node-gyp rebuild"
 	},
 	"dependencies": {
 		"nan": "^2.1.0",
-		"node-deps-opengl-raub": "0.1.2"
+		"node-deps-opengl-raub": "^0.2.0"
 	}
 }

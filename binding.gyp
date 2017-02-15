@@ -1,7 +1,9 @@
 {
 	'variables': {
-		'platform' : '<(OS)',
-		'deps_root': '<!(node -e "console.log(require(\'node-deps-opengl-raub\'))")',
+		'platform'      : '<(OS)',
+		'opengl_root'   : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').root)")',
+		'opengl_include': '<(opengl_root)/include',
+		'opengl_bin'    : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').bin)")',
 	},
 	'conditions': [
 		['platform == "mac"', { 'variables': { 'platform': 'darwin' } }],
@@ -14,8 +16,9 @@
 			'sources': [ 'src/glfw.cc' ],
 			'include_dirs': [
 				'<!(node -e "require(\'nan\')")',
-				'./deps/include',
+				'<(opengl_include)',
 			],
+			'library_dirs': [ '<(opengl_bin)' ],
 			'conditions': [
 				[
 					'OS=="linux"',
@@ -38,8 +41,6 @@
 				[
 					'OS=="win"',
 					{
-						'include_dirs': [ '<(deps_root)/include' ],
-						'library_dirs': [ '<(deps_root)/bin_<(platform)' ],
 						'libraries': [ 'FreeImage.lib', 'glfw3dll.lib', 'glew32.lib', 'opengl32.lib' ],
 						'defines' : [
 							'WIN32_LEAN_AND_MEAN',
@@ -66,13 +67,13 @@
 			'target_name': 'copy_binary',
 			'type':'none',
 			'dependencies' : ['glfw'],
+			'destination': '<(module_root_dir)/bin_<(platform)',
 			'conditions': [
 				[
 					'OS=="linux"',
 					{
 						'copies': [
 							{
-								'destination': '<(module_root_dir)/bin_linux',
 								'files': [
 									'<(module_root_dir)/build/Release/glfw.node',
 								]
@@ -85,7 +86,6 @@
 					{
 						'copies': [
 							{
-								'destination': '<(module_root_dir)/bin_darwin',
 								'files': [
 									'<(module_root_dir)/build/Release/glfw.node',
 								]
@@ -98,12 +98,8 @@
 					{
 						'copies': [
 							{
-								'destination': '<(module_root_dir)/bin_win32',
 								'files': [
 									'<(module_root_dir)/build/Release/glfw.node',
-									'<(deps_root)/bin_<(platform)/FreeImage.dll',
-									'<(deps_root)/bin_<(platform)/glew32.dll',
-									'<(deps_root)/bin_<(platform)/glfw3.dll',
 								]
 							}
 						]
