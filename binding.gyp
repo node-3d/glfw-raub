@@ -67,46 +67,32 @@
 			'target_name': 'copy_binary',
 			'type':'none',
 			'dependencies' : ['glfw'],
-			'destination': '<(module_root_dir)/bin_<(platform)',
-			'conditions': [
-				[
-					'OS=="linux"',
-					{
-						'copies': [
+			'copies': [
+				{
+					'destination': '<(module_root_dir)/bin_<(platform)',
+					'conditions': [
+						[
+							'OS=="linux"',
 							{
-								'files': [
-									'<(module_root_dir)/build/Release/glfw.node',
-								]
+								'files': [ '<(module_root_dir)/build/Release/glfw.node' ]
 							}
-						]
-					}
-				],
-				[
-					'OS=="mac"',
-					{
-						'copies': [
+						],
+						[
+							'OS=="mac"',
 							{
-								'files': [
-									'<(module_root_dir)/build/Release/glfw.node',
-								]
+								'files': [ '<(module_root_dir)/build/Release/glfw.node' ]
 							}
-						]
-					}
-				],
-				[
-					'OS=="win"',
-					{
-						'copies': [
+						],
+						[
+							'OS=="win"',
 							{
-								'files': [
-									'<(module_root_dir)/build/Release/glfw.node',
-								]
-							}
-						]
-					},
-				],
-				
-			],
+								'files': [ '<(module_root_dir)/build/Release/glfw.node' ]
+							},
+						],
+						
+					]
+				}
+			]
 			
 		}
 	]
