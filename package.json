@@ -1,6 +1,6 @@
 {
 	"name": "node-glfw-raub",
-	"version": "0.4.8",
+	"version": "0.4.9",
 	"description": "GLFW for nodejs. Fork of https://github.com/peoronoob/node-glfw .",
 	"main": "index.js",
 	"author": "Luis Blanco <raubtierxxx@gmail.com>",
