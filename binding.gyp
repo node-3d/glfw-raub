@@ -64,36 +64,69 @@
 		},
 		
 		{
-			'target_name': 'copy_binary',
-			'type':'none',
+			'target_name'  : 'copy_binary',
+			'type'         : 'none',
 			'dependencies' : ['glfw'],
-			'copies': [
+			'message'      : 'Copying the addon into the platform-specific directory.',
+			'copies'       : [
 				{
-					'destination': '<(module_root_dir)/bin_<(platform)',
-					'conditions': [
+					'destination' : '<(module_root_dir)/bin_<(platform)',
+					'conditions'  : [
 						[
 							'OS=="linux"',
-							{
-								'files': [ '<(module_root_dir)/build/Release/glfw.node' ]
-							}
+							{ 'files' : [] }
 						],
 						[
 							'OS=="mac"',
-							{
-								'files': [ '<(module_root_dir)/build/Release/glfw.node' ]
-							}
+							{ 'files' : [] }
 						],
 						[
 							'OS=="win"',
-							{
-								'files': [ '<(module_root_dir)/build/Release/glfw.node' ]
-							},
+							{ 'files' : [ '<(module_root_dir)/build/Release/glfw.node' ] },
 						],
-						
 					]
 				}
-			]
-			
-		}
+			],
+		},
+		
+		{
+			'target_name'  : 'remove_temporaries',
+			'type'         : 'none',
+			'dependencies' : ['copy_binary'],
+			'message'      : 'Removing temporary files.',
+			'actions'      : [
+				{
+					'action_name' : 'action_remove1',
+					'inputs'      : ['build/Release/glfw.*'],
+					'outputs'     : ['build'],
+					'conditions'  : [
+						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
+					],
+				},
+				{
+					'action_name' : 'action_remove2',
+					'inputs'      : ['build/Release/obj/glfw/*.obj'],
+					'outputs'     : ['build'],
+					'conditions'  : [
+						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
+					],
+				},
+				{
+					'action_name' : 'action_remove3',
+					'inputs'      : ['build/Release/obj/glfw/*.pdb'],
+					'outputs'     : ['build'],
+					'conditions'  : [
+						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
+					],
+				},
+			],
+		},
+		
 	]
 }
