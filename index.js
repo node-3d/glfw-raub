@@ -1,18 +1,20 @@
 'use strict';
 
-const os = require('os');
-
 require('node-deps-opengl-raub');
 
-const addonPaths = {
-	win32 : './bin_win32/glfw' ,
-	linux : './bin_linux/glfw' ,
-	darwin: './bin_darwin/glfw',
+
+const platformPaths = {
+	win32  : './bin_windows/glfw',
+	linux  : './bin_linux/glfw'  ,
+	darwin : './bin_darwin/glfw' ,
 };
 
-const glfw = require(addonPaths[os.platform()]);
+const binDir  = platformPaths[process.platform];
+
+const glfw = require(binDir);
 
 module.exports = glfw;
+
 
 // Easy event emitter based event loop.  Started automatically when the first
 // listener is added.

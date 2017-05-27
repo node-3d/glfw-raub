@@ -7,7 +7,7 @@
 	},
 	'conditions': [
 		['platform == "mac"', { 'variables': { 'platform': 'darwin' } }],
-		['platform == "win"', { 'variables': { 'platform': 'win32'  } }],
+		['platform == "win"', { 'variables': { 'platform': 'windows'  } }],
 	],
 	'targets': [
 		{
@@ -46,7 +46,6 @@
 							'WIN32_LEAN_AND_MEAN',
 							'VC_EXTRALEAN'
 						],
-						'msvs_version'  : '2013',
 						'msvs_settings' : {
 							'VCCLCompilerTool' : {
 								'AdditionalOptions' : [
@@ -67,7 +66,6 @@
 			'target_name'  : 'copy_binary',
 			'type'         : 'none',
 			'dependencies' : ['glfw'],
-			'message'      : 'Copying the addon into the platform-specific directory.',
 			'copies'       : [
 				{
 					'destination' : '<(module_root_dir)/bin_<(platform)',
@@ -90,10 +88,9 @@
 		},
 		
 		{
-			'target_name'  : 'remove_temporaries',
+			'target_name'  : 'remove_extras',
 			'type'         : 'none',
 			'dependencies' : ['copy_binary'],
-			'message'      : 'Removing temporary files.',
 			'actions'      : [
 				{
 					'action_name' : 'action_remove1',

@@ -1,4 +1,4 @@
-var glfw = require('../index');
+var glfw = require('.');
 var util=require('util');
 var log = console.log;
 
