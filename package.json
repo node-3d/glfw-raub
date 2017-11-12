@@ -24,6 +24,7 @@
     "node": ">=3.0.0"
   },
   "scripts": {
+    "preinstall": "npm install native-graphics-deps",
     "install": "node-gyp rebuild"
   },
   "dependencies": {
