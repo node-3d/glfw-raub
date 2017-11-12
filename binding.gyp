@@ -22,7 +22,7 @@
       ],
       'include_dirs': [
         "<!(node -e \"require('nan')\")",
-        './deps/include',
+        './node_modules/native-graphics-deps/include',
       ],
       'conditions': [
         ['OS=="linux"', {
@@ -39,10 +39,10 @@
         }],
         ['OS=="win"', {
             'include_dirs': [
-              './deps/include',
+              './node_modules/native-graphics-deps/include',
               ],
             'library_dirs': [
-              './deps/windows/lib/<(target_arch)',
+              './node_modules/native-graphics-deps/windows/lib/<(target_arch)',
               ],
             'libraries': [
               'FreeImage.lib',
