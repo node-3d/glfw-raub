@@ -63,6 +63,25 @@
                 'AdditionalOptions' : ['/OPT:REF','/OPT:ICF','/LTCG']
               },
             },
+            'copies': [
+              {
+                'destination': './build/Release/',
+                'files': [
+                  './node_modules/native-graphics-deps/windows/lib/x64/AntTweakBar.dll',
+                  './node_modules/native-graphics-deps/windows/lib/x64/AntTweakBar.lib',
+                  './node_modules/native-graphics-deps/windows/lib/x64/AntTweakBar64.dll',
+                  './node_modules/native-graphics-deps/windows/lib/x64/AntTweakBar64.lib',
+                  './node_modules/native-graphics-deps/windows/lib/x64/FreeImage.dll',
+                  './node_modules/native-graphics-deps/windows/lib/x64/FreeImage.lib',
+                  './node_modules/native-graphics-deps/windows/lib/x64/glew32.dll',
+                  './node_modules/native-graphics-deps/windows/lib/x64/glew32.lib',
+                  './node_modules/native-graphics-deps/windows/lib/x64/glew32s.lib',
+                  './node_modules/native-graphics-deps/windows/lib/x64/glfw3.dll',
+                  './node_modules/native-graphics-deps/windows/lib/x64/glfw3.lib',
+                  './node_modules/native-graphics-deps/windows/lib/x64/glfw3dll.lib',
+                 ]
+              }
+            ],
             'conditions': [
               ['target_arch=="ia32"', {
                 'libraries': ['AntTweakBar.lib']
