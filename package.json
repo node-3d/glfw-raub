@@ -1,6 +1,6 @@
 {
   "name": "node-glfw2",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A NodeJS wrapper around GLFW 3.x library",
   "main": "index.js",
   "author": "Avaer Kazmer <a@modules.io>",
