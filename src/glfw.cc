@@ -593,6 +593,31 @@ NAN_METHOD(GetJoystickName) {
   info.GetReturnValue().Set(JS_STR(response));
 }
 
+NAN_METHOD(GetFBOs) {
+  Nan::HandleScope scope;
+  Local<Array> result = Array::New(Isolate::GetCurrent(), 2);
+
+  uint64_t handle=info[0]->IntegerValue();
+  if (handle) {
+    GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
+
+    GLint fbo1;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo1);
+
+    glfwSwapBuffers(window);
+
+    GLint fbo2;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo2);
+
+    glfwSwapBuffers(window);
+
+    result->Set(0, Number::New(Isolate::GetCurrent(), fbo1));
+    result->Set(1, Number::New(Isolate::GetCurrent(), fbo2));
+  }
+
+  info.GetReturnValue().Set(result);
+}
+
 NAN_METHOD(glfw_CreateWindow) {
   Nan::HandleScope scope;
   int width       = info[0]->Uint32Value();
@@ -1000,6 +1025,8 @@ NAN_MODULE_INIT(init)
   JS_GLFW_SET_METHOD(GetJoystickAxes);
   JS_GLFW_SET_METHOD(GetJoystickButtons);
   JS_GLFW_SET_METHOD(GetJoystickName);
+
+  JS_GLFW_SET_METHOD(GetFBOs);
 
   /*************************************************************************
    * GLFW version
