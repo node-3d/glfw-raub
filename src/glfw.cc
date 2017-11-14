@@ -593,32 +593,6 @@ NAN_METHOD(GetJoystickName) {
   info.GetReturnValue().Set(JS_STR(response));
 }
 
-NAN_METHOD(GetFBOs) {
-  Nan::HandleScope scope;
-
-  uint64_t handle=info[0]->IntegerValue();
-  if (handle) {
-    GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
-
-    GLint fbo1;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo1);
-
-    glfwSwapBuffers(window);
-
-    GLint fbo2;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo2);
-
-    glfwSwapBuffers(window);
-
-    Local<Array> result = Array::New(Isolate::GetCurrent(), 2);
-    result->Set(0, Number::New(Isolate::GetCurrent(), fbo1));
-    result->Set(1, Number::New(Isolate::GetCurrent(), fbo2));
-    info.GetReturnValue().Set(result);
-  } else {
-    return Nan::ThrowError("Invalid handle");
-  }
-}
-
 NAN_METHOD(glfw_CreateWindow) {
   Nan::HandleScope scope;
   int width       = info[0]->Uint32Value();
@@ -687,6 +661,25 @@ NAN_METHOD(glfw_CreateWindow) {
   glfwSetScrollCallback( window, scrollCB );
 
   info.GetReturnValue().Set(JS_NUM((uint64_t) window));
+}
+
+NAN_METHOD(GetFramebufferTexture) {
+  Nan::HandleScope scope;
+  int width = info[0]->Uint32Value();
+  int height = info[1]->Uint32Value();
+  int samples = info[2]->Uint32Value();
+
+  GLuint tex;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, tex);
+  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, width, height, true);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, tex, 0);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
+    info.GetReturnValue().Set(JS_NUM((uint64_t) tex));
+  } else {
+    info.GetReturnValue().Set(Null(Isolate::GetCurrent()));
+  }
 }
 
 NAN_METHOD(DestroyWindow) {
@@ -989,6 +982,7 @@ NAN_MODULE_INIT(init)
   /* Window handling */
   //JS_GLFW_SET_METHOD(CreateWindow);
   Nan::SetMethod(target, "CreateWindow", glfw::glfw_CreateWindow);
+  Nan::SetMethod(target, "GetFramebufferTexture", glfw::GetFramebufferTexture);
   JS_GLFW_SET_METHOD(WindowHint);
   JS_GLFW_SET_METHOD(DefaultWindowHints);
   JS_GLFW_SET_METHOD(DestroyWindow);
@@ -1026,8 +1020,6 @@ NAN_MODULE_INIT(init)
   JS_GLFW_SET_METHOD(GetJoystickAxes);
   JS_GLFW_SET_METHOD(GetJoystickButtons);
   JS_GLFW_SET_METHOD(GetJoystickName);
-
-  JS_GLFW_SET_METHOD(GetFBOs);
 
   /*************************************************************************
    * GLFW version
