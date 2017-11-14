@@ -595,7 +595,6 @@ NAN_METHOD(GetJoystickName) {
 
 NAN_METHOD(GetFBOs) {
   Nan::HandleScope scope;
-  Local<Array> result = Array::New(Isolate::GetCurrent(), 2);
 
   uint64_t handle=info[0]->IntegerValue();
   if (handle) {
@@ -611,11 +610,13 @@ NAN_METHOD(GetFBOs) {
 
     glfwSwapBuffers(window);
 
+    Local<Array> result = Array::New(Isolate::GetCurrent(), 2);
     result->Set(0, Number::New(Isolate::GetCurrent(), fbo1));
     result->Set(1, Number::New(Isolate::GetCurrent(), fbo2));
+    info.GetReturnValue().Set(result);
+  } else {
+    return Nan::ThrowError("Invalid handle");
   }
-
-  info.GetReturnValue().Set(result);
 }
 
 NAN_METHOD(glfw_CreateWindow) {
