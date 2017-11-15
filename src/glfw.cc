@@ -668,18 +668,64 @@ NAN_METHOD(GetFramebufferTexture) {
   int width = info[0]->Uint32Value();
   int height = info[1]->Uint32Value();
   int samples = info[2]->Uint32Value();
-
+  
+  GLuint fbo;
+  glGenFramebuffers(1, &fbo );
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  
+  GLuint renderBuffer;
+	glGenRenderbuffers(1, &renderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	renderBuffer );
+  
   GLuint tex;
-  glGenTextures(1, &tex);
-  glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, tex);
-  glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, width, height, true);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, tex, 0);
+  glGenTextures(1, &tex );
+	glBindTexture(GL_TEXTURE_2D, tex );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+  
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) {
-    info.GetReturnValue().Set(JS_NUM((uint64_t) tex));
+  GLenum framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (framebufferStatus == GL_FRAMEBUFFER_COMPLETE) {
+    Local<Array> result = Array::New(Isolate::GetCurrent(), 2);
+    result->Set(0, JS_NUM(fbo));
+    result->Set(1, JS_NUM(tex));
+    info.GetReturnValue().Set(result);
   } else {
     info.GetReturnValue().Set(Null(Isolate::GetCurrent()));
   }
+}
+
+NAN_METHOD(BindFrameBuffer) {
+  Nan::HandleScope scope;
+  GLuint fbo = info[0]->Uint32Value();
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+NAN_METHOD(BlitFrameBuffer) {
+  Nan::HandleScope scope;
+  GLuint fbo1 = info[0]->Uint32Value();
+  GLuint fbo2 = info[1]->Uint32Value();
+  int sw = info[2]->Uint32Value();
+  int sh = info[3]->Uint32Value();
+  int dw = info[4]->Uint32Value();
+  int dh = info[5]->Uint32Value();
+  
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo1);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo2);
+
+  glBlitFramebuffer(0,0,
+    sw, sh,
+    0,0,
+    dw, dh,
+    GL_COLOR_BUFFER_BIT,
+    GL_LINEAR);
+    
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 NAN_METHOD(DestroyWindow) {
@@ -983,6 +1029,8 @@ NAN_MODULE_INIT(init)
   //JS_GLFW_SET_METHOD(CreateWindow);
   Nan::SetMethod(target, "CreateWindow", glfw::glfw_CreateWindow);
   Nan::SetMethod(target, "GetFramebufferTexture", glfw::GetFramebufferTexture);
+  Nan::SetMethod(target, "BindFrameBuffer", glfw::BindFrameBuffer);
+  Nan::SetMethod(target, "BlitFrameBuffer", glfw::BlitFrameBuffer);
   JS_GLFW_SET_METHOD(WindowHint);
   JS_GLFW_SET_METHOD(DefaultWindowHints);
   JS_GLFW_SET_METHOD(DestroyWindow);
