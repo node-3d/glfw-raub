@@ -668,17 +668,17 @@ NAN_METHOD(GetFramebufferTexture) {
   int width = info[0]->Uint32Value();
   int height = info[1]->Uint32Value();
   int samples = info[2]->Uint32Value();
-  
+
   GLuint fbo;
   glGenFramebuffers(1, &fbo );
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  
+
   GLuint renderBuffer;
 	glGenRenderbuffers(1, &renderBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	renderBuffer );
-  
+
   GLuint tex;
   glGenTextures(1, &tex );
 	glBindTexture(GL_TEXTURE_2D, tex );
@@ -686,7 +686,7 @@ NAN_METHOD(GetFramebufferTexture) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
-  
+
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   GLenum framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -714,7 +714,7 @@ NAN_METHOD(BlitFrameBuffer) {
   int sh = info[3]->Uint32Value();
   int dw = info[4]->Uint32Value();
   int dh = info[5]->Uint32Value();
-  
+
   glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo1);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo2);
 
@@ -724,7 +724,7 @@ NAN_METHOD(BlitFrameBuffer) {
     dw, dh,
     GL_COLOR_BUFFER_BIT,
     GL_LINEAR);
-    
+
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
