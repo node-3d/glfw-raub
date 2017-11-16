@@ -635,7 +635,7 @@ NAN_METHOD(glfw_CreateWindow) {
       fprintf(stderr, "%s", msg.c_str());
       return Nan::ThrowError(msg.c_str());
     }
-    fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    // fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
   }
   else
     glfwSetWindowSize(window, width,height);
