@@ -899,6 +899,18 @@ NAN_METHOD(GetWindowAttrib) {
   return;
 }
 
+NAN_METHOD(SetInputMode) {
+  Nan::HandleScope scope;
+  uint64_t handle=info[0]->IntegerValue();
+  if(handle) {
+    GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
+    int mode = info[1]->Int32Value();
+    int value = info[2]->Int32Value();
+    glfwSetInputMode(window, mode, value);
+  }
+  return;
+}
+
 NAN_METHOD(PollEvents) {
   Nan::HandleScope scope;
   glfwPollEvents();
