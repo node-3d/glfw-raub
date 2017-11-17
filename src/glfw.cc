@@ -1072,6 +1072,7 @@ NAN_MODULE_INIT(init)
   JS_GLFW_SET_METHOD(ShowWindow);
   JS_GLFW_SET_METHOD(HideWindow);
   JS_GLFW_SET_METHOD(GetWindowAttrib);
+  JS_GLFW_SET_METHOD(SetInputMode);
   JS_GLFW_SET_METHOD(PollEvents);
   JS_GLFW_SET_METHOD(WaitEvents);
 
