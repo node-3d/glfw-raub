@@ -399,6 +399,7 @@ void APIENTRY cursorEnterCB(GLFWwindow* window, int entered) {
 void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
    if(!TwEventMouseButtonGLFW(button,action)) {
     Nan::HandleScope scope;
+
     Local<Array> evt=Nan::New<Array>(7);
     evt->Set(JS_STR("type"),JS_STR(action ? "mousedown" : "mouseup"));
     evt->Set(JS_STR("button"),JS_INT(button));
@@ -418,6 +419,28 @@ void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods
     };
 
     CallEmitter(2, argv);
+
+    if (!action) {
+      Local<Array> evt=Nan::New<Array>(7);
+      evt->Set(JS_STR("type"),JS_STR("click"));
+      evt->Set(JS_STR("button"),JS_INT(button));
+      evt->Set(JS_STR("which"),JS_INT(button));
+      evt->Set(JS_STR("x"),JS_INT(lastX));
+      evt->Set(JS_STR("y"),JS_INT(lastY));
+      evt->Set(JS_STR("pageX"),JS_INT(lastX));
+      evt->Set(JS_STR("pageY"),JS_INT(lastY));
+      evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
+      evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
+      evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
+      evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
+
+      Local<Value> argv[2] = {
+        JS_STR("click"), // event name
+        evt
+      };
+
+      CallEmitter(2, argv);
+    }
   }
 }
 
