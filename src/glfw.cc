@@ -367,10 +367,12 @@ void APIENTRY cursorPosCB(GLFWwindow* window, double x, double y) {
 
     Local<Array> evt=Nan::New<Array>(5);
     evt->Set(JS_STR("type"),JS_STR("mousemove"));
-    evt->Set(JS_STR("pageX"),JS_NUM(x));
-    evt->Set(JS_STR("pageY"),JS_NUM(y));
     evt->Set(JS_STR("x"),JS_NUM(x));
     evt->Set(JS_STR("y"),JS_NUM(y));
+    evt->Set(JS_STR("clientX"),JS_NUM(x));
+    evt->Set(JS_STR("clientY"),JS_NUM(y));
+    evt->Set(JS_STR("pageX"),JS_NUM(x));
+    evt->Set(JS_STR("pageY"),JS_NUM(y));
 
     Local<Value> argv[2] = {
       JS_STR("mousemove"), // event name
@@ -406,6 +408,8 @@ void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods
     evt->Set(JS_STR("which"),JS_INT(button));
     evt->Set(JS_STR("x"),JS_INT(lastX));
     evt->Set(JS_STR("y"),JS_INT(lastY));
+    evt->Set(JS_STR("clientX"),JS_INT(lastX));
+    evt->Set(JS_STR("clientY"),JS_INT(lastY));
     evt->Set(JS_STR("pageX"),JS_INT(lastX));
     evt->Set(JS_STR("pageY"),JS_INT(lastY));
     evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
@@ -427,6 +431,8 @@ void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods
       evt->Set(JS_STR("which"),JS_INT(button));
       evt->Set(JS_STR("x"),JS_INT(lastX));
       evt->Set(JS_STR("y"),JS_INT(lastY));
+      evt->Set(JS_STR("clientX"),JS_INT(lastX));
+      evt->Set(JS_STR("clientY"),JS_INT(lastY));
       evt->Set(JS_STR("pageX"),JS_INT(lastX));
       evt->Set(JS_STR("pageY"),JS_INT(lastY));
       evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
