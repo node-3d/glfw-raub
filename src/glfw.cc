@@ -326,19 +326,89 @@ void APIENTRY keyCB(GLFWwindow *window, int key, int scancode, int action, int m
 
     int which=key, charCode=key;
 
-    if(key>=GLFW_KEY_ESCAPE && key<=GLFW_KEY_LAST)
-      key=jsKeyCode[key-GLFW_KEY_ESCAPE];
-    else if(key==GLFW_KEY_SEMICOLON)  key=186;    // ;
-    else if(key==GLFW_KEY_EQUAL)  key=187;        // =
-    else if(key==GLFW_KEY_COMMA)  key=188;        // ,
-    else if(key==GLFW_KEY_MINUS)  key=189;        // -
-    else if(key==GLFW_KEY_PERIOD)  key=190;       // .
-    else if(key==GLFW_KEY_SLASH)  key=191;        // /
-    else if(key==GLFW_KEY_GRAVE_ACCENT)  key=192; // `
-    else if(key==GLFW_KEY_LEFT_BRACKET)  key=219; // [
-    else if(key==GLFW_KEY_BACKSLASH)  key=220;    /* \ */
-    else if(key==GLFW_KEY_RIGHT_BRACKET)  key=221;// ]
-    else if(key==GLFW_KEY_APOSTROPHE)  key=222;   // '
+    switch (key) {
+      case GLFW_KEY_ESCAPE:       key = 27; break;
+      case GLFW_KEY_ENTER:        key = 13; break;
+      case GLFW_KEY_TAB:          key = 9; break;
+      case GLFW_KEY_BACKSPACE:    key = 8; break;
+      case GLFW_KEY_INSERT:       key = 45; break;
+      case GLFW_KEY_DELETE:       key = 46; break;
+      case GLFW_KEY_RIGHT:        key = 39; break;
+      case GLFW_KEY_LEFT:         key = 37; break;
+      case GLFW_KEY_DOWN:         key = 40; break;
+      case GLFW_KEY_UP:           key = 38; break;
+      case GLFW_KEY_PAGE_UP:      key = 33; break;
+      case GLFW_KEY_PAGE_DOWN:    key = 34; break;
+      case GLFW_KEY_HOME:         key = 36; break;
+      case GLFW_KEY_END:          key = 35; break;
+      case GLFW_KEY_CAPS_LOCK:    key = 20; break;
+      case GLFW_KEY_SCROLL_LOCK:  key = 145; break;
+      case GLFW_KEY_NUM_LOCK:     key = 144; break;
+      case GLFW_KEY_PRINT_SCREEN: key = 144; break; /* TODO */
+      case GLFW_KEY_PAUSE:        key = 19; break;
+      case GLFW_KEY_F1:           key = 112; break;
+      case GLFW_KEY_F2:           key = 113; break;
+      case GLFW_KEY_F3:           key = 114; break;
+      case GLFW_KEY_F4:           key = 115; break;
+      case GLFW_KEY_F5:           key = 116; break;
+      case GLFW_KEY_F6:           key = 117; break;
+      case GLFW_KEY_F7:           key = 118; break;
+      case GLFW_KEY_F8:           key = 119; break;
+      case GLFW_KEY_F9:           key = 120; break;
+      case GLFW_KEY_F10:          key = 121; break;
+      case GLFW_KEY_F11:          key = 122; break;
+      case GLFW_KEY_F12:          key = 123; break;
+      case GLFW_KEY_F13:          key = 123; break; /* unknown */
+      case GLFW_KEY_F14:          key = 123; break; /* unknown */
+      case GLFW_KEY_F15:          key = 123; break; /* unknown */
+      case GLFW_KEY_F16:          key = 123; break; /* unknown */
+      case GLFW_KEY_F17:          key = 123; break; /* unknown */
+      case GLFW_KEY_F18:          key = 123; break; /* unknown */
+      case GLFW_KEY_F19:          key = 123; break; /* unknown */
+      case GLFW_KEY_F20:          key = 123; break; /* unknown */
+      case GLFW_KEY_F21:          key = 123; break; /* unknown */
+      case GLFW_KEY_F22:          key = 123; break; /* unknown */
+      case GLFW_KEY_F23:          key = 123; break; /* unknown */
+      case GLFW_KEY_F24:          key = 123; break; /* unknown */
+      case GLFW_KEY_F25:          key = 123; break; /* unknown */
+      case GLFW_KEY_KP_0:         key = 96; break;
+      case GLFW_KEY_KP_1:         key = 97; break;
+      case GLFW_KEY_KP_2:         key = 98; break;
+      case GLFW_KEY_KP_3:         key = 99; break;
+      case GLFW_KEY_KP_4:         key = 100; break;
+      case GLFW_KEY_KP_5:         key = 101; break;
+      case GLFW_KEY_KP_6:         key = 102; break;
+      case GLFW_KEY_KP_7:         key = 103; break;
+      case GLFW_KEY_KP_8:         key = 104; break;
+      case GLFW_KEY_KP_9:         key = 105; break;
+      case GLFW_KEY_KP_DECIMAL:   key = 110; break;
+      case GLFW_KEY_KP_DIVIDE:    key = 111; break;
+      case GLFW_KEY_KP_MULTIPLY:  key = 106; break;
+      case GLFW_KEY_KP_SUBTRACT:  key = 109; break;
+      case GLFW_KEY_KP_ADD:       key = 107; break;
+      case GLFW_KEY_KP_ENTER:     key = 13; break;
+      case GLFW_KEY_KP_EQUAL:     key = 187; break;
+      case GLFW_KEY_LEFT_SHIFT:   key = 16; break;
+      case GLFW_KEY_LEFT_CONTROL: key = 17; break;
+      case GLFW_KEY_LEFT_ALT:     key = 18; break;
+      case GLFW_KEY_LEFT_SUPER:   key = 91; break;
+      case GLFW_KEY_RIGHT_SHIFT:  key = 16; break;
+      case GLFW_KEY_RIGHT_CONTROL: key = 17; break;
+      case GLFW_KEY_RIGHT_ALT:    key = 18; break;
+      case GLFW_KEY_RIGHT_SUPER:  key = 93; break;
+      case GLFW_KEY_MENU:         key = 18; break;
+      case GLFW_KEY_SEMICOLON:    key = 186; break; // ;
+      case GLFW_KEY_EQUAL:        key = 187; break; // =
+      case GLFW_KEY_COMMA:        key = 188; break; // ,
+      case GLFW_KEY_MINUS:        key = 189; break; // -
+      case GLFW_KEY_PERIOD:       key = 190; break; // .
+      case GLFW_KEY_SLASH:        key = 191; break; // /
+      case GLFW_KEY_GRAVE_ACCENT: key = 192; break; // `
+      case GLFW_KEY_LEFT_BRACKET: key = 219; break; // [
+      case GLFW_KEY_BACKSLASH:    key = 220; break; /* \ */
+      case GLFW_KEY_RIGHT_BRACKET: key = 221; break; // ]
+      case GLFW_KEY_APOSTROPHE:   key = 222; break; // '
+    }
 
     evt->Set(JS_STR("which"),JS_INT(which));
     evt->Set(JS_STR("keyCode"),JS_INT(key));
