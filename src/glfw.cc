@@ -407,6 +407,10 @@ void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods
     evt->Set(JS_STR("y"),JS_INT(lastY));
     evt->Set(JS_STR("pageX"),JS_INT(lastX));
     evt->Set(JS_STR("pageY"),JS_INT(lastY));
+    evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
+    evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
+    evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
+    evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
 
     Local<Value> argv[2] = {
       JS_STR(action ? "mousedown" : "mouseup"), // event name
@@ -1388,4 +1392,3 @@ NAN_MODULE_INIT(init)
 
 NODE_MODULE(glfw, init)
 }
-
