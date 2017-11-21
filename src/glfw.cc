@@ -183,6 +183,22 @@ void APIENTRY windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
   CallEmitter(2, argv);
 }
 
+void APIENTRY windowDropCB(GLFWwindow *window, int count, const char **paths) {
+  Nan::HandleScope scope;
+
+  Local<Array> evt = Nan::New<Array>(count);
+  for (int i = 0; i < count; i++) {
+    evt->Set(i, JS_STR(paths[i]));
+  }
+
+  Local<Value> argv[2] = {
+    JS_STR("filedrop"), // event name
+    evt
+  };
+
+  CallEmitter(2, argv);
+}
+
 void APIENTRY windowCloseCB(GLFWwindow *window) {
   Nan::HandleScope scope;
 
@@ -758,6 +774,7 @@ NAN_METHOD(glfw_CreateWindow) {
   glfwSetWindowFocusCallback( window, windowFocusCB );
   glfwSetWindowIconifyCallback( window, windowIconifyCB );
   glfwSetFramebufferSizeCallback( window, windowFramebufferSizeCB );
+  glfwSetDropCallback(window, windowDropCB);
 
   // input callbacks
   glfwSetKeyCallback( window, keyCB);
