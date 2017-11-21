@@ -192,7 +192,7 @@ void APIENTRY windowDropCB(GLFWwindow *window, int count, const char **paths) {
   }
 
   Local<Value> argv[2] = {
-    JS_STR("filedrop"), // event name
+    JS_STR("drop"), // event name
     evt
   };
 
