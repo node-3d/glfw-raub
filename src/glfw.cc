@@ -184,7 +184,25 @@ void /*APIENTRY*/ windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
   CallEmitter(2, argv);
 }
 
-void /*APIENTRY*/ windowCloseCB(GLFWwindow *window) {
+
+void APIENTRY windowDropCB(GLFWwindow *window, int count, const char **paths) {
+  Nan::HandleScope scope;
+
+  Local<Array> evt = Nan::New<Array>(count);
+  for (int i = 0; i < count; i++) {
+    evt->Set(i, JS_STR(paths[i]));
+  }
+
+  Local<Value> argv[2] = {
+    JS_STR("drop"), // event name
+    evt
+  };
+
+  CallEmitter(2, argv);
+}
+
+
+void APIENTRY windowCloseCB(GLFWwindow *window) {
   Nan::HandleScope scope;
 
   Local<Value> argv[1] = {
@@ -315,41 +333,112 @@ static int jsKeyCode[]={
 void /*APIENTRY*/ keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) {
   const char *actionNames = "keyup\0  keydown\0keypress";
 
-  Nan::HandleScope scope;
+    Nan::HandleScope scope;
 
-  Local<Array> evt=Nan::New<Array>(7);
-  evt->Set(JS_STR("type"), JS_STR( &actionNames[action << 3] ));
-  evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
-  evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
-  evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
-  evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
+    Local<Array> evt=Nan::New<Array>(7);
+    evt->Set(JS_STR("type"), JS_STR( &actionNames[action << 3] ));
+    evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
+    evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
+    evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
+    evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
 
-  int which=key, charCode=key;
+    int which=key, charCode=key;
 
-  if(key>=GLFW_KEY_ESCAPE && key<=GLFW_KEY_LAST)
-    key=jsKeyCode[key-GLFW_KEY_ESCAPE];
-  else if(key==GLFW_KEY_SEMICOLON)  key=186;    // ;
-  else if(key==GLFW_KEY_EQUAL)  key=187;        // =
-  else if(key==GLFW_KEY_COMMA)  key=188;        // ,
-  else if(key==GLFW_KEY_MINUS)  key=189;        // -
-  else if(key==GLFW_KEY_PERIOD)  key=190;       // .
-  else if(key==GLFW_KEY_SLASH)  key=191;        // /
-  else if(key==GLFW_KEY_GRAVE_ACCENT)  key=192; // `
-  else if(key==GLFW_KEY_LEFT_BRACKET)  key=219; // [
-  else if(key==GLFW_KEY_BACKSLASH)  key=220;    /* \ */
-  else if(key==GLFW_KEY_RIGHT_BRACKET)  key=221;// ]
-  else if(key==GLFW_KEY_APOSTROPHE)  key=222;   // '
+    switch (key) {
+      case GLFW_KEY_ESCAPE:       key = 27; break;
+      case GLFW_KEY_ENTER:        key = 13; break;
+      case GLFW_KEY_TAB:          key = 9; break;
+      case GLFW_KEY_BACKSPACE:    key = 8; break;
+      case GLFW_KEY_INSERT:       key = 45; break;
+      case GLFW_KEY_DELETE:       key = 46; break;
+      case GLFW_KEY_RIGHT:        key = 39; break;
+      case GLFW_KEY_LEFT:         key = 37; break;
+      case GLFW_KEY_DOWN:         key = 40; break;
+      case GLFW_KEY_UP:           key = 38; break;
+      case GLFW_KEY_PAGE_UP:      key = 33; break;
+      case GLFW_KEY_PAGE_DOWN:    key = 34; break;
+      case GLFW_KEY_HOME:         key = 36; break;
+      case GLFW_KEY_END:          key = 35; break;
+      case GLFW_KEY_CAPS_LOCK:    key = 20; break;
+      case GLFW_KEY_SCROLL_LOCK:  key = 145; break;
+      case GLFW_KEY_NUM_LOCK:     key = 144; break;
+      case GLFW_KEY_PRINT_SCREEN: key = 144; break; /* TODO */
+      case GLFW_KEY_PAUSE:        key = 19; break;
+      case GLFW_KEY_F1:           key = 112; break;
+      case GLFW_KEY_F2:           key = 113; break;
+      case GLFW_KEY_F3:           key = 114; break;
+      case GLFW_KEY_F4:           key = 115; break;
+      case GLFW_KEY_F5:           key = 116; break;
+      case GLFW_KEY_F6:           key = 117; break;
+      case GLFW_KEY_F7:           key = 118; break;
+      case GLFW_KEY_F8:           key = 119; break;
+      case GLFW_KEY_F9:           key = 120; break;
+      case GLFW_KEY_F10:          key = 121; break;
+      case GLFW_KEY_F11:          key = 122; break;
+      case GLFW_KEY_F12:          key = 123; break;
+      case GLFW_KEY_F13:          key = 123; break; /* unknown */
+      case GLFW_KEY_F14:          key = 123; break; /* unknown */
+      case GLFW_KEY_F15:          key = 123; break; /* unknown */
+      case GLFW_KEY_F16:          key = 123; break; /* unknown */
+      case GLFW_KEY_F17:          key = 123; break; /* unknown */
+      case GLFW_KEY_F18:          key = 123; break; /* unknown */
+      case GLFW_KEY_F19:          key = 123; break; /* unknown */
+      case GLFW_KEY_F20:          key = 123; break; /* unknown */
+      case GLFW_KEY_F21:          key = 123; break; /* unknown */
+      case GLFW_KEY_F22:          key = 123; break; /* unknown */
+      case GLFW_KEY_F23:          key = 123; break; /* unknown */
+      case GLFW_KEY_F24:          key = 123; break; /* unknown */
+      case GLFW_KEY_F25:          key = 123; break; /* unknown */
+      case GLFW_KEY_KP_0:         key = 96; break;
+      case GLFW_KEY_KP_1:         key = 97; break;
+      case GLFW_KEY_KP_2:         key = 98; break;
+      case GLFW_KEY_KP_3:         key = 99; break;
+      case GLFW_KEY_KP_4:         key = 100; break;
+      case GLFW_KEY_KP_5:         key = 101; break;
+      case GLFW_KEY_KP_6:         key = 102; break;
+      case GLFW_KEY_KP_7:         key = 103; break;
+      case GLFW_KEY_KP_8:         key = 104; break;
+      case GLFW_KEY_KP_9:         key = 105; break;
+      case GLFW_KEY_KP_DECIMAL:   key = 110; break;
+      case GLFW_KEY_KP_DIVIDE:    key = 111; break;
+      case GLFW_KEY_KP_MULTIPLY:  key = 106; break;
+      case GLFW_KEY_KP_SUBTRACT:  key = 109; break;
+      case GLFW_KEY_KP_ADD:       key = 107; break;
+      case GLFW_KEY_KP_ENTER:     key = 13; break;
+      case GLFW_KEY_KP_EQUAL:     key = 187; break;
+      case GLFW_KEY_LEFT_SHIFT:   key = 16; break;
+      case GLFW_KEY_LEFT_CONTROL: key = 17; break;
+      case GLFW_KEY_LEFT_ALT:     key = 18; break;
+      case GLFW_KEY_LEFT_SUPER:   key = 91; break;
+      case GLFW_KEY_RIGHT_SHIFT:  key = 16; break;
+      case GLFW_KEY_RIGHT_CONTROL: key = 17; break;
+      case GLFW_KEY_RIGHT_ALT:    key = 18; break;
+      case GLFW_KEY_RIGHT_SUPER:  key = 93; break;
+      case GLFW_KEY_MENU:         key = 18; break;
+      case GLFW_KEY_SEMICOLON:    key = 186; break; // ;
+      case GLFW_KEY_EQUAL:        key = 187; break; // =
+      case GLFW_KEY_COMMA:        key = 188; break; // ,
+      case GLFW_KEY_MINUS:        key = 189; break; // -
+      case GLFW_KEY_PERIOD:       key = 190; break; // .
+      case GLFW_KEY_SLASH:        key = 191; break; // /
+      case GLFW_KEY_GRAVE_ACCENT: key = 192; break; // `
+      case GLFW_KEY_LEFT_BRACKET: key = 219; break; // [
+      case GLFW_KEY_BACKSLASH:    key = 220; break; /* \ */
+      case GLFW_KEY_RIGHT_BRACKET: key = 221; break; // ]
+      case GLFW_KEY_APOSTROPHE:   key = 222; break; // '
+    }
 
-  evt->Set(JS_STR("which"),JS_INT(which));
-  evt->Set(JS_STR("keyCode"),JS_INT(key));
-  evt->Set(JS_STR("charCode"),JS_INT(charCode));
+    evt->Set(JS_STR("which"),JS_INT(which));
+    evt->Set(JS_STR("keyCode"),JS_INT(key));
+    evt->Set(JS_STR("charCode"),JS_INT(charCode));
 
-  Local<Value> argv[2] = {
-    JS_STR(&actionNames[action << 3]), // event name
-    evt
-  };
+    Local<Value> argv[2] = {
+      JS_STR(&actionNames[action << 3]), // event name
+      evt
+    };
 
-  CallEmitter(2, argv);
+    CallEmitter(2, argv);
+
 }
 
 void /*APIENTRY*/ cursorPosCB(GLFWwindow* window, double x, double y) {
@@ -363,15 +452,19 @@ void /*APIENTRY*/ cursorPosCB(GLFWwindow* window, double x, double y) {
 
   Nan::HandleScope scope;
 
-  Local<Array> evt=Nan::New<Array>(5);
-  evt->Set(JS_STR("type"),JS_STR("mousemove"));
-  evt->Set(JS_STR("pageX"),JS_NUM(x));
-  evt->Set(JS_STR("pageY"),JS_NUM(y));
-  evt->Set(JS_STR("clientX"),JS_NUM(x));
-  evt->Set(JS_STR("clientY"),JS_NUM(y));
-  evt->Set(JS_STR("x"),JS_NUM(x));
-  evt->Set(JS_STR("y"),JS_NUM(y));
-
+    Local<Array> evt=Nan::New<Array>(5);
+    evt->Set(JS_STR("type"),JS_STR("mousemove"));
+    evt->Set(JS_STR("clientX"),JS_NUM(x));
+    evt->Set(JS_STR("clientY"),JS_NUM(y));
+    evt->Set(JS_STR("pageX"),JS_NUM(x));
+    evt->Set(JS_STR("pageY"),JS_NUM(y));
+    evt->Set(JS_STR("ctrlKey"),JS_BOOL(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS));
+    evt->Set(JS_STR("shiftKey"),JS_BOOL(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS));
+    evt->Set(JS_STR("altKey"),JS_BOOL(glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS));
+    evt->Set(JS_STR("metaKey"),JS_BOOL(glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS));
+    evt->Set(JS_STR("x"),JS_NUM(x));
+    evt->Set(JS_STR("y"),JS_NUM(y));
+  
   Local<Value> argv[2] = {
     JS_STR("mousemove"), // event name
     evt
@@ -395,26 +488,56 @@ void /*APIENTRY*/ cursorEnterCB(GLFWwindow* window, int entered) {
   CallEmitter(2, argv);
 }
 
-void /*APIENTRY*/ mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
-  Nan::HandleScope scope;
-  Local<Array> evt=Nan::New<Array>(7);
-  evt->Set(JS_STR("type"),JS_STR(action ? "mousedown" : "mouseup"));
-  evt->Set(JS_STR("button"),JS_INT(button));
-  evt->Set(JS_STR("which"),JS_INT(button));
-  evt->Set(JS_STR("x"),JS_INT(lastX));
-  evt->Set(JS_STR("y"),JS_INT(lastY));
-  evt->Set(JS_STR("pageX"),JS_INT(lastX));
-  evt->Set(JS_STR("pageY"),JS_INT(lastY));
-  evt->Set(JS_STR("clientX"),JS_NUM(lastX));
-  evt->Set(JS_STR("clientY"),JS_NUM(lastY));
 
-  Local<Value> argv[2] = {
-    JS_STR(action ? "mousedown" : "mouseup"), // event name
-    evt
-  };
+void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
+    Nan::HandleScope scope;
 
-  CallEmitter(2, argv);
+    Local<Array> evt=Nan::New<Array>(7);
+    evt->Set(JS_STR("type"),JS_STR(action ? "mousedown" : "mouseup"));
+    evt->Set(JS_STR("button"),JS_INT(button));
+    evt->Set(JS_STR("which"),JS_INT(button));
+    evt->Set(JS_STR("clientX"),JS_INT(lastX));
+    evt->Set(JS_STR("clientY"),JS_INT(lastY));
+    evt->Set(JS_STR("pageX"),JS_INT(lastX));
+    evt->Set(JS_STR("pageY"),JS_INT(lastY));
+    
+    evt->Set(JS_STR("x"),JS_INT(lastX));
+    evt->Set(JS_STR("y"),JS_INT(lastY));
+    evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
+    evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
+    evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
+    evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
+
+    Local<Value> argv[2] = {
+      JS_STR(action ? "mousedown" : "mouseup"), // event name
+      evt
+    };
+
+    CallEmitter(2, argv);
+
+    if (!action) {
+      Local<Array> evt=Nan::New<Array>(7);
+      evt->Set(JS_STR("type"),JS_STR("click"));
+      evt->Set(JS_STR("button"),JS_INT(button));
+      evt->Set(JS_STR("which"),JS_INT(button));
+      evt->Set(JS_STR("clientX"),JS_INT(lastX));
+      evt->Set(JS_STR("clientY"),JS_INT(lastY));
+      evt->Set(JS_STR("pageX"),JS_INT(lastX));
+      evt->Set(JS_STR("pageY"),JS_INT(lastY));
+      evt->Set(JS_STR("shiftKey"),JS_BOOL(mods & GLFW_MOD_SHIFT));
+      evt->Set(JS_STR("ctrlKey"),JS_BOOL(mods & GLFW_MOD_CONTROL));
+      evt->Set(JS_STR("altKey"),JS_BOOL(mods & GLFW_MOD_ALT));
+      evt->Set(JS_STR("metaKey"),JS_BOOL(mods & GLFW_MOD_SUPER));
+
+      Local<Value> argv[2] = {
+        JS_STR("click"), // event name
+        evt
+      };
+
+      CallEmitter(2, argv);
+    }
 }
+
 
 void /*APIENTRY*/ scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
   Nan::HandleScope scope;
@@ -632,24 +755,6 @@ NAN_METHOD(glfw_CreateWindow) {
       fprintf(stderr, "%s", msg.c_str());
       return Nan::ThrowError(msg.c_str());
     }
-    
-    //fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-  }
-  else {
-    glfwSetWindowSize(window, width, height);
-    glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    GLenum err = glewInit();
-    if (err)
-    {
-      /* Problem: glewInit failed, something is seriously wrong. */
-      string msg="Can't init GLEW (glew error ";
-      msg+=(const char*) glewGetErrorString(err);
-      msg+=")";
-
-      fprintf(stderr, "%s", msg.c_str());
-      return Nan::ThrowError(msg.c_str());
-    }
   }
 
   // Set callback functions
@@ -663,6 +768,7 @@ NAN_METHOD(glfw_CreateWindow) {
   glfwSetWindowFocusCallback( window, windowFocusCB );
   glfwSetWindowIconifyCallback( window, windowIconifyCB );
   glfwSetFramebufferSizeCallback( window, windowFramebufferSizeCB );
+  glfwSetDropCallback(window, windowDropCB);
 
   // input callbacks
   glfwSetKeyCallback( window, keyCB);
@@ -675,6 +781,7 @@ NAN_METHOD(glfw_CreateWindow) {
   info.GetReturnValue().Set(JS_NUM((uint64_t) window));
 }
 
+
 NAN_METHOD(Win32Window) {
 Nan::HandleScope scope;
   uint64_t handle=info[0]->IntegerValue();
@@ -685,6 +792,7 @@ Nan::HandleScope scope;
     info.GetReturnValue().Set(JS_NUM((uint64_t) 0));
   }
 }
+
 
 NAN_METHOD(Win32Context) {
 Nan::HandleScope scope;
@@ -697,6 +805,86 @@ Nan::HandleScope scope;
   }
 }
 
+
+NAN_METHOD(GetRenderTarget) {
+  Nan::HandleScope scope;
+  int width = info[0]->Uint32Value();
+  int height = info[1]->Uint32Value();
+  int samples = info[2]->Uint32Value();
+
+  GLuint fbo;
+  glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+  GLuint renderBuffer;
+	glGenRenderbuffers(1, &renderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+  if (samples > 1) {
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
+  } else {
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+  }
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	renderBuffer);
+
+  GLuint tex;
+  glGenTextures(1, &tex);
+  if (samples > 1) {
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, tex);
+    // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAX_LEVEL, 0);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, width, height, true);
+    // glFramebufferTexture2DMultisampleEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0, samples);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, tex, 0);
+  } else {
+    glBindTexture(GL_TEXTURE_2D, tex);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  GLenum framebufferStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if (framebufferStatus == GL_FRAMEBUFFER_COMPLETE) {
+    Local<Array> result = Array::New(Isolate::GetCurrent(), 2);
+    result->Set(0, JS_NUM(fbo));
+    result->Set(1, JS_NUM(tex));
+    info.GetReturnValue().Set(result);
+  } else {
+    info.GetReturnValue().Set(Null(Isolate::GetCurrent()));
+  }
+}
+
+NAN_METHOD(BindFrameBuffer) {
+  Nan::HandleScope scope;
+  GLuint fbo = info[0]->Uint32Value();
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+NAN_METHOD(BlitFrameBuffer) {
+  Nan::HandleScope scope;
+  GLuint fbo1 = info[0]->Uint32Value();
+  GLuint fbo2 = info[1]->Uint32Value();
+  int sw = info[2]->Uint32Value();
+  int sh = info[3]->Uint32Value();
+  int dw = info[4]->Uint32Value();
+  int dh = info[5]->Uint32Value();
+
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo1);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo2);
+
+  glBlitFramebuffer(0,0,
+    sw, sh,
+    0,0,
+    dw, dh,
+    GL_COLOR_BUFFER_BIT,
+    GL_LINEAR);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
 NAN_METHOD(DestroyWindow) {
   Nan::HandleScope scope;
   uint64_t handle=info[0]->IntegerValue();
@@ -706,6 +894,7 @@ NAN_METHOD(DestroyWindow) {
   }
   return;
 }
+
 
 NAN_METHOD(SetWindowTitle) {
   Nan::HandleScope scope;
@@ -717,6 +906,7 @@ NAN_METHOD(SetWindowTitle) {
   }
   return;
 }
+
 
 NAN_METHOD(GetWindowSize) {
   Nan::HandleScope scope;
@@ -851,6 +1041,18 @@ NAN_METHOD(GetWindowAttrib) {
   if(handle) {
     GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
     info.GetReturnValue().Set(JS_INT(glfwGetWindowAttrib(window, attrib)));
+  }
+  return;
+}
+
+NAN_METHOD(SetInputMode) {
+  Nan::HandleScope scope;
+  uint64_t handle=info[0]->IntegerValue();
+  if(handle) {
+    GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
+    int mode = info[1]->Int32Value();
+    int value = info[2]->Int32Value();
+    glfwSetInputMode(window, mode, value);
   }
   return;
 }
@@ -996,6 +1198,9 @@ NAN_MODULE_INIT(init)
   /* Window handling */
   //JS_GLFW_SET_METHOD(CreateWindow);
   Nan::SetMethod(target, "CreateWindow", glfw::glfw_CreateWindow);
+  Nan::SetMethod(target, "GetRenderTarget", glfw::GetRenderTarget);
+  Nan::SetMethod(target, "BindFrameBuffer", glfw::BindFrameBuffer);
+  Nan::SetMethod(target, "BlitFrameBuffer", glfw::BlitFrameBuffer);
   JS_GLFW_SET_METHOD(WindowHint);
   JS_GLFW_SET_METHOD(DefaultWindowHints);
   JS_GLFW_SET_METHOD(Win32Window);
@@ -1014,6 +1219,7 @@ NAN_MODULE_INIT(init)
   JS_GLFW_SET_METHOD(ShowWindow);
   JS_GLFW_SET_METHOD(HideWindow);
   JS_GLFW_SET_METHOD(GetWindowAttrib);
+  JS_GLFW_SET_METHOD(SetInputMode);
   JS_GLFW_SET_METHOD(PollEvents);
   JS_GLFW_SET_METHOD(WaitEvents);
 
@@ -1283,6 +1489,9 @@ NAN_MODULE_INIT(init)
   JS_GLFW_CONSTANT(SAMPLES);
   JS_GLFW_CONSTANT(SRGB_CAPABLE);
   JS_GLFW_CONSTANT(REFRESH_RATE);
+  JS_GLFW_CONSTANT(DOUBLEBUFFER);
+  JS_GLFW_CONSTANT(TRUE);
+  JS_GLFW_CONSTANT(FALSE);
 
   JS_GLFW_CONSTANT(CLIENT_API);
   JS_GLFW_CONSTANT(CONTEXT_VERSION_MAJOR);
@@ -1322,4 +1531,3 @@ NAN_MODULE_INIT(init)
 
 NODE_MODULE(glfw, init)
 }
-
