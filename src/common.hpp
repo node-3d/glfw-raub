@@ -1,10 +1,11 @@
-#ifndef COMMON_H_
-#define COMMON_H_
+#ifndef COMMON_HPP_
+#define COMMON_HPP_
 
 // OpenGL Graphics Includes
 #ifndef _WIN32
-#define GLEW_STATIC
+	#define GLEW_STATIC
 #endif
+
 #include <GL/glew.h>
 
 #define GLFW_NO_GLU
@@ -59,4 +60,4 @@
 		Nan::ThrowError(v8::String::New(#error));
 
 
-#endif /* COMMON_H_ */
+#endif /* COMMON_HPP_ */

@@ -13,7 +13,7 @@
 		{
 			'target_name': 'glfw',
 			'defines': [ 'VERSION=0.4.6' ],
-			'sources': [ 'src/glfw.cc' ],
+			'sources': [ 'src/glfw.cpp' ],
 			'include_dirs': [
 				'<!(node -e "require(\'nan\')")',
 				'<(opengl_include)',
@@ -66,64 +66,44 @@
 			'target_name'  : 'copy_binary',
 			'type'         : 'none',
 			'dependencies' : ['glfw'],
-			'copies'       : [
-				{
-					'destination' : '<(module_root_dir)/bin_<(platform)',
-					'conditions'  : [
-						[
-							'OS=="linux"',
-							{ 'files' : [] }
-						],
-						[
-							'OS=="mac"',
-							{ 'files' : [] }
-						],
-						[
-							'OS=="win"',
-							{ 'files' : [ '<(module_root_dir)/build/Release/glfw.node' ] },
-						],
-					]
-				}
-			],
+			'actions'      : [{
+				'action_name' : 'Module copied.',
+				'inputs'      : [],
+				'outputs'     : ['build'],
+				'conditions'  : [
+					[ 'OS=="linux"', { 'action' : [
+						'cp "<(module_root_dir)/build/Release/glfw.node"' +
+						' "<(module_root_dir)/binary"'
+					] } ],
+					[ 'OS=="mac"', { 'action' : [
+						'cp "<(module_root_dir)/build/Release/glfw.node"' +
+						' "<(module_root_dir)/binary"'
+					] } ],
+					[ 'OS=="win"', { 'action' : [
+						'copy "<(module_root_dir)/build/Release/glfw.node"' +
+						' "<(module_root_dir)/binary"'
+					] } ],
+				],
+			}],
 		},
 		
 		{
 			'target_name'  : 'remove_extras',
 			'type'         : 'none',
 			'dependencies' : ['copy_binary'],
-			'actions'      : [
-				{
-					'action_name' : 'action_remove1',
-					'inputs'      : ['build/Release/glfw.*'],
-					'outputs'     : ['build'],
-					'conditions'  : [
-						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
-					],
-				},
-				{
-					'action_name' : 'action_remove2',
-					'inputs'      : ['build/Release/obj/glfw/*.obj'],
-					'outputs'     : ['build'],
-					'conditions'  : [
-						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
-					],
-				},
-				{
-					'action_name' : 'action_remove3',
-					'inputs'      : ['build/Release/obj/glfw/*.pdb'],
-					'outputs'     : ['build'],
-					'conditions'  : [
-						[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-						[ 'OS=="win"'  , { 'action' : [ '<(module_root_dir)/_del', '<@(_inputs)' ] } ],
-					],
-				},
-			],
+			'actions'      : [{
+				'action_name' : 'Build intermediates removed.',
+				'inputs'      : [],
+				'outputs'     : ['build'],
+				'conditions'  : [
+					[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+					[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+					[ 'OS=="win"'  , { 'action' : [
+						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/glfw.*" && ' +
+						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/glfw/*.*'
+					] } ],
+				],
+			}],
 		},
-		
 	]
 }

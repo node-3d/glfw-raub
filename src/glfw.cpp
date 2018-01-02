@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "common.h"
+#include "common.hpp"
 
 using namespace v8;
 using namespace node;

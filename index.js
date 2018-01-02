@@ -1,7 +1,9 @@
 'use strict';
 
+// Add deps dll dirs
 require('node-deps-opengl-raub');
 
+const EventEmitter = require('events');
 
 const platformPaths = {
 	win32  : './bin_windows/glfw',
@@ -9,38 +11,30 @@ const platformPaths = {
 	darwin : './bin_darwin/glfw' ,
 };
 
-const binDir  = platformPaths[process.platform];
+const binDir = platformPaths[process.platform];
 
 const glfw = require(binDir);
 
-module.exports = glfw;
 
-
-// Easy event emitter based event loop.  Started automatically when the first
-// listener is added.
-
-const EventEmitter = require('events');
 const events = new EventEmitter();
 
-events.emit = function() {
+events.emit = (type, event) => {
 	
-	const args = Array.prototype.slice.call(arguments);
-	const evt  = args[1]; // args[1] is the event, args[0] is the type of event
-	
-	if(args[0] !== 'quit') {
-		evt.preventDefault  = function () {};
-		evt.stopPropagation = function () {};
+	if (type !== 'quit') {
+		event.preventDefault  = () => {};
+		event.stopPropagation = () => {};
 	}
 	
-	events.listeners(args[0]).forEach(function(listener) {
-		listener(args[1]);
-	});
+	events.listeners(type).forEach(listener => listener(event));
 	
 };
 
 
 Object.defineProperty(glfw, 'events', {
-	get: function () { return events; },
-	enumerable  : true,
-	configurable: true
+	get          : function () { return events; },
+	enumerable   : true,
+	configurable : true
 });
+
+
+module.exports = glfw;

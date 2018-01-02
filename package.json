@@ -1,7 +1,7 @@
 {
   "name": "node-glfw-raub",
-  "version": "0.5.1",
-  "description": "GLFW for nodejs. Fork of https://github.com/peoronoob/node-glfw .",
+  "version": "0.5.4",
+  "description": "GLFW bindings for Node.js",
   "main": "index.js",
   "author": "Luis Blanco <raubtierxxx@gmail.com>",
   "keywords": [
@@ -23,7 +23,8 @@
     "url": "https://github.com/raub/node-glfw.git"
   },
   "dependencies": {
-    "nan": "2.6.2",
-    "node-deps-opengl-raub": "0.2.2"
+    "nan": "2.8.0",
+    "node-deps-opengl-raub": "0.2.3",
+    "node-addon-tools-raub" : "0.0.2"
   }
 }
