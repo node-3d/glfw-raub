@@ -1,8 +1,7 @@
-#ifndef COMMON_HPP_
-#define COMMON_HPP_
+#ifndef _COMMON_HPP_
+#define _COMMON_HPP_
 
 
-// NodeJS includes
 #include <node.h>
 
 #ifdef _WIN32
@@ -13,6 +12,9 @@
 #ifdef _WIN32
 	#pragma warning(pop)
 #endif
+
+
+// OpenGL stuff
 
 #include <GL/glew.h>
 
@@ -32,43 +34,16 @@
 #endif
 #include <GLFW/glfw3native.h>
 
+
+// Fix bad defines
+
 #undef True
 #undef False
 
 
-#define JS_STR(...) Nan::New<v8::String>(__VA_ARGS__).ToLocalChecked()
-#define JS_INT(val) Nan::New<v8::Integer>(val)
-#define JS_NUM(val) Nan::New<v8::Number>(val)
-#define JS_BOOL(val) (val) ? Nan::True() : Nan::False()
-#define JS_RETHROW(tc) v8::Local<v8::Value>::New(tc.Exception());
+// Cool macros
+
+#include <addon-tools.hpp>
 
 
-#define REQ_ARGS(N)                                                     \
-	if (info.Length() < (N))                                            \
-		Nan::ThrowTypeError("Expected " #N " arguments");
-
-
-#define REQ_STR_ARG(I, VAR)                                             \
-	if (info.Length() <= (I) || !info[I]->IsString())                   \
-		Nan::ThrowTypeError("Argument " #I " must be a string");        \
-	v8::String::Utf8Value VAR(info[I]->ToString());
-
-
-#define REQ_EXT_ARG(I, VAR)                                             \
-	if (info.Length() <= (I) || !info[I]->IsExternal())                 \
-		Nan::ThrowTypeError("Argument " #I " invalid");                 \
-	v8::Local<v8::External> VAR = v8::Local<v8::External>::Cast(info[I]);
-
-
-#define REQ_FUN_ARG(I, VAR)                                             \
-	if (info.Length() <= (I) || !info[I]->IsFunction())                 \
-		Nan::ThrowTypeError("Argument " #I " must be a function");      \
-	v8::Local<Function> VAR = v8::Local<v8::Function>::Cast(info[I]);
-
-
-#define REQ_ERROR_THROW(error)                                          \
-	if (ret == error)                                                   \
-		Nan::ThrowError(v8::String::New(#error));
-
-
-#endif /* COMMON_HPP_ */
+#endif /* _COMMON_HPP_ */

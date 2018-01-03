@@ -1,14 +1,9 @@
 {
 	'variables': {
-		'platform'      : '<(OS)',
 		'opengl_root'   : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').root)")',
 		'opengl_include': '<(opengl_root)/include',
 		'opengl_bin'    : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').bin)")',
 	},
-	'conditions': [
-		['platform == "mac"', { 'variables': { 'platform': 'darwin' } }],
-		['platform == "win"', { 'variables': { 'platform': 'windows'  } }],
-	],
 	'targets': [
 		{
 			'target_name': 'glfw',
@@ -17,6 +12,7 @@
 			'include_dirs': [
 				'<!(node -e "require(\'nan\')")',
 				'<(opengl_include)',
+				'<!(node -e "require(\'node-addon-tools-raub\')")',
 			],
 			'library_dirs': [ '<(opengl_bin)' ],
 			'conditions': [
@@ -73,7 +69,6 @@
 				'action_name' : 'Directory created.',
 				'inputs'      : [],
 				'outputs'     : ['build'],
-				'action'      : ['mkdir', 'binary'],
 				'conditions'  : [
 					[ 'OS=="linux"', { 'action': ['mkdir', '-p', 'binary'] } ],
 					[ 'OS=="mac"', { 'action': ['mkdir', '-p', 'binary'] } ],
