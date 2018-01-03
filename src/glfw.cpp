@@ -188,7 +188,7 @@ void /*APIENTRY*/ windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
 }
 
 
-void APIENTRY windowDropCB(GLFWwindow *window, int count, const char **paths) {
+void /*APIENTRY*/ windowDropCB(GLFWwindow *window, int count, const char **paths) {
 	Nan::HandleScope scope;
 	
 	Local<Array> evt = Nan::New<Array>(count);
@@ -205,7 +205,7 @@ void APIENTRY windowDropCB(GLFWwindow *window, int count, const char **paths) {
 }
 
 
-void APIENTRY windowCloseCB(GLFWwindow *window) {
+void /*APIENTRY*/ windowCloseCB(GLFWwindow *window) {
 	Nan::HandleScope scope;
 	
 	Local<Value> argv[1] = {
@@ -506,7 +506,7 @@ void /*APIENTRY*/ cursorEnterCB(GLFWwindow* window, int entered) {
 }
 
 
-void APIENTRY mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
+void /*APIENTRY*/ mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
 	
 	Nan::HandleScope scope;
 	
