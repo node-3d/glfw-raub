@@ -23,7 +23,14 @@
 				[
 					'OS=="linux"',
 					{
-						'libraries': ['-lfreeimage', '-lglfw', '-lglew', '-lGL', '-lXrandr']
+						'libraries': [
+							'-Wl,-rpath,<(opengl_bin)',
+							'<(opengl_bin)/libfreeimage.so',
+							'<(opengl_bin)/libglfw.so.3',
+							'<(opengl_bin)/libGLEW.so.2.0',
+							'<(opengl_bin)/libGL.so',
+							'<(opengl_bin)/libXrandr.so',
+						],
 					}
 				],
 				[

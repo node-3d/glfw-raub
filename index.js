@@ -5,15 +5,7 @@ require('node-deps-opengl-raub');
 
 const EventEmitter = require('events');
 
-const platformPaths = {
-	win32  : './bin_windows/glfw',
-	linux  : './bin_linux/glfw'  ,
-	darwin : './bin_darwin/glfw' ,
-};
-
-const binDir = platformPaths[process.platform];
-
-const glfw = require(binDir);
+const glfw = require('./binary/glfw');
 
 
 const events = new EventEmitter();
