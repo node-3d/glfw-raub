@@ -24,9 +24,9 @@
 					'OS=="linux"',
 					{
 						'libraries': [
-							'<!@(pkg-config --libs glfw3 glew)',
-							'-lXrandr','-lXinerama','-lXxf86vm','-lXcursor','-lXi',
-							'-lrt','-lm'
+							'freeimage', 'glfw', 'glew',
+							# '-lXrandr','-lXinerama','-lXxf86vm','-lXcursor','-lXi',
+							# '-lrt','-lm'
 						]
 					}
 				],
@@ -72,12 +72,10 @@
 				'outputs'     : ['build'],
 				'conditions'  : [
 					[ 'OS=="linux"', { 'action' : [
-						'cp "<(module_root_dir)/build/Release/glfw.node"' +
-						' "<(module_root_dir)/binary"'
+						'echo', 'copy'
 					] } ],
 					[ 'OS=="mac"', { 'action' : [
-						'cp "<(module_root_dir)/build/Release/glfw.node"' +
-						' "<(module_root_dir)/binary"'
+						'echo', 'copy'
 					] } ],
 					[ 'OS=="win"', { 'action' : [
 						'copy "<(module_root_dir)/build/Release/glfw.node"' +
@@ -96,8 +94,8 @@
 				'inputs'      : [],
 				'outputs'     : ['build'],
 				'conditions'  : [
-					[ 'OS=="linux"', { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
-					[ 'OS=="mac"'  , { 'action' : [ 'rm -rf <@(_inputs)' ] } ],
+					[ 'OS=="linux"', { 'action' : [ 'echo', 'remove' ] } ],
+					[ 'OS=="mac"'  , { 'action' : [ 'echo', 'remove' ] } ],
 					[ 'OS=="win"'  , { 'action' : [
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/glfw.*" && ' +
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/glfw/*.*'
