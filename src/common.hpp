@@ -1,18 +1,18 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
-// // OpenGL Graphics Includes
-// #ifndef _WIN32
-// 	#define GLEW_STATIC
-// #endif
 
 // NodeJS includes
 #include <node.h>
 
-#pragma warning(push)
-#pragma warning(disable:4244)
+#ifdef _WIN32
+	#pragma warning(push)
+	#pragma warning(disable:4244)
+#endif
 #include <nan.h>
-#pragma warning(pop)
+#ifdef _WIN32
+	#pragma warning(pop)
+#endif
 
 #include <GL/glew.h>
 

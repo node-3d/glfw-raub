@@ -264,78 +264,78 @@ void /*APIENTRY*/ windowFocusCB(GLFWwindow *window, int focused) {
 }
 
 
-static int jsKeyCode[]={
-/*GLFW_KEY_ESCAPE*/       27,
-/*GLFW_KEY_ENTER*/        13,
-/*GLFW_KEY_TAB*/          9,
-/*GLFW_KEY_BACKSPACE*/    8,
-/*GLFW_KEY_INSERT*/       45,
-/*GLFW_KEY_DELETE*/       46,
-/*GLFW_KEY_RIGHT*/        39,
-/*GLFW_KEY_LEFT*/         37,
-/*GLFW_KEY_DOWN*/         40,
-/*GLFW_KEY_UP*/           38,
-/*GLFW_KEY_PAGE_UP*/      33,
-/*GLFW_KEY_PAGE_DOWN*/    34,
-/*GLFW_KEY_HOME*/         36,
-/*GLFW_KEY_END*/          35,
-/*GLFW_KEY_CAPS_LOCK*/    20,
-/*GLFW_KEY_SCROLL_LOCK*/  145,
-/*GLFW_KEY_NUM_LOCK*/     144,
-/*GLFW_KEY_PRINT_SCREEN*/ 144, /* TODO */
-/*GLFW_KEY_PAUSE*/        19,
-/*GLFW_KEY_F1*/           112,
-/*GLFW_KEY_F2*/           113,
-/*GLFW_KEY_F3*/           114,
-/*GLFW_KEY_F4*/           115,
-/*GLFW_KEY_F5*/           116,
-/*GLFW_KEY_F6*/           117,
-/*GLFW_KEY_F7*/           118,
-/*GLFW_KEY_F8*/           119,
-/*GLFW_KEY_F9*/           120,
-/*GLFW_KEY_F10*/          121,
-/*GLFW_KEY_F11*/          122,
-/*GLFW_KEY_F12*/          123,
-/*GLFW_KEY_F13*/          123, /* unknown */
-/*GLFW_KEY_F14*/          123, /* unknown */
-/*GLFW_KEY_F15*/          123, /* unknown */
-/*GLFW_KEY_F16*/          123, /* unknown */
-/*GLFW_KEY_F17*/          123, /* unknown */
-/*GLFW_KEY_F18*/          123, /* unknown */
-/*GLFW_KEY_F19*/          123, /* unknown */
-/*GLFW_KEY_F20*/          123, /* unknown */
-/*GLFW_KEY_F21*/          123, /* unknown */
-/*GLFW_KEY_F22*/          123, /* unknown */
-/*GLFW_KEY_F23*/          123, /* unknown */
-/*GLFW_KEY_F24*/          123, /* unknown */
-/*GLFW_KEY_F25*/          123, /* unknown */
-/*GLFW_KEY_KP_0*/         96,
-/*GLFW_KEY_KP_1*/         97,
-/*GLFW_KEY_KP_2*/         98,
-/*GLFW_KEY_KP_3*/         99,
-/*GLFW_KEY_KP_4*/         100,
-/*GLFW_KEY_KP_5*/         101,
-/*GLFW_KEY_KP_6*/         102,
-/*GLFW_KEY_KP_7*/         103,
-/*GLFW_KEY_KP_8*/         104,
-/*GLFW_KEY_KP_9*/         105,
-/*GLFW_KEY_KP_DECIMAL*/   110,
-/*GLFW_KEY_KP_DIVIDE*/    111,
-/*GLFW_KEY_KP_MULTIPLY*/  106,
-/*GLFW_KEY_KP_SUBTRACT*/  109,
-/*GLFW_KEY_KP_ADD*/       107,
-/*GLFW_KEY_KP_ENTER*/     13,
-/*GLFW_KEY_KP_EQUAL*/     187,
-/*GLFW_KEY_LEFT_SHIFT*/   16,
-/*GLFW_KEY_LEFT_CONTROL*/ 17,
-/*GLFW_KEY_LEFT_ALT*/     18,
-/*GLFW_KEY_LEFT_SUPER*/   91,
-/*GLFW_KEY_RIGHT_SHIFT*/  16,
-/*GLFW_KEY_RIGHT_CONTROL*/17,
-/*GLFW_KEY_RIGHT_ALT*/    18,
-/*GLFW_KEY_RIGHT_SUPER*/  93,
-/*GLFW_KEY_MENU*/         18
-};
+// static int jsKeyCode[]={
+// /*GLFW_KEY_ESCAPE*/       27,
+// /*GLFW_KEY_ENTER*/        13,
+// /*GLFW_KEY_TAB*/          9,
+// /*GLFW_KEY_BACKSPACE*/    8,
+// /*GLFW_KEY_INSERT*/       45,
+// /*GLFW_KEY_DELETE*/       46,
+// /*GLFW_KEY_RIGHT*/        39,
+// /*GLFW_KEY_LEFT*/         37,
+// /*GLFW_KEY_DOWN*/         40,
+// /*GLFW_KEY_UP*/           38,
+// /*GLFW_KEY_PAGE_UP*/      33,
+// /*GLFW_KEY_PAGE_DOWN*/    34,
+// /*GLFW_KEY_HOME*/         36,
+// /*GLFW_KEY_END*/          35,
+// /*GLFW_KEY_CAPS_LOCK*/    20,
+// /*GLFW_KEY_SCROLL_LOCK*/  145,
+// /*GLFW_KEY_NUM_LOCK*/     144,
+// /*GLFW_KEY_PRINT_SCREEN*/ 144, /* TODO */
+// /*GLFW_KEY_PAUSE*/        19,
+// /*GLFW_KEY_F1*/           112,
+// /*GLFW_KEY_F2*/           113,
+// /*GLFW_KEY_F3*/           114,
+// /*GLFW_KEY_F4*/           115,
+// /*GLFW_KEY_F5*/           116,
+// /*GLFW_KEY_F6*/           117,
+// /*GLFW_KEY_F7*/           118,
+// /*GLFW_KEY_F8*/           119,
+// /*GLFW_KEY_F9*/           120,
+// /*GLFW_KEY_F10*/          121,
+// /*GLFW_KEY_F11*/          122,
+// /*GLFW_KEY_F12*/          123,
+// /*GLFW_KEY_F13*/          123, /* unknown */
+// /*GLFW_KEY_F14*/          123, /* unknown */
+// /*GLFW_KEY_F15*/          123, /* unknown */
+// /*GLFW_KEY_F16*/          123, /* unknown */
+// /*GLFW_KEY_F17*/          123, /* unknown */
+// /*GLFW_KEY_F18*/          123, /* unknown */
+// /*GLFW_KEY_F19*/          123, /* unknown */
+// /*GLFW_KEY_F20*/          123, /* unknown */
+// /*GLFW_KEY_F21*/          123, /* unknown */
+// /*GLFW_KEY_F22*/          123, /* unknown */
+// /*GLFW_KEY_F23*/          123, /* unknown */
+// /*GLFW_KEY_F24*/          123, /* unknown */
+// /*GLFW_KEY_F25*/          123, /* unknown */
+// /*GLFW_KEY_KP_0*/         96,
+// /*GLFW_KEY_KP_1*/         97,
+// /*GLFW_KEY_KP_2*/         98,
+// /*GLFW_KEY_KP_3*/         99,
+// /*GLFW_KEY_KP_4*/         100,
+// /*GLFW_KEY_KP_5*/         101,
+// /*GLFW_KEY_KP_6*/         102,
+// /*GLFW_KEY_KP_7*/         103,
+// /*GLFW_KEY_KP_8*/         104,
+// /*GLFW_KEY_KP_9*/         105,
+// /*GLFW_KEY_KP_DECIMAL*/   110,
+// /*GLFW_KEY_KP_DIVIDE*/    111,
+// /*GLFW_KEY_KP_MULTIPLY*/  106,
+// /*GLFW_KEY_KP_SUBTRACT*/  109,
+// /*GLFW_KEY_KP_ADD*/       107,
+// /*GLFW_KEY_KP_ENTER*/     13,
+// /*GLFW_KEY_KP_EQUAL*/     187,
+// /*GLFW_KEY_LEFT_SHIFT*/   16,
+// /*GLFW_KEY_LEFT_CONTROL*/ 17,
+// /*GLFW_KEY_LEFT_ALT*/     18,
+// /*GLFW_KEY_LEFT_SUPER*/   91,
+// /*GLFW_KEY_RIGHT_SHIFT*/  16,
+// /*GLFW_KEY_RIGHT_CONTROL*/17,
+// /*GLFW_KEY_RIGHT_ALT*/    18,
+// /*GLFW_KEY_RIGHT_SUPER*/  93,
+// /*GLFW_KEY_MENU*/         18
+// };
 
 
 void /*APIENTRY*/ keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) {
