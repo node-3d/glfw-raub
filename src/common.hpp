@@ -1,20 +1,10 @@
 #ifndef COMMON_HPP_
 #define COMMON_HPP_
 
-// OpenGL Graphics Includes
-#ifndef _WIN32
-	#define GLEW_STATIC
-#endif
-
-#include <GL/glew.h>
-
-#define GLFW_NO_GLU
-#define GLFW_DLL
-#include <GLFW/glfw3.h>
-
-#define GLFW_EXPOSE_NATIVE_WIN32
-#define GLFW_EXPOSE_NATIVE_WGL
-#include <GLFW/glfw3native.h>
+// // OpenGL Graphics Includes
+// #ifndef _WIN32
+// 	#define GLEW_STATIC
+// #endif
 
 // NodeJS includes
 #include <node.h>
@@ -23,6 +13,27 @@
 #pragma warning(disable:4244)
 #include <nan.h>
 #pragma warning(pop)
+
+#include <GL/glew.h>
+
+#define GLFW_NO_GLU
+#define GLFW_DLL
+#include <GLFW/glfw3.h>
+
+#ifdef _WIN32
+	#define GLFW_EXPOSE_NATIVE_WIN32
+	#define GLFW_EXPOSE_NATIVE_WGL
+#elif __APPLE__
+	#define GLFW_EXPOSE_NATIVE_COCOA
+	#define GLFW_EXPOSE_NATIVE_NSGL
+#elif __linux__
+	#define GLFW_EXPOSE_NATIVE_X11
+	#define GLFW_EXPOSE_NATIVE_GLX
+#endif
+#include <GLFW/glfw3native.h>
+
+#undef True
+#undef False
 
 
 #define JS_STR(...) Nan::New<v8::String>(__VA_ARGS__).ToLocalChecked()

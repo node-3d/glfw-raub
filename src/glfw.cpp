@@ -813,24 +813,36 @@ NAN_METHOD(glfw_CreateWindow) {
 }
 
 
-NAN_METHOD(Win32Window) {
+NAN_METHOD(PlatformWindow) {
 	Nan::HandleScope scope;
 	uint64_t handle=info[0]->IntegerValue();
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
+#ifdef _WIN32
 		info.GetReturnValue().Set(JS_NUM((uint64_t) glfwGetWin32Window(window)));
+#elif __linux__
+		info.GetReturnValue().Set(JS_NUM((uint64_t) glfwGetX11Window(window)));
+#elif __APPLE__
+		info.GetReturnValue().Set(JS_NUM((uint64_t) glfwGetCocoaWindow(window)));
+#endif
 	} else {
 		info.GetReturnValue().Set(JS_NUM((uint64_t) 0));
 	}
 }
 
 
-NAN_METHOD(Win32Context) {
+NAN_METHOD(PlatformContext) {
 	Nan::HandleScope scope;
 	uint64_t handle=info[0]->IntegerValue();
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
+#ifdef _WIN32
 		info.GetReturnValue().Set(JS_NUM((uint64_t) glfwGetWGLContext(window)));
+#elif __linux__
+		info.GetReturnValue().Set(JS_NUM((uint64_t) glfwGetGLXContext(window)));
+#elif __APPLE__
+		info.GetReturnValue().Set(JS_NUM((uint64_t) glfwGetNSGLContext(window)));
+#endif
 	} else {
 		info.GetReturnValue().Set(JS_NUM((uint64_t) 0));
 	}
@@ -1241,8 +1253,8 @@ NAN_MODULE_INIT(init) {
 	Nan::SetMethod(target, "BlitFrameBuffer", glfw::BlitFrameBuffer);
 	JS_GLFW_SET_METHOD(WindowHint);
 	JS_GLFW_SET_METHOD(DefaultWindowHints);
-	JS_GLFW_SET_METHOD(Win32Window);
-	JS_GLFW_SET_METHOD(Win32Context);
+	JS_GLFW_SET_METHOD(PlatformWindow);
+	JS_GLFW_SET_METHOD(PlatformContext);
 	JS_GLFW_SET_METHOD(DestroyWindow);
 	JS_GLFW_SET_METHOD(SetWindowShouldClose);
 	JS_GLFW_SET_METHOD(WindowShouldClose);

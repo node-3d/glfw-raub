@@ -24,7 +24,7 @@
 					'OS=="linux"',
 					{
 						'libraries': [
-							'freeimage', 'glfw', 'glew',
+							'libfreeimage.so', 'libglfw.so', 'libglew.so',
 							# '-lXrandr','-lXinerama','-lXxf86vm','-lXcursor','-lXi',
 							# '-lrt','-lm'
 						]

@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "nan": "2.8.0",
-    "node-deps-opengl-raub": "0.2.4",
+    "node-deps-opengl-raub": "0.2.9",
     "node-addon-tools-raub" : "0.0.2"
   }
 }
