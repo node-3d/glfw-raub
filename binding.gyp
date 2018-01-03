@@ -23,11 +23,7 @@
 				[
 					'OS=="linux"',
 					{
-						'libraries': [
-							'libfreeimage.so', 'libglfw.so', 'libglew.so',
-							# '-lXrandr','-lXinerama','-lXxf86vm','-lXcursor','-lXi',
-							# '-lrt','-lm'
-						]
+						'libraries': ['-lfreeimage', '-lglfw', '-lglew', '-lGL', '-lXrandr']
 					}
 				],
 				[
@@ -63,16 +59,35 @@
 		},
 		
 		{
-			'target_name'  : 'copy_binary',
+			'target_name'  : 'make_directory',
 			'type'         : 'none',
 			'dependencies' : ['glfw'],
 			'actions'      : [{
-				'action_name' : 'Module copied.',
+				'action_name' : 'Directory created.',
 				'inputs'      : [],
 				'outputs'     : ['build'],
+				'action'      : ['mkdir', 'binary'],
+				'conditions'  : [
+					[ 'OS=="linux"', { 'action': ['mkdir', '-p', 'binary'] } ],
+					[ 'OS=="mac"', { 'action': ['mkdir', '-p', 'binary'] } ],
+					[ 'OS=="win"', { 'action': ['mkdir', 'binary'] } ],
+				],
+			}],
+		},
+		
+		{
+			'target_name'  : 'copy_binary',
+			'type'         : 'none',
+			'dependencies' : ['make_directory'],
+			'actions'      : [{
+				'action_name' : 'Module copied.',
+				'inputs'      : [],
+				'outputs'     : ['binary'],
 				'conditions'  : [
 					[ 'OS=="linux"', { 'action' : [
-						'echo', 'copy'
+						'cp',
+						'<(module_root_dir)/build/Release/glfw.node',
+						'<(module_root_dir)/binary/glfw.node'
 					] } ],
 					[ 'OS=="mac"', { 'action' : [
 						'echo', 'copy'
@@ -92,9 +107,14 @@
 			'actions'      : [{
 				'action_name' : 'Build intermediates removed.',
 				'inputs'      : [],
-				'outputs'     : ['build'],
+				'outputs'     : ['src'],
 				'conditions'  : [
-					[ 'OS=="linux"', { 'action' : [ 'echo', 'remove' ] } ],
+					[ 'OS=="linux"', { 'action' : [
+						'rm',
+						'<(module_root_dir)/build/Release/obj.target/glfw/src/glfw.o',
+						'<(module_root_dir)/build/Release/obj.target/glfw.node',
+						'<(module_root_dir)/build/Release/glfw.node'
+					] } ],
 					[ 'OS=="mac"'  , { 'action' : [ 'echo', 'remove' ] } ],
 					[ 'OS=="win"'  , { 'action' : [
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/glfw.*" && ' +
