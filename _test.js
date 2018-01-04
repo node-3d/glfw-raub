@@ -5,69 +5,65 @@ const util = require('util');
 const glfw = require('.');
 
 
-const version = glfw.GetVersion();
-console.log(`glfw ${version.major}.${version.minor}.${version.rev}`);
-console.log(`glfw version-string: ${glfw.GetVersionString()}`);
-
-// Initialize GLFW
-if ( ! glfw.Init() ) {
-	console.log('Failed to initialize GLFW');
-	process.exit(-1);
-}
-
-// Open OpenGL window
-glfw.DefaultWindowHints();
-
-const width  = 640;
-const height = 480;
-const wnd = glfw.CreateWindow(width, height, 'Test');
-
-if ( ! wnd ) {
-	console.log('Failed to open GLFW window');
-	glfw.Terminate();
-	process.exit(-1);
-}
-
-glfw.MakeContextCurrent(wnd);
-
-glfw.SetWindowTitle('GLFW Simple Test');
+const w1 = new glfw.Window({ title: 'GLFW Simple Test 1' });
+const w2 = new glfw.Window({ title: 'GLFW Simple Test 2' });
 
 // testing events
-glfw.events.on('keydown', e => console.log(`[keydown] ${util.inspect(e)}`));
-glfw.events.on('mousedown', e => console.log(`[mousedown] ${util.inspect(e)}`));
-glfw.events.on('mousemove', e => console.log(`[mousemove] ${e.x}, ${e.y}`));
-glfw.events.on('mousewheel', e => console.log(`[mousewheel] ${e.position}`));
-glfw.events.on('resize', e => console.log(`[resize] ${e.width}, ${e.height}`));
+w1.on('keydown', e => console.log(`[#1 keydown] ${util.inspect(e)}`));
+w1.on('mousedown', e => console.log(`[#1 mousedown] ${util.inspect(e)}`));
+w1.on('mousemove', e => console.log(`[#1 mousemove] ${e.x}, ${e.y}`));
+w1.on('mousewheel', e => console.log(`[#1 mousewheel] ${e.position}`));
+w1.on('resize', e => console.log(`[#1 resize] ${e.width}, ${e.height}`));
+
+w2.on('keydown', e => console.log(`[#2 keydown] ${util.inspect(e)}`));
+w2.on('mousedown', e => console.log(`[#2 mousedown] ${util.inspect(e)}`));
+w2.on('mousemove', e => console.log(`[#2 mousemove] ${e.x}, ${e.y}`));
+w2.on('mousewheel', e => console.log(`[#2 mousewheel] ${e.position}`));
+w2.on('resize', e => console.log(`[#2 resize] ${e.width}, ${e.height}`));
+
+console.log(w1.version);
 
 
-//can only be called after window creation!
-const major = glfw.GetWindowAttrib(wnd, glfw.CONTEXT_VERSION_MAJOR);
-const minor = glfw.GetWindowAttrib(wnd, glfw.CONTEXT_VERSION_MINOR);
-const rev   = glfw.GetWindowAttrib(wnd, glfw.CONTEXT_REVISION);
-const prof  = glfw.GetWindowAttrib(wnd, glfw.OPENGL_PROFILE);
-console.log(`GL ${major}.${minor}.${rev} Profile: ${prof}`);
-
-// Enable vertical sync (on cards that support it)
-glfw.SwapInterval(0 /*1*/); // 0 for vsync off
-
-
-const start = glfw.GetTime();
-
-while( ! glfw.WindowShouldClose(wnd) && ! glfw.GetKey(wnd, glfw.KEY_ESCAPE) ) {
+const draw = () => {
 	
-	// Get wnd size (may be different than the requested size)
-	const wsize = glfw.GetFramebufferSize(wnd);
+	w1.makeCurrent();
+	const wsize1 = glfw.GetFramebufferSize(w1._window);
+	glfw.testScene(wsize1.width, wsize1.height);
 	
-	glfw.testScene(wsize.width, wsize.height);
+	w2.makeCurrent();
+	const wsize2 = glfw.GetFramebufferSize(w2._window);
+	glfw.testScene(wsize2.width, wsize2.height);
 	
 	// Swap buffers
-	glfw.SwapBuffers(wnd);
+	glfw.SwapBuffers(w1._window);
+	glfw.SwapBuffers(w2._window);
+	
 	glfw.PollEvents();
 	
-}
+};
 
-// Close OpenGL window and terminate GLFW
-glfw.DestroyWindow(wnd);
-glfw.Terminate();
 
-process.exit(0);
+const animate = () => {
+	
+	if ( ! (
+		w1.shouldClose || w2.shouldClose ||
+		w1.getKey(glfw.KEY_ESCAPE) || w2.getKey(glfw.KEY_ESCAPE)
+	) ) {
+		
+		draw();
+		setTimeout(animate, 16);
+		
+	} else {
+		// Close OpenGL window and terminate GLFW
+		glfw.DestroyWindow(w1._window);
+		glfw.DestroyWindow(w2._window);
+		
+		glfw.Terminate();
+		
+		process.exit(0);
+	}
+	
+};
+
+
+animate();

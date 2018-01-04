@@ -160,6 +160,7 @@ void NAN_INLINE(_emit(GLFWwindow *window, int argc, Local<Value> argv[])) { NAN_
 		Nan::Callback callback(Nan::New(state.events)->Get(JS_STR("emit")).As<Function>());
 		
 		if ( ! callback.IsEmpty() ) {
+			
 			callback.Call(argc, argv);
 		}
 		
@@ -552,7 +553,7 @@ NAN_METHOD(testScene) { NAN_HS;
 	
 	int width = info[0]->Uint32Value();
 	int height = info[1]->Uint32Value();
-	float z = info.Length()>2 ? (float) info[2]->NumberValue() : 0;
+	float z = info.Length() > 2 ? (float) info[2]->NumberValue() : 0;
 	float ratio = width / (float) height;
 	
 	glViewport(0, 0, width, height);
@@ -680,14 +681,16 @@ NAN_METHOD(_CreateWindow) { NAN_HS;
 	int width  = info[0]->Uint32Value();
 	int height = info[1]->Uint32Value();
 	
-	String::Utf8Value str(info[2]->ToString());
-	int monitor_idx = info[3]->Uint32Value();
+	Local<Object> emitter = info[2]->ToObject();
+	
+	String::Utf8Value str(info[3]->ToString());
+	int monitor_idx = info[4]->Uint32Value();
 	
 	GLFWmonitor **monitors = NULL;
 	GLFWmonitor *monitor = NULL;
 	int monitor_count;
 	
-	if (info.Length() >= 4 && monitor_idx >= 0) {
+	if (info.Length() >= 5 && monitor_idx >= 0) {
 		monitors = glfwGetMonitors(&monitor_count);
 		if (monitor_idx >= monitor_count) {
 			return Nan::ThrowError("Invalid monitor");
@@ -695,7 +698,12 @@ NAN_METHOD(_CreateWindow) { NAN_HS;
 		monitor = monitors[monitor_idx];
 	}
 	
-	GLFWwindow *window = glfwCreateWindow(width, height, *str, monitor, NULL);
+	GLFWwindow *share = NULL;
+	if (states.size() > 0) {
+		share = states.begin()->first;
+	}
+	
+	GLFWwindow *window = glfwCreateWindow(width, height, *str, monitor, share);
 	
 	if ( ! window ) {
 		// can't create window, throw error
@@ -724,7 +732,7 @@ NAN_METHOD(_CreateWindow) { NAN_HS;
 	
 	// Set callback functions
 	WinState &state = states[window];
-	state.events.Reset( info.This()->Get(JS_STR("events"))->ToObject() );
+	state.events.Reset( emitter );
 	
 	// window callbacks
 	glfwSetWindowPosCallback( window, windowPosCB );
