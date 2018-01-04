@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <map>
 
 #include "common.hpp"
 
@@ -9,10 +10,34 @@ using namespace v8;
 using namespace node;
 using namespace std;
 
+#define JS_GLFW_CONSTANT(name) target->Set(JS_STR( #name ), JS_INT(GLFW_ ## name))
+#define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
+#define SET_PROP(OBJ, KEY, VAL) OBJ->Set(JS_STR(KEY), VAL);
+
 
 namespace glfw {
 
-GLFWwindow* window = NULL;
+// Window info
+struct WinState {
+	
+	int mouseX;
+	int mouseY;
+	Nan::Persistent<Object> events;
+	
+	WinState() {
+		mouseX = 0;
+		mouseY = 0;
+	}
+	
+	const WinState & operator = (const WinState &other) {
+		mouseX = other.mouseX;
+		mouseY = other.mouseY;
+		return *this;
+	}
+	
+};
+
+std::map<GLFWwindow *, WinState> states;
 
 
 NAN_METHOD(Init) { NAN_HS;
@@ -35,9 +60,9 @@ NAN_METHOD(GetVersion) { NAN_HS;
 	glfwGetVersion(&major, &minor, &rev);
 	
 	Local<Array> arr = Nan::New<Array>(3);
-	arr->Set(JS_STR("major"), JS_INT(major));
-	arr->Set(JS_STR("minor"), JS_INT(minor));
-	arr->Set(JS_STR("rev"), JS_INT(rev));
+	SET_PROP(arr, "major", JS_INT(major));
+	SET_PROP(arr, "minor", JS_INT(minor));
+	SET_PROP(arr, "rev", JS_INT(rev));
 	
 	RET_VALUE(arr);
 	
@@ -72,7 +97,7 @@ NAN_METHOD(SetTime) { NAN_HS;
 NAN_METHOD(GetMonitors) { NAN_HS;
 	
 	int monitor_count, mode_count, xpos, ypos, width, height;
-	int i, j;
+	
 	GLFWmonitor **monitors = glfwGetMonitors(&monitor_count);
 	GLFWmonitor *primary = glfwGetPrimaryMonitor();
 	const GLFWvidmode *mode, *modes;
@@ -81,42 +106,42 @@ NAN_METHOD(GetMonitors) { NAN_HS;
 	Local<Object> js_monitor, js_mode;
 	Local<Array> js_modes;
 	
-	for (i = 0; i < monitor_count; i++) {
+	for (int i = 0; i < monitor_count; i++) {
 		
 		js_monitor = Nan::New<Object>();
-		js_monitor->Set(JS_STR("is_primary"), JS_BOOL(monitors[i] == primary));
-		js_monitor->Set(JS_STR("index"), JS_INT(i));
-		js_monitor->Set(JS_STR("name"), JS_STR(glfwGetMonitorName(monitors[i])));
+		SET_PROP(js_monitor, "is_primary", JS_BOOL(monitors[i] == primary));
+		SET_PROP(js_monitor, "index", JS_INT(i));
+		SET_PROP(js_monitor, "name", JS_STR(glfwGetMonitorName(monitors[i])));
 		
 		glfwGetMonitorPos(monitors[i], &xpos, &ypos);
-		js_monitor->Set(JS_STR("pos_x"), JS_INT(xpos));
-		js_monitor->Set(JS_STR("pos_y"), JS_INT(ypos));
+		SET_PROP(js_monitor, "pos_x", JS_INT(xpos));
+		SET_PROP(js_monitor, "pos_y", JS_INT(ypos));
 		
 		glfwGetMonitorPhysicalSize(monitors[i], &width, &height);
-		js_monitor->Set(JS_STR("width_mm"), JS_INT(width));
-		js_monitor->Set(JS_STR("height_mm"), JS_INT(height));
+		SET_PROP(js_monitor, "width_mm", JS_INT(width));
+		SET_PROP(js_monitor, "height_mm", JS_INT(height));
 		
 		mode = glfwGetVideoMode(monitors[i]);
-		js_monitor->Set(JS_STR("width"), JS_INT(mode->width));
-		js_monitor->Set(JS_STR("height"), JS_INT(mode->height));
-		js_monitor->Set(JS_STR("rate"), JS_INT(mode->refreshRate));
+		SET_PROP(js_monitor, "width", JS_INT(mode->width));
+		SET_PROP(js_monitor, "height", JS_INT(mode->height));
+		SET_PROP(js_monitor, "rate", JS_INT(mode->refreshRate));
 		
 		modes = glfwGetVideoModes(monitors[i], &mode_count);
 		js_modes = Nan::New<Array>(mode_count);
 		
-		for(j = 0; j < mode_count; j++){
+		for(int j = 0; j < mode_count; j++){
 			
 			js_mode = Nan::New<Object>();
-			js_mode->Set(JS_STR("width"), JS_INT(modes[j].width));
-			js_mode->Set(JS_STR("height"), JS_INT(modes[j].height));
-			js_mode->Set(JS_STR("rate"), JS_INT(modes[j].refreshRate));
+			SET_PROP(js_mode, "width", JS_INT(modes[j].width));
+			SET_PROP(js_mode, "height", JS_INT(modes[j].height));
+			SET_PROP(js_mode, "rate", JS_INT(modes[j].refreshRate));
 			
 			// NOTE: Are color bits necessary?
 			js_modes->Set(JS_INT(j), js_mode);
 			
 		}
 		
-		js_monitor->Set(JS_STR("modes"), js_modes);
+		SET_PROP(js_monitor, "modes", js_modes);
 		js_monitors->Set(JS_INT(i), js_monitor);
 		
 	}
@@ -126,73 +151,66 @@ NAN_METHOD(GetMonitors) { NAN_HS;
 }
 
 
-/* @Module: Window handling */
-Nan::Persistent<Object> glfw_events;
-int lastX = 0;
-int lastY = 0;
-bool windowCreated = false;
-
-
-void NAN_INLINE(CallEmitter(int argc, Local<Value> argv[])) { NAN_HS;
+void NAN_INLINE(_emit(GLFWwindow *window, int argc, Local<Value> argv[])) { NAN_HS;
 	
-	// MakeCallback(glfw_events, "emit", argc, argv);
-	if (Nan::New(glfw_events)->Has(JS_STR("emit"))) {
-		// Local<Function> callback = Nan::New(glfw_events)->Get(JS_STR("emit")).As<Function>();
-		Nan::Callback callback(Nan::New(glfw_events)->Get(JS_STR("emit")).As<Function>());
+	WinState &state = states[window];
+	
+	if (Nan::New(state.events)->Has(JS_STR("emit"))) {
+		
+		Nan::Callback callback(Nan::New(state.events)->Get(JS_STR("emit")).As<Function>());
 		
 		if ( ! callback.IsEmpty() ) {
-			// callback->Call(Context::GetCurrent()->Global(),argc,argv);
-			callback.Call(argc,argv);
+			callback.Call(argc, argv);
 		}
+		
 	}
 	
 }
 
 
-/* Window callbacks handling */
-void /*APIENTRY*/ windowPosCB(GLFWwindow *window, int xpos, int ypos) { NAN_HS;
+void windowPosCB(GLFWwindow *window, int xpos, int ypos) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(3);
-	evt->Set(JS_STR("type"), JS_STR("window_pos"));
-	evt->Set(JS_STR("xpos"), JS_INT(xpos));
-	evt->Set(JS_STR("ypos"), JS_INT(ypos));
+	SET_PROP(evt, "type", JS_STR("window_pos"));
+	SET_PROP(evt, "xpos", JS_INT(xpos));
+	SET_PROP(evt, "ypos", JS_INT(ypos));
 	
 	Local<Value> argv[2] = { JS_STR("window_pos"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
+void windowSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(3);
-	evt->Set(JS_STR("type"), JS_STR("resize"));
-	evt->Set(JS_STR("width"), JS_INT(w));
-	evt->Set(JS_STR("height"), JS_INT(h));
+	SET_PROP(evt, "type", JS_STR("resize"));
+	SET_PROP(evt, "width", JS_INT(w));
+	SET_PROP(evt, "height", JS_INT(h));
 	
 	Local<Value> argv[2] = { JS_STR("resize"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowFramebufferSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
+void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(3);
-	evt->Set(JS_STR("type"), JS_STR("framebuffer_resize"));
-	evt->Set(JS_STR("width"), JS_INT(w));
-	evt->Set(JS_STR("height"), JS_INT(h));
+	SET_PROP(evt, "type", JS_STR("framebuffer_resize"));
+	SET_PROP(evt, "width", JS_INT(w));
+	SET_PROP(evt, "height", JS_INT(h));
 	
 	Local<Value> argv[2] = { JS_STR("framebuffer_resize"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowDropCB(GLFWwindow *window, int count, const char **paths) { NAN_HS;
+void windowDropCB(GLFWwindow *window, int count, const char **paths) { NAN_HS;
 	
 	
 	Local<Array> evt = Nan::New<Array>(count);
@@ -202,69 +220,69 @@ void /*APIENTRY*/ windowDropCB(GLFWwindow *window, int count, const char **paths
 	
 	Local<Value> argv[2] = { JS_STR("drop"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowCloseCB(GLFWwindow *window) { NAN_HS;
+void windowCloseCB(GLFWwindow *window) { NAN_HS;
 	
 	Local<Value> argv[1] = { JS_STR("quit") };
 	
-	CallEmitter(1, argv);
+	_emit(window, 1, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowRefreshCB(GLFWwindow *window) { NAN_HS;
+void windowRefreshCB(GLFWwindow *window) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(2);
-	evt->Set(JS_STR("type"), JS_STR("refresh"));
-	evt->Set(JS_STR("window"), JS_NUM((uint64_t) window));
+	SET_PROP(evt, "type", JS_STR("refresh"));
+	SET_PROP(evt, "window", JS_NUM((uint64_t) window));
 	
 	Local<Value> argv[2] = { JS_STR("refresh"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowIconifyCB(GLFWwindow *window, int iconified) { NAN_HS;
+void windowIconifyCB(GLFWwindow *window, int iconified) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(2);
-	evt->Set(JS_STR("type"), JS_STR("iconified"));
-	evt->Set(JS_STR("iconified"), JS_BOOL(iconified));
+	SET_PROP(evt, "type", JS_STR("iconified"));
+	SET_PROP(evt, "iconified", JS_BOOL(iconified));
 	
 	Local<Value> argv[2] = { JS_STR("iconified"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
+void windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(2);
-	evt->Set(JS_STR("type"), JS_STR("focused"));
-	evt->Set(JS_STR("focused"), JS_BOOL(focused));
+	SET_PROP(evt, "type", JS_STR("focused"));
+	SET_PROP(evt, "focused", JS_BOOL(focused));
 	
 	Local<Value> argv[2] = { JS_STR("focused"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) { NAN_HS;
+void keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) { NAN_HS;
 	
 	const char *actionNames = "keyup\0  keydown\0keypress";
 	
 	Local<Array> evt = Nan::New<Array>(7);
-	evt->Set(JS_STR("type"), JS_STR( &actionNames[action << 3] ));
-	evt->Set(JS_STR("ctrlKey"), JS_BOOL(mods & GLFW_MOD_CONTROL));
-	evt->Set(JS_STR("shiftKey"), JS_BOOL(mods & GLFW_MOD_SHIFT));
-	evt->Set(JS_STR("altKey"), JS_BOOL(mods & GLFW_MOD_ALT));
-	evt->Set(JS_STR("metaKey"), JS_BOOL(mods & GLFW_MOD_SUPER));
+	SET_PROP(evt, "type", JS_STR( &actionNames[action << 3] ));
+	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
+	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
+	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
+	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
 	
 	int which = key, charCode = key;
 	
@@ -352,18 +370,18 @@ void /*APIENTRY*/ keyCB(GLFWwindow *window, int key, int scancode, int action, i
 		case GLFW_KEY_APOSTROPHE:   key = 222; break; // '
 	}
 	
-	evt->Set(JS_STR("which"), JS_INT(which));
-	evt->Set(JS_STR("keyCode"), JS_INT(key));
-	evt->Set(JS_STR("charCode"), JS_INT(charCode));
+	SET_PROP(evt, "which", JS_INT(which));
+	SET_PROP(evt, "keyCode", JS_INT(key));
+	SET_PROP(evt, "charCode", JS_INT(charCode));
 	
 	Local<Value> argv[2] = { JS_STR(&actionNames[action << 3]), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ cursorPosCB(GLFWwindow* window, double x, double y) {
+void cursorPosCB(GLFWwindow* window, double x, double y) {
 	
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
@@ -372,127 +390,120 @@ void /*APIENTRY*/ cursorPosCB(GLFWwindow* window, double x, double y) {
 		return;
 	}
 	
-	lastX = static_cast<int>(x);
-	lastY = static_cast<int>(y);
+	WinState &state = states[window];
+	
+	state.mouseX = static_cast<int>(x);
+	state.mouseY = static_cast<int>(y);
 	
 	NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(5);
 	
-	evt->Set(JS_STR("type"), JS_STR("mousemove"));
-	evt->Set(JS_STR("clientX"), JS_NUM(x));
-	evt->Set(JS_STR("clientY"), JS_NUM(y));
-	evt->Set(JS_STR("pageX"), JS_NUM(x));
-	evt->Set(JS_STR("pageY"), JS_NUM(y));
-	evt->Set(JS_STR("ctrlKey"), JS_BOOL(
+	SET_PROP(evt, "type", JS_STR("mousemove"));
+	SET_PROP(evt, "clientX", JS_NUM(x));
+	SET_PROP(evt, "clientY", JS_NUM(y));
+	SET_PROP(evt, "pageX", JS_NUM(x));
+	SET_PROP(evt, "pageY", JS_NUM(y));
+	SET_PROP(evt, "ctrlKey", JS_BOOL(
 		glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
 		glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS
 	));
-	evt->Set(JS_STR("shiftKey"), JS_BOOL(
+	SET_PROP(evt, "shiftKey", JS_BOOL(
 		glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
 		glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS
 	));
-	evt->Set(JS_STR("altKey"), JS_BOOL(
+	SET_PROP(evt, "altKey", JS_BOOL(
 		glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
 		glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS
 	));
-	evt->Set(JS_STR("metaKey"), JS_BOOL(
+	SET_PROP(evt, "metaKey", JS_BOOL(
 		glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
 		glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS
 	));
-	evt->Set(JS_STR("x"), JS_NUM(x));
-	evt->Set(JS_STR("y"), JS_NUM(y));
+	SET_PROP(evt, "x", JS_NUM(x));
+	SET_PROP(evt, "y", JS_NUM(y));
 	
 	Local<Value> argv[2] = { JS_STR("mousemove"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
+void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(2);
-	evt->Set(JS_STR("type"), JS_STR("mouseenter"));
-	evt->Set(JS_STR("entered"), JS_INT(entered));
+	SET_PROP(evt, "type", JS_STR("mouseenter"));
+	SET_PROP(evt, "entered", JS_INT(entered));
 	
 	Local<Value> argv[2] = { JS_STR("mouseenter"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 }
 
 
-void /*APIENTRY*/ mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_HS;
+void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_HS;
+	
+	const WinState &state = states[window];
 	
 	Local<Array> evt = Nan::New<Array>(7);
 	
-	evt->Set(JS_STR("type"), JS_STR(action ? "mousedown" : "mouseup"));
-	evt->Set(JS_STR("button"), JS_INT(button));
-	evt->Set(JS_STR("which"), JS_INT(button));
-	evt->Set(JS_STR("clientX"), JS_INT(lastX));
-	evt->Set(JS_STR("clientY"), JS_INT(lastY));
-	evt->Set(JS_STR("pageX"), JS_INT(lastX));
-	evt->Set(JS_STR("pageY"), JS_INT(lastY));
+	SET_PROP(evt, "type", JS_STR(action ? "mousedown" : "mouseup"));
+	SET_PROP(evt, "button", JS_INT(button));
+	SET_PROP(evt, "which", JS_INT(button));
+	SET_PROP(evt, "clientX", JS_INT(state.mouseX));
+	SET_PROP(evt, "clientY", JS_INT(state.mouseY));
+	SET_PROP(evt, "pageX", JS_INT(state.mouseX));
+	SET_PROP(evt, "pageY", JS_INT(state.mouseY));
 	
-	evt->Set(JS_STR("x"), JS_INT(lastX));
-	evt->Set(JS_STR("y"), JS_INT(lastY));
-	evt->Set(JS_STR("shiftKey"), JS_BOOL(mods & GLFW_MOD_SHIFT));
-	evt->Set(JS_STR("ctrlKey"), JS_BOOL(mods & GLFW_MOD_CONTROL));
-	evt->Set(JS_STR("altKey"), JS_BOOL(mods & GLFW_MOD_ALT));
-	evt->Set(JS_STR("metaKey"), JS_BOOL(mods & GLFW_MOD_SUPER));
+	SET_PROP(evt, "x", JS_INT(state.mouseX));
+	SET_PROP(evt, "y", JS_INT(state.mouseY));
+	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
+	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
+	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
+	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
 	
 	Local<Value> argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt };
 	
-	CallEmitter(2, argv);
+	_emit(window, 2, argv);
 	
 	if ( ! action ) {
 		
 		Local<Array> evt = Nan::New<Array>(7);
 		
-		evt->Set(JS_STR("type"), JS_STR("click"));
-		evt->Set(JS_STR("button"), JS_INT(button));
-		evt->Set(JS_STR("which"), JS_INT(button));
-		evt->Set(JS_STR("clientX"), JS_INT(lastX));
-		evt->Set(JS_STR("clientY"), JS_INT(lastY));
-		evt->Set(JS_STR("pageX"), JS_INT(lastX));
-		evt->Set(JS_STR("pageY"), JS_INT(lastY));
-		evt->Set(JS_STR("shiftKey"), JS_BOOL(mods & GLFW_MOD_SHIFT));
-		evt->Set(JS_STR("ctrlKey"), JS_BOOL(mods & GLFW_MOD_CONTROL));
-		evt->Set(JS_STR("altKey"), JS_BOOL(mods & GLFW_MOD_ALT));
-		evt->Set(JS_STR("metaKey"), JS_BOOL(mods & GLFW_MOD_SUPER));
+		SET_PROP(evt, "type", JS_STR("click"));
+		SET_PROP(evt, "button", JS_INT(button));
+		SET_PROP(evt, "which", JS_INT(button));
+		SET_PROP(evt, "clientX", JS_INT(state.mouseX));
+		SET_PROP(evt, "clientY", JS_INT(state.mouseY));
+		SET_PROP(evt, "pageX", JS_INT(state.mouseX));
+		SET_PROP(evt, "pageY", JS_INT(state.mouseY));
+		SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
+		SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
+		SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
+		SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
 		
 		Local<Value> argv[2] = { JS_STR("click"), evt };
 		
-		CallEmitter(2, argv);
+		_emit(window, 2, argv);
 		
 	}
 	
 }
 
 
-void /*APIENTRY*/ scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
+void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	
 	Local<Array> evt = Nan::New<Array>(3);
-	evt->Set(JS_STR("type"), JS_STR("mousewheel"));
-	evt->Set(JS_STR("wheelDeltaX"), JS_NUM(xoffset*120));
-	evt->Set(JS_STR("wheelDeltaY"), JS_NUM(yoffset*120));
-	evt->Set(JS_STR("wheelDelta"), JS_NUM(yoffset*120));
+	SET_PROP(evt, "type", JS_STR("mousewheel"));
+	SET_PROP(evt, "wheelDeltaX", JS_NUM(xoffset*120));
+	SET_PROP(evt, "wheelDeltaY", JS_NUM(yoffset*120));
+	SET_PROP(evt, "wheelDelta", JS_NUM(yoffset*120));
 	
 	Local<Value> argv[2] = { JS_STR("mousewheel"), evt };
 	
-	CallEmitter(2, argv);
-	
-}
-
-
-int /*APIENTRY*/ windowCloseCB() { NAN_HS;
-	
-	Local<Value> argv[1] = { JS_STR("quit") };
-	
-	CallEmitter(1, argv);
-	
-	return 1;
+	_emit(window, 2, argv);
 	
 }
 
@@ -663,7 +674,8 @@ NAN_METHOD(GetJoystickName) { NAN_HS;
 }
 
 
-NAN_METHOD(CreateWindow) { NAN_HS;
+// Name altered due to windows.h collision
+NAN_METHOD(_CreateWindow) { NAN_HS;
 	
 	int width  = info[0]->Uint32Value();
 	int height = info[1]->Uint32Value();
@@ -683,37 +695,36 @@ NAN_METHOD(CreateWindow) { NAN_HS;
 		monitor = monitors[monitor_idx];
 	}
 	
-	if ( ! windowCreated ) {
-		
-		window = glfwCreateWindow(width, height, *str, monitor, NULL);
-		windowCreated = true;
-		
-		if ( ! window ) {
-			// can't create window, throw error
-			return Nan::ThrowError("Can't create GLFW window");
-		}
-		
-		glfwMakeContextCurrent(window);
-		
-		// make sure cursor is always shown
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		
-		GLenum err = glewInit();
-		
-		if (err) {
-			/* Problem: glewInit failed, something is seriously wrong. */
-			string msg="Can't init GLEW (glew error ";
-			msg+=(const char*) glewGetErrorString(err);
-			msg+=")";
-			
-			fprintf(stderr, "%s", msg.c_str());
-			return Nan::ThrowError(msg.c_str());
-		}
-		
+	GLFWwindow *window = glfwCreateWindow(width, height, *str, monitor, NULL);
+	
+	if ( ! window ) {
+		// can't create window, throw error
+		return Nan::ThrowError("Can't create GLFW window");
 	}
 	
+	states[window] = WinState();
+	
+	glfwMakeContextCurrent(window);
+	
+	// make sure cursor is always shown
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	
+	GLenum err = glewInit();
+	
+	if (err) {
+		/* Problem: glewInit failed, something is seriously wrong. */
+		string msg="Can't init GLEW (glew error ";
+		msg += (const char*) glewGetErrorString(err);
+		msg += ")";
+		
+		fprintf(stderr, "%s", msg.c_str());
+		return Nan::ThrowError(msg.c_str());
+	}
+	
+	
 	// Set callback functions
-	glfw_events.Reset( info.This()->Get(JS_STR("events"))->ToObject());
+	WinState &state = states[window];
+	state.events.Reset( info.This()->Get(JS_STR("events"))->ToObject() );
 	
 	// window callbacks
 	glfwSetWindowPosCallback( window, windowPosCB );
@@ -726,7 +737,7 @@ NAN_METHOD(CreateWindow) { NAN_HS;
 	glfwSetDropCallback(window, windowDropCB);
 	
 	// input callbacks
-	glfwSetKeyCallback( window, keyCB);
+	glfwSetKeyCallback( window, keyCB );
 	// glfwSetCharCallback( window, charCB);
 	glfwSetMouseButtonCallback( window, mouseButtonCB );
 	glfwSetCursorPosCallback( window, cursorPosCB );
@@ -740,7 +751,7 @@ NAN_METHOD(CreateWindow) { NAN_HS;
 
 NAN_METHOD(PlatformWindow) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
 #ifdef _WIN32
@@ -759,7 +770,7 @@ NAN_METHOD(PlatformWindow) { NAN_HS;
 
 NAN_METHOD(PlatformContext) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
 #ifdef _WIN32
@@ -865,7 +876,7 @@ NAN_METHOD(BlitFrameBuffer) { NAN_HS;
 
 NAN_METHOD(DestroyWindow) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -877,7 +888,7 @@ NAN_METHOD(DestroyWindow) { NAN_HS;
 
 NAN_METHOD(SetWindowTitle) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	String::Utf8Value str(info[1]->ToString());
 	
 	if (handle) {
@@ -890,7 +901,7 @@ NAN_METHOD(SetWindowTitle) { NAN_HS;
 
 NAN_METHOD(GetWindowSize) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		
@@ -899,8 +910,8 @@ NAN_METHOD(GetWindowSize) { NAN_HS;
 		glfwGetWindowSize(window, &w, &h);
 		
 		Local<Array> arr=Nan::New<Array>(2);
-		arr->Set(JS_STR("width"), JS_INT(w));
-		arr->Set(JS_STR("height"), JS_INT(h));
+		SET_PROP(arr, "width", JS_INT(w));
+		SET_PROP(arr, "height", JS_INT(h));
 		
 		RET_VALUE(arr);
 		
@@ -911,7 +922,7 @@ NAN_METHOD(GetWindowSize) { NAN_HS;
 
 NAN_METHOD(SetWindowSize) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -923,7 +934,7 @@ NAN_METHOD(SetWindowSize) { NAN_HS;
 
 NAN_METHOD(SetWindowPos) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -935,7 +946,7 @@ NAN_METHOD(SetWindowPos) { NAN_HS;
 
 NAN_METHOD(GetWindowPos) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		
@@ -944,8 +955,8 @@ NAN_METHOD(GetWindowPos) { NAN_HS;
 		glfwGetWindowPos(window, &xpos, &ypos);
 		
 		Local<Array> arr=Nan::New<Array>(2);
-		arr->Set(JS_STR("xpos"), JS_INT(xpos));
-		arr->Set(JS_STR("ypos"), JS_INT(ypos));
+		SET_PROP(arr, "xpos", JS_INT(xpos));
+		SET_PROP(arr, "ypos", JS_INT(ypos));
 		
 		RET_VALUE(arr);
 		
@@ -956,7 +967,7 @@ NAN_METHOD(GetWindowPos) { NAN_HS;
 
 NAN_METHOD(GetFramebufferSize) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		
@@ -965,8 +976,8 @@ NAN_METHOD(GetFramebufferSize) { NAN_HS;
 		glfwGetFramebufferSize(window, &width, &height);
 		
 		Local<Array> arr=Nan::New<Array>(2);
-		arr->Set(JS_STR("width"), JS_INT(width));
-		arr->Set(JS_STR("height"), JS_INT(height));
+		SET_PROP(arr, "width", JS_INT(width));
+		SET_PROP(arr, "height", JS_INT(height));
 		
 		RET_VALUE(arr);
 		
@@ -977,7 +988,7 @@ NAN_METHOD(GetFramebufferSize) { NAN_HS;
 
 NAN_METHOD(IconifyWindow) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -989,7 +1000,7 @@ NAN_METHOD(IconifyWindow) { NAN_HS;
 
 NAN_METHOD(RestoreWindow) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1001,7 +1012,7 @@ NAN_METHOD(RestoreWindow) { NAN_HS;
 
 NAN_METHOD(HideWindow) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1013,7 +1024,7 @@ NAN_METHOD(HideWindow) { NAN_HS;
 
 NAN_METHOD(ShowWindow) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1025,7 +1036,7 @@ NAN_METHOD(ShowWindow) { NAN_HS;
 
 NAN_METHOD(WindowShouldClose) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1037,8 +1048,8 @@ NAN_METHOD(WindowShouldClose) { NAN_HS;
 
 NAN_METHOD(SetWindowShouldClose) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
-	int value=info[1]->Uint32Value();
+	uint64_t handle = info[0]->IntegerValue();
+	int value = info[1]->Uint32Value();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1050,8 +1061,8 @@ NAN_METHOD(SetWindowShouldClose) { NAN_HS;
 
 NAN_METHOD(GetWindowAttrib) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
-	int attrib=info[1]->Uint32Value();
+	uint64_t handle = info[0]->IntegerValue();
+	int attrib = info[1]->Uint32Value();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1063,7 +1074,7 @@ NAN_METHOD(GetWindowAttrib) { NAN_HS;
 
 NAN_METHOD(SetInputMode) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1092,8 +1103,8 @@ NAN_METHOD(WaitEvents) { NAN_HS;
 /* Input handling */
 NAN_METHOD(GetKey) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
-	int key=info[1]->Uint32Value();
+	uint64_t handle = info[0]->IntegerValue();
+	int key = info[1]->Uint32Value();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1105,8 +1116,8 @@ NAN_METHOD(GetKey) { NAN_HS;
 
 NAN_METHOD(GetMouseButton) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
-	int button=info[1]->Uint32Value();
+	uint64_t handle = info[0]->IntegerValue();
+	int button = info[1]->Uint32Value();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1118,7 +1129,7 @@ NAN_METHOD(GetMouseButton) { NAN_HS;
 
 NAN_METHOD(GetCursorPos) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		
@@ -1127,8 +1138,8 @@ NAN_METHOD(GetCursorPos) { NAN_HS;
 		glfwGetCursorPos(window, &x, &y);
 		
 		Local<Array> arr=Nan::New<Array>(2);
-		arr->Set(JS_STR("x"), JS_NUM(x));
-		arr->Set(JS_STR("y"), JS_NUM(y));
+		SET_PROP(arr, "x", JS_NUM(x));
+		SET_PROP(arr, "y", JS_NUM(y));
 		
 		RET_VALUE(arr);
 		
@@ -1139,7 +1150,7 @@ NAN_METHOD(GetCursorPos) { NAN_HS;
 
 NAN_METHOD(SetCursorPos) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	int x = static_cast<int>(info[1]->NumberValue());
 	int y = static_cast<int>(info[2]->NumberValue());
 	
@@ -1154,7 +1165,7 @@ NAN_METHOD(SetCursorPos) { NAN_HS;
 /* @Module Context handling */
 NAN_METHOD(MakeContextCurrent) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
@@ -1174,7 +1185,7 @@ NAN_METHOD(GetCurrentContext) { NAN_HS;
 
 NAN_METHOD(SwapBuffers) { NAN_HS;
 	
-	uint64_t handle=info[0]->IntegerValue();
+	uint64_t handle = info[0]->IntegerValue();
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
 		glfwSwapBuffers(window);
@@ -1185,7 +1196,7 @@ NAN_METHOD(SwapBuffers) { NAN_HS;
 
 NAN_METHOD(SwapInterval) { NAN_HS;
 	
-	int interval=info[0]->Int32Value();
+	int interval = info[0]->Int32Value();
 	glfwSwapInterval(interval);
 	
 }
@@ -1208,10 +1219,6 @@ void AtExit() {
 
 
 } // namespace glfw
-
-
-#define JS_GLFW_CONSTANT(name) target->Set(JS_STR( #name ), JS_INT(GLFW_ ## name))
-#define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
 
 
 extern "C" {
@@ -1237,7 +1244,7 @@ NAN_MODULE_INIT(init) {
 	JS_GLFW_SET_METHOD(GetMonitors);
 	
 	/* Window handling */
-	JS_GLFW_SET_METHOD(CreateWindow);
+	Nan::SetMethod(target, "CreateWindow" , glfw::_CreateWindow);
 	JS_GLFW_SET_METHOD(GetRenderTarget);
 	JS_GLFW_SET_METHOD(BindFrameBuffer);
 	JS_GLFW_SET_METHOD(BlitFrameBuffer);
