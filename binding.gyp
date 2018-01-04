@@ -21,18 +21,23 @@
 					{
 						'libraries': [
 							'-Wl,-rpath,<(opengl_bin)',
-							'<(opengl_bin)/freeimage.dylib',
-							'<(opengl_bin)/glfw.dylib',
-							'<(opengl_bin)/glew.dylib'
+							'<(opengl_bin)/libfreeimage.so',
+							'<(opengl_bin)/libglfw.so.3',
+							'<(opengl_bin)/libGLEW.so.2.0',
+							'<(opengl_bin)/libGL.so',
+							'<(opengl_bin)/libXrandr.so',
 						],
 					}
 				],
 				[
 					'OS=="mac"',
 					{
-						'include_dirs': [ '<!@(pkg-config glfw3 glew --cflags-only-I | sed s/-I//g)' ],
-						'libraries'   : [ '<!@(pkg-config --libs glfw3 glew)', '-framework OpenGL' ],
-						'library_dirs': [ '/usr/local/lib' ],
+						'libraries': [
+							'-Wl,-rpath,<(opengl_bin)',
+							'<(opengl_bin)/freeimage.dylib',
+							'<(opengl_bin)/glfw.dylib',
+							'<(opengl_bin)/glew.dylib'
+						],
 					}
 				],
 				[
