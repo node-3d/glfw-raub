@@ -32,9 +32,12 @@
 				[
 					'OS=="mac"',
 					{
-						'include_dirs': [ '<!@(pkg-config glfw3 glew --cflags-only-I | sed s/-I//g)' ],
-						'libraries'   : [ '<!@(pkg-config --libs glfw3 glew)', '-framework OpenGL' ],
-						'library_dirs': [ '/usr/local/lib' ],
+						'libraries': [
+							'-Wl,-rpath,<(opengl_bin)',
+							'<(opengl_bin)/freeimage.dylib',
+							'<(opengl_bin)/glfw.dylib',
+							'<(opengl_bin)/glew.dylib'
+						],
 					}
 				],
 				[
@@ -60,7 +63,7 @@
 				],
 			],
 		},
-		
+
 		{
 			'target_name'  : 'make_directory',
 			'type'         : 'none',
@@ -79,7 +82,7 @@
 				],
 			}],
 		},
-		
+
 		{
 			'target_name'  : 'copy_binary',
 			'type'         : 'none',
@@ -95,7 +98,9 @@
 						'<(module_root_dir)/binary/glfw.node'
 					] } ],
 					[ 'OS=="mac"', { 'action' : [
-						'echo', 'copy'
+						'cp',
+						'<(module_root_dir)/build/Release/glfw.node',
+						'<(module_root_dir)/binary/glfw.node'
 					] } ],
 					[ 'OS=="win"', { 'action' : [
 						'copy "<(module_root_dir)/build/Release/glfw.node"' +
@@ -104,7 +109,7 @@
 				],
 			}],
 		},
-		
+
 		{
 			'target_name'  : 'remove_extras',
 			'type'         : 'none',
@@ -120,7 +125,11 @@
 						'<(module_root_dir)/build/Release/obj.target/glfw.node',
 						'<(module_root_dir)/build/Release/glfw.node'
 					] } ],
-					[ 'OS=="mac"', { 'action' : [ 'echo', 'remove' ] } ],
+					[ 'OS=="mac"', { 'action' : [
+						'rm',
+						'<(module_root_dir)/build/Release/obj.target/glfw/src/glfw.o',
+						'<(module_root_dir)/build/Release/glfw.node'
+					] } ],
 					[ 'OS=="win"', { 'action' : [
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/glfw.*" && ' +
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/glfw/*.*"'
