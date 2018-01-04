@@ -21,11 +21,9 @@
 					{
 						'libraries': [
 							'-Wl,-rpath,<(opengl_bin)',
-							'<(opengl_bin)/libfreeimage.so',
-							'<(opengl_bin)/libglfw.so.3',
-							'<(opengl_bin)/libGLEW.so.2.0',
-							'<(opengl_bin)/libGL.so',
-							'<(opengl_bin)/libXrandr.so',
+							'<(opengl_bin)/freeimage.dylib',
+							'<(opengl_bin)/glfw.dylib',
+							'<(opengl_bin)/glew.dylib'
 						],
 					}
 				],
@@ -60,7 +58,7 @@
 				],
 			],
 		},
-		
+
 		{
 			'target_name'  : 'make_directory',
 			'type'         : 'none',
@@ -79,7 +77,7 @@
 				],
 			}],
 		},
-		
+
 		{
 			'target_name'  : 'copy_binary',
 			'type'         : 'none',
@@ -95,7 +93,9 @@
 						'<(module_root_dir)/binary/glfw.node'
 					] } ],
 					[ 'OS=="mac"', { 'action' : [
-						'echo', 'copy'
+						'cp',
+						'<(module_root_dir)/build/Release/glfw.node',
+						'<(module_root_dir)/binary/glfw.node'
 					] } ],
 					[ 'OS=="win"', { 'action' : [
 						'copy "<(module_root_dir)/build/Release/glfw.node"' +
@@ -104,7 +104,7 @@
 				],
 			}],
 		},
-		
+
 		{
 			'target_name'  : 'remove_extras',
 			'type'         : 'none',
