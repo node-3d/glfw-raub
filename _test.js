@@ -3,10 +3,12 @@
 const util = require('util');
 
 const glfw = require('.');
+const { Window } = glfw;
 
 
-const w1 = new glfw.Window({ title: 'GLFW Simple Test 1' });
-const w2 = new glfw.Window({ title: 'GLFW Simple Test 2' });
+const w1 = new Window({ title: 'GLFW Simple Test 1' });
+const w2 = new Window({ title: 'GLFW Simple Test 2' });
+
 
 // testing events
 w1.on('keydown', e => console.log(`[#1 keydown] ${util.inspect(e)}`));
@@ -27,16 +29,16 @@ console.log(w1.version);
 const draw = () => {
 	
 	w1.makeCurrent();
-	const wsize1 = glfw.GetFramebufferSize(w1._window);
+	const wsize1 = w1.framebufferSize;
 	glfw.testScene(wsize1.width, wsize1.height);
 	
 	w2.makeCurrent();
-	const wsize2 = glfw.GetFramebufferSize(w2._window);
+	const wsize2 = w2.framebufferSize;
 	glfw.testScene(wsize2.width, wsize2.height);
 	
 	// Swap buffers
-	glfw.SwapBuffers(w1._window);
-	glfw.SwapBuffers(w2._window);
+	w1.swapBuffers();
+	w2.swapBuffers();
 	
 	glfw.PollEvents();
 	
@@ -55,8 +57,8 @@ const animate = () => {
 		
 	} else {
 		// Close OpenGL window and terminate GLFW
-		glfw.DestroyWindow(w1._window);
-		glfw.DestroyWindow(w2._window);
+		w1.destroy();
+		w2.destroy();
 		
 		glfw.Terminate();
 		

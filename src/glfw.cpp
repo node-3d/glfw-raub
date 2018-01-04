@@ -760,6 +760,7 @@ NAN_METHOD(_CreateWindow) { NAN_HS;
 NAN_METHOD(PlatformWindow) { NAN_HS;
 	
 	uint64_t handle = info[0]->IntegerValue();
+	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
 #ifdef _WIN32
@@ -779,6 +780,7 @@ NAN_METHOD(PlatformWindow) { NAN_HS;
 NAN_METHOD(PlatformContext) { NAN_HS;
 	
 	uint64_t handle = info[0]->IntegerValue();
+	
 	if (handle) {
 		GLFWwindow* window = reinterpret_cast<GLFWwindow*>(handle);
 #ifdef _WIN32
@@ -963,8 +965,8 @@ NAN_METHOD(GetWindowPos) { NAN_HS;
 		glfwGetWindowPos(window, &xpos, &ypos);
 		
 		Local<Array> arr=Nan::New<Array>(2);
-		SET_PROP(arr, "xpos", JS_INT(xpos));
-		SET_PROP(arr, "ypos", JS_INT(ypos));
+		SET_PROP(arr, "x", JS_INT(xpos));
+		SET_PROP(arr, "y", JS_INT(ypos));
 		
 		RET_VALUE(arr);
 		
