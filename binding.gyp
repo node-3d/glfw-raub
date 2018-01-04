@@ -125,7 +125,11 @@
 						'<(module_root_dir)/build/Release/obj.target/glfw.node',
 						'<(module_root_dir)/build/Release/glfw.node'
 					] } ],
-					[ 'OS=="mac"', { 'action' : [ 'echo', 'remove' ] } ],
+					[ 'OS=="mac"', { 'action' : [
+						'rm',
+						'<(module_root_dir)/build/Release/obj.target/glfw/src/glfw.o',
+						'<(module_root_dir)/build/Release/glfw.node'
+					] } ],
 					[ 'OS=="win"', { 'action' : [
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/glfw.*" && ' +
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/glfw/*.*"'
