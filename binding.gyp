@@ -72,7 +72,10 @@
 				'conditions'  : [
 					[ 'OS=="linux"', { 'action': ['mkdir', '-p', 'binary'] } ],
 					[ 'OS=="mac"', { 'action': ['mkdir', '-p', 'binary'] } ],
-					[ 'OS=="win"', { 'action': ['mkdir', 'binary'] } ],
+					[ 'OS=="win"', { 'action': [
+						'<(module_root_dir)/_rd "<(module_root_dir)/binary" && ' +
+						'md "<(module_root_dir)/binary"'
+					] } ],
 				],
 			}],
 		},
@@ -96,7 +99,7 @@
 					] } ],
 					[ 'OS=="win"', { 'action' : [
 						'copy "<(module_root_dir)/build/Release/glfw.node"' +
-						' "<(module_root_dir)/binary"'
+						' "<(module_root_dir)/binary/glfw.node"'
 					] } ],
 				],
 			}],
@@ -117,10 +120,10 @@
 						'<(module_root_dir)/build/Release/obj.target/glfw.node',
 						'<(module_root_dir)/build/Release/glfw.node'
 					] } ],
-					[ 'OS=="mac"'  , { 'action' : [ 'echo', 'remove' ] } ],
-					[ 'OS=="win"'  , { 'action' : [
+					[ 'OS=="mac"', { 'action' : [ 'echo', 'remove' ] } ],
+					[ 'OS=="win"', { 'action' : [
 						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/glfw.*" && ' +
-						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/glfw/*.*'
+						'<(module_root_dir)/_del "<(module_root_dir)/build/Release/obj/glfw/*.*"'
 					] } ],
 				],
 			}],
