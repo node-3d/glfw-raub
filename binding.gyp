@@ -1,8 +1,7 @@
 {
 	'variables': {
-		'opengl_root'   : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').root)")',
-		'opengl_include': '<(opengl_root)/include',
-		'opengl_bin'    : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').bin)")',
+		'opengl_include' : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').include)")',
+		'opengl_bin'     : '<!(node -e "console.log(require(\'node-deps-opengl-raub\').bin)")',
 	},
 	'targets': [
 		{

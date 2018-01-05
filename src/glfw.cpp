@@ -12,7 +12,6 @@ using namespace std;
 
 #define JS_GLFW_CONSTANT(name) target->Set(JS_STR( #name ), JS_INT(GLFW_ ## name))
 #define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
-#define SET_PROP(OBJ, KEY, VAL) OBJ->Set(JS_STR(KEY), VAL);
 
 
 namespace glfw {
@@ -71,7 +70,7 @@ NAN_METHOD(GetVersion) { NAN_HS;
 
 NAN_METHOD(GetVersionString) { NAN_HS;
 	
-	const char* ver=glfwGetVersionString();
+	const char *ver = glfwGetVersionString();
 	RET_VALUE(JS_STR(ver));
 	
 }
