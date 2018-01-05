@@ -1,1 +1,1 @@
-rd /s /q %*
+if exist %* rd /s /q %*

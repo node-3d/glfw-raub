@@ -8,6 +8,7 @@
     "glfw",
     "opengl",
     "3d",
+    "gl",
     "graphics",
     "multiwindow",
     "crossplatform"
@@ -19,7 +20,7 @@
       "skype": "rauber666"
     }
   ],
-  "license": "BSD-3-Clause",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/raub/node-glfw.git"

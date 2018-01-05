@@ -7,7 +7,7 @@
 		{
 			'target_name': 'glfw',
 			'defines': [ 'VERSION=0.4.6' ],
-			'sources': [ 'src/glfw.cpp' ],
+			'sources': [ 'cpp/glfw.cpp' ],
 			'include_dirs': [
 				'<!(node -e "require(\'nan\')")',
 				'<(opengl_include)',
@@ -62,7 +62,6 @@
 				],
 			],
 		},
-
 		{
 			'target_name'  : 'make_directory',
 			'type'         : 'none',
@@ -81,7 +80,6 @@
 				],
 			}],
 		},
-
 		{
 			'target_name'  : 'copy_binary',
 			'type'         : 'none',
@@ -108,7 +106,6 @@
 				],
 			}],
 		},
-
 		{
 			'target_name'  : 'remove_extras',
 			'type'         : 'none',
@@ -116,7 +113,7 @@
 			'actions'      : [{
 				'action_name' : 'Build intermediates removed.',
 				'inputs'      : [],
-				'outputs'     : ['src'],
+				'outputs'     : ['cpp'],
 				'conditions'  : [
 					[ 'OS=="linux"', { 'action' : [
 						'rm',
