@@ -7,6 +7,70 @@ const glfw = require('../binary/glfw');
 
 class Window extends EventEmitter {
 	
+	constructor(opts = {}) {
+		
+		super();
+		
+		this._title = opts.title;
+		
+		if ( ! this.title ) {
+			const pathMatch2 = process.mainModule.filename.replace(/\\/g, '/').match(
+				/(\/(.*))*\/(.*?)\/[^\/]*$/
+			);
+			this._title = pathMatch2 ? pathMatch2[pathMatch2.length - 1] : 'Untitled';
+		}
+		
+		this._width = opts.width || 800;
+		this._height = opts.height || 600;
+		
+		this._display = opts.display || undefined;
+		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
+		
+		this._fullscreen = opts.fullscreen ? true : false;
+		
+		const attribs = this._fullscreen ? glfw.WINDOW : glfw.FULLSCREEN;
+		
+		// we use OpenGL 2.1, GLSL 1.20. Comment this for now as this is for GLSL 1.50
+		//glfw.OpenWindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
+		//glfw.OpenWindowHint(glfw.OPENGL_VERSION_MAJOR, 3);
+		//glfw.OpenWindowHint(glfw.OPENGL_VERSION_MINOR, 2);
+		//glfw.OpenWindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
+		glfw.WindowHint(glfw.RESIZABLE, 1);
+		glfw.WindowHint(glfw.VISIBLE, 1);
+		glfw.WindowHint(glfw.DECORATED, 1);
+		glfw.WindowHint(glfw.RED_BITS, 8);
+		glfw.WindowHint(glfw.GREEN_BITS, 8);
+		glfw.WindowHint(glfw.BLUE_BITS, 8);
+		glfw.WindowHint(glfw.DEPTH_BITS, 24);
+		glfw.WindowHint(glfw.REFRESH_RATE, 0);
+		
+		
+		const emitter = { emit: (t, e) => this.emit(t, e) };
+		
+		if (this._display !== undefined) {
+			this._window = glfw.CreateWindow(this._width, this._height, emitter, this._title, this._display);
+		} else {
+			this._window = glfw.CreateWindow(this._width, this._height, emitter, this._title);
+		}
+		
+		if ( ! this._window ) {
+			throw new Error('Failed to open GLFW window');
+		}
+		
+		//can only be called after window creation!
+		this._major = glfw.GetWindowAttrib(this._window, glfw.CONTEXT_VERSION_MAJOR);
+		this._minor = glfw.GetWindowAttrib(this._window, glfw.CONTEXT_VERSION_MINOR);
+		this._rev   = glfw.GetWindowAttrib(this._window, glfw.CONTEXT_REVISION);
+		this._prof  = glfw.GetWindowAttrib(this._window, glfw.OPENGL_PROFILE);
+		
+		// Vertical sync (on cards that support it)
+		glfw.SwapInterval(this._vsync);
+		
+	}
+	
+	
+	get handle() { return this._window; }
+	
 	get width() { return this._width; }
 	get height() { return this._height; }
 	
@@ -54,63 +118,12 @@ class Window extends EventEmitter {
 		glfw.SetWindowSize(this._window, v.x, v.y);
 	}
 	
-	get framebufferSize() {
-		return glfw.GetFramebufferSize(this._window);
-	}
+	get framebufferSize() { return glfw.GetFramebufferSize(this._window); }
 	
-	get currentContext() {
-		return glfw.GetCurrentContext(this._window);
-	}
+	get currentContext() { return glfw.GetCurrentContext(this._window); }
 	
-	get cursorPos() {
-		return glfw.GetCursorPos(this._window);
-	}
-	set cursorPos(v) {
-		glfw.SetCursorPos(this._window, v.x, v.y);
-	}
-	
-	
-	constructor(opts = {}) {
-		
-		super();
-		
-		this._title = opts.title;
-		
-		if ( ! this.title ) {
-			const pathMatch2 = process.mainModule.filename.replace(/\\/g, '/').match(
-				/(\/(.*))*\/(.*?)\/[^\/]*$/
-			);
-			this._title = pathMatch2 ? pathMatch2[pathMatch2.length - 1] : 'Untitled';
-		}
-		
-		this._width = opts.width || 800;
-		this._height = opts.height || 600;
-		
-		this._display = opts.display || undefined;
-		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
-		
-		const emitter = { emit: (t, e) => this.emit(t, e) };
-		
-		if (this._display !== undefined) {
-			this._window = glfw.CreateWindow(this._width, this._height, emitter, this._title, this._display);
-		} else {
-			this._window = glfw.CreateWindow(this._width, this._height, emitter, this._title);
-		}
-		
-		if ( ! this._window ) {
-			throw new Error('Failed to open GLFW window');
-		}
-		
-		//can only be called after window creation!
-		this._major = glfw.GetWindowAttrib(this._window, glfw.CONTEXT_VERSION_MAJOR);
-		this._minor = glfw.GetWindowAttrib(this._window, glfw.CONTEXT_VERSION_MINOR);
-		this._rev   = glfw.GetWindowAttrib(this._window, glfw.CONTEXT_REVISION);
-		this._prof  = glfw.GetWindowAttrib(this._window, glfw.OPENGL_PROFILE);
-		
-		// Vertical sync (on cards that support it)
-		glfw.SwapInterval(this._vsync);
-		
-	}
+	get cursorPos() { return glfw.GetCursorPos(this._window); }
+	set cursorPos(v) { glfw.SetCursorPos(this._window, v.x, v.y); }
 	
 	
 	emit(type, event) {
