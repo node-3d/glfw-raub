@@ -66,6 +66,15 @@ class Window extends EventEmitter {
 		// Vertical sync (on cards that support it)
 		glfw.SwapInterval(this._vsync);
 		
+		this.on('window_pos', ({ x, y }) => {
+			this._x = x;
+			this._y = y;
+		});
+		this.on('resize', ({ width, height }) => {
+			this._width = width;
+			this._height = height;
+		});
+		
 	}
 	
 	
@@ -84,13 +93,13 @@ class Window extends EventEmitter {
 		this._height = size.height;
 		return size;
 	}
-	set size(v) {
-		this._width = v.width;
-		this._height = v.height;
-		glfw.SetWindowSize(this._window, v.width, v.height);
+	set size({ width, height }) {
+		this._width = width;
+		this._height = height;
+		glfw.SetWindowSize(this._window, width, height);
 	}
 	
-	get title()  { return this._title; }
+	get title() { return this._title; }
 	set title(v) {
 		this._title = v || 'Untitled';
 		glfw.SetWindowTitle(this._window, this._title);
@@ -112,10 +121,10 @@ class Window extends EventEmitter {
 		this._y = pos.y;
 		return pos;
 	}
-	set pos(v) {
-		this._x = v.x;
-		this._y = v.y;
-		glfw.SetWindowSize(this._window, v.x, v.y);
+	set pos({ x, y }) {
+		this._x = x;
+		this._y = y;
+		glfw.SetWindowSize(this._window, x, y);
 	}
 	
 	get framebufferSize() { return glfw.GetFramebufferSize(this._window); }
@@ -123,7 +132,30 @@ class Window extends EventEmitter {
 	get currentContext() { return glfw.GetCurrentContext(this._window); }
 	
 	get cursorPos() { return glfw.GetCursorPos(this._window); }
-	set cursorPos(v) { glfw.SetCursorPos(this._window, v.x, v.y); }
+	set cursorPos({ x, y }) { glfw.SetCursorPos(this._window, x, y); }
+	
+	
+	getKey(key) { return glfw.GetKey(this._window, key); }
+	
+	getMouseButton(button) { return glfw.GetMouseButton(this._window, button); }
+	
+	getWindowAttrib(attrib) { return glfw.GetWindowAttrib(this._window, attrib); }
+	
+	setInputMode(mode) { glfw.SetInputMode(this._window, mode); }
+	
+	swapBuffers() { glfw.SwapBuffers(this._window); }
+	
+	makeCurrent() { glfw.MakeContextCurrent(this._window); }
+	
+	destroy() { glfw.DestroyWindow(this._window); }
+	
+	iconify() { glfw.IconifyWindow(this._window); }
+	
+	restore() { glfw.RestoreWindow(this._window); }
+	
+	hide() { glfw.HideWindow(this._window); }
+	
+	show() { glfw.ShowWindow(this._window); }
 	
 	
 	emit(type, event) {
@@ -135,61 +167,6 @@ class Window extends EventEmitter {
 		
 		super.emit(type, event);
 		
-	}
-	
-	
-	getKey(key) {
-		return glfw.GetKey(this._window, key);
-	}
-	
-	
-	getMouseButton(button) {
-		return glfw.GetMouseButton(this._window, button);
-	}
-	
-	
-	getWindowAttrib(attrib) {
-		return glfw.GetWindowAttrib(this._window, attrib);
-	}
-	
-	
-	setInputMode(mode) {
-		return glfw.SetInputMode(this._window, mode);
-	}
-	
-	
-	swapBuffers() {
-		return glfw.SwapBuffers(this._window);
-	}
-	
-	
-	makeCurrent() {
-		glfw.MakeContextCurrent(this._window);
-	}
-	
-	
-	destroy() {
-		glfw.DestroyWindow(this._window);
-	}
-	
-	
-	iconify() {
-		glfw.IconifyWindow(this._window);
-	}
-	
-	
-	restore() {
-		glfw.RestoreWindow(this._window);
-	}
-	
-	
-	hide() {
-		glfw.HideWindow(this._window);
-	}
-	
-	
-	show() {
-		glfw.ShowWindow(this._window);
 	}
 	
 }

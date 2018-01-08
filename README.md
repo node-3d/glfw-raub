@@ -1,62 +1,103 @@
-NodeJS bindings to GLFW
-=======================
+# GLFW for Node.js
 
-This projects attempts to provide platform-independent access to windowing system and input devices on desktop/laptop computers using GLFW 3 and above.
+GLFW 3 crossplatform addon with minimized dependencies.
 
-**This is a fork of [mikeseven/node-glfw](https://github.com/mikeseven/node-glfw/) that removes the dependency to AntTweakBar.**
 
-Dependencies
-------------
-- NodeJS
-While v0.6.5+ work in many cases, some missing features for typed arrays are only available in v0.7.x. So we recommend at least v0.7.5.
+## Install
 
-- GLEW (http://glew.sourceforge.net/)
-GLEW is used to find OpenGL extensions in a cross-platform manner.
-
-- GLFW (http://www.glfw.org/)
-GLFW is a simple multi-platform framework for opening a window, creating an OpenGL context, and managing input.
-
-All of these libraries are cross-platform. node-glfw provides a Javascript wrapper to access native methods in GLFW.
-
-Once dependent libraries are installed, do
 ```
-npm install node-gyp
-npm install --save bindings nan
-node-gyp rebuild
+npm i -s node-glfw-raub
 ```
 
-Installation (Mac)
--------------------------
-Use Homebrew
-```
-brew install pkg-config glfw3 glew
-```
-
-Installation (Linux)
--------------------------
-Use apt-get or similar package manager
-```
-sudo apt-get install libxrandr-dev libxinerama-dev libxcursor-dev libfreeimage-dev libglew-dev libxi-dev
-```
-
-Download GLFW3 (do not use ```apt-get install libglfw-dev```, it is wrong version)
-```
-cd glfw
-mkdir build
-cd build
-cmake ..
-make
-sudo make install
-```
-Installation (Windows)
-----------------------
-
-Have Visual Studio (Express version works fine) installed.
-Windows dependencies are bundled with this package, so `npm install node-glfw` should work out-of-box. The binary packages for Windows on their respective web site above do work as well but you'll need to change the path in ```bindings.gyp``` to point to where you installed them, includes and libs.
-
-Notes
------
-- node-glfw is a just a platform binding so don't expect samples here. You should install node-webgl, which contains lots of tests and examples using node-glfw features.
-- run ```node test/test.js``` to see a colored triangle with mouse tracking in the command-line. This indicates all is installed correctly.
+Note: as this is a compiled addon, compilation tools must be in place on your system.
+Such as MSVS13 for Windows, where `npm install --global windows-build-tools` most probably helps.
 
 
+## Use
+
+This is a rather low level interface, where most of the stuff is directly reflecting
+GLFW interfaces. Do not expect much. See [GLFW Docs](http://www.glfw.org/docs/latest/group__window.html)
+for useful info on what it does and doesn't.
+
+As per this lib, 2 entities are exported.
+
+```js
+const glfw = require('node-glfw-raub');
+const { Window } = glfw;
+```
+
+Here `glfw` is low level interface container, where all `glfw*` functions are accessible as
+`glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.SetWindowTitle`.
+
+`glfw.CreateWindow(w, h, emitter, title, display)` - this function differs from GLFW Docs
+signature due to JS specifics. Here `emitter` is any object having `emit()` method
+**AS OWN PROPERTY**, specifically not prototype property. It will be used to transmit
+glfw events.
+
+----------
+
+`Window` is higher level js-wrapper around the above functions, which helps in managing window
+instances. It basically has all the functionality where in GLFW Docs `window` parameter
+is mentioned. E.g. `glfwSetWindowTitle (window, title)` -> `window.title = title`.
+
+There are few simple rules for the above transformation to become intuitive:
+
+* API is available if it has `window` parameter.
+* All props start lowercase.
+* Word "Window" is omitted.
+* Whatever can have a `get/set` interface is done so.
+
+Without further ado:
+
+* get `handle` - window pointer as `int`
+* get `version` - OpenGL vendor info as `string`
+* get `platformWindow` - window HWND pointer as `int`
+* get `platformContext` - OpenGL context handle as `int`
+* get `framebufferSize` - the size of allocated framebuffer as `{width, height}`
+* get `currentContext` - what GLFW window is now current as `int`
+
+---
+
+* get/set `width`|`w` - window width as `int`
+* get/set `height`|`h` - window height as `int`
+* get/set `wh` - window width and height as `[width, height]`
+* get/set `size` - window width and height as `{width, height}`
+* get/set `title` - window title as `string`
+* get/set `shouldClose` - if window is going to be closed as `bool`
+* get/set `pos` - where window is on the screen as `{x, y}`
+* get/set `cursorPos` - where mouse is relative to the window as `{x, y}`
+
+---
+
+* `getKey(key)` - glfw.GetKey(window, key)
+* `getMouseButton(button)` - glfw.GetMouseButton(window, button)
+* `getWindowAttrib(attrib)` - glfw.GetWindowAttrib(window, attrib)
+* `setInputMode(mode)` - glfw.SetInputMode(window, mode)
+* `swapBuffers()` - glfw.SwapBuffers(window)
+* `makeCurrent()` - glfw.MakeContextCurrent(window)
+* `destroy()` - glfw.DestroyWindow(window)
+* `iconify()` - glfw.IconifyWindow(window)
+* `restore()` - glfw.RestoreWindow(window)
+* `hide()` - glfw.HideWindow(window)
+* `show()` - glfw.ShowWindow(window)
+* `on(type, cb)` - listen for window events
+
+## GLFW events:
+
+* `'window_pos'` - window moved
+* `'resize'` - window frame resized
+* `'framebuffer_resize'` - render-surface resized
+* `'drop'` - drag-dropped some files on the window
+* `'quit'` - window closed
+* `'refresh'` - window needs to be redrawn
+* `'iconified'` - window was iconified
+* `'focused'` - focus gained/lost
+* `'keyup'` - keyboard key up
+* `'keydown'` - keyboard key down
+* `'keypress'` - keyboard key pressed
+* `'mousemove'` - mouse moved
+* `'mouseenter'` - mouse entered/left the window
+* `'mousedown'` - mouse button down
+* `'mouseup'` - mouse button up
+* `'click'` - mouse button clicked
+* `'mousewheel'` - mouse wheel rotation
