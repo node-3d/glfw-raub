@@ -34,7 +34,10 @@ signature due to JS specifics. Here `emitter` is any object having `emit()` meth
 **AS OWN PROPERTY**, specifically not prototype property. It will be used to transmit
 glfw events.
 
+
 ----------
+
+### class Window
 
 `Window` is higher level js-wrapper around the above functions, which helps in managing window
 instances. It basically has all the functionality where in GLFW Docs `window` parameter
@@ -47,40 +50,56 @@ There are few simple rules for the above transformation to become intuitive:
 * Word "Window" is omitted.
 * Whatever can have a `get/set` interface is done so.
 
-Without further ado:
 
-* get `handle` - window pointer as `int`
-* get `version` - OpenGL vendor info as `string`
-* get `platformWindow` - window HWND pointer as `int`
-* get `platformContext` - OpenGL context handle as `int`
-* get `framebufferSize` - the size of allocated framebuffer as `{width, height}`
-* get `currentContext` - what GLFW window is now current as `int`
+Constructor:
+
+* `Window({ title, width, height, display, vsync, fullscreen, msaa })`
+	* `string title $PWD` - window title, takes current directory as default.
+	* `number width 800` - window initial width.
+	* `number height 600` - window initial height.
+	* `number display undefined` - display id to open window on a specific display.
+	* `boolean vsync false` - if vsync should be used.
+	* `boolean fullscreen false` - if fullscreen should be used.
+	* `number msaa 2` - multisample antialiasing level.
+	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
+
+
+Properties:
+
+* `get number handle` - window pointer.
+* `get string version` - OpenGL vendor info.
+* `get number platformWindow` - window HWND pointer.
+* `get number platformContext` - OpenGL context handle.
+* `get {width, height} framebufferSize` - the size of allocated framebuffer.
+* `get number currentContext` - what GLFW window is now current.
+* `get number samples` - number of msaa samples passed to the constructor.
 
 ---
 
-* get/set `width`|`w` - window width as `int`
-* get/set `height`|`h` - window height as `int`
-* get/set `wh` - window width and height as `[width, height]`
-* get/set `size` - window width and height as `{width, height}`
-* get/set `title` - window title as `string`
-* get/set `shouldClose` - if window is going to be closed as `bool`
-* get/set `pos` - where window is on the screen as `{x, y}`
-* get/set `cursorPos` - where mouse is relative to the window as `{x, y}`
+* `get/set number width|w` - window width.
+* `get/set number height|h` - window height.
+* `get/set [width, height] wh` - window width and height.
+* `get/set {width, height} size` - window width and height.
+* `get/set string title` - window title.
+* `get/set boolean shouldClose` - if window is going to be closed.
+* `get/set {x, y} pos` - where window is on the screen.
+* `get/set {x, y} cursorPos` - where mouse is relative to the window.
 
 ---
 
-* `getKey(key)` - glfw.GetKey(window, key)
-* `getMouseButton(button)` - glfw.GetMouseButton(window, button)
-* `getWindowAttrib(attrib)` - glfw.GetWindowAttrib(window, attrib)
-* `setInputMode(mode)` - glfw.SetInputMode(window, mode)
-* `swapBuffers()` - glfw.SwapBuffers(window)
-* `makeCurrent()` - glfw.MakeContextCurrent(window)
-* `destroy()` - glfw.DestroyWindow(window)
-* `iconify()` - glfw.IconifyWindow(window)
-* `restore()` - glfw.RestoreWindow(window)
-* `hide()` - glfw.HideWindow(window)
-* `show()` - glfw.ShowWindow(window)
-* `on(type, cb)` - listen for window events
+* `getKey(number key)` - `glfw.GetKey(window, key)`.
+* `getMouseButton(number button)` - `glfw.GetMouseButton(window, button)`.
+* `getWindowAttrib(number attrib)` - `glfw.GetWindowAttrib(window, attrib)`.
+* `setInputMode(number mode)` - `glfw.SetInputMode(window, mode)`.
+* `swapBuffers()` - `glfw.SwapBuffers(window)`.
+* `makeCurrent()` - `glfw.MakeContextCurrent(window)`.
+* `destroy()` - `glfw.DestroyWindow(window)`.
+* `iconify()` - `glfw.IconifyWindow(window)`.
+* `restore()` - `glfw.RestoreWindow(window)`.
+* `hide()` - `glfw.HideWindow(window)`.
+* `show()` - `glfw.ShowWindow(window)`.
+* `on(string type, function cb)` - listen for window events.
+
 
 ## GLFW events:
 
