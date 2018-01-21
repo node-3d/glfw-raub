@@ -23,10 +23,12 @@ class Window extends EventEmitter {
 		this._width = opts.width || 800;
 		this._height = opts.height || 600;
 		
-		this._display = opts.display || undefined;
+		this._display = opts.display;
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
 		
 		this._fullscreen = opts.fullscreen ? true : false;
+		this._decorated = opts.decorated === false ? false : true;
+		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
 		const attribs = this._fullscreen ? glfw.WINDOW : glfw.FULLSCREEN;
 		
@@ -43,6 +45,9 @@ class Window extends EventEmitter {
 		glfw.WindowHint(glfw.BLUE_BITS, 8);
 		glfw.WindowHint(glfw.DEPTH_BITS, 24);
 		glfw.WindowHint(glfw.REFRESH_RATE, 0);
+		glfw.WindowHint(glfw.DOUBLEBUFFER, glfw.TRUE);
+		glfw.WindowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
+		glfw.WindowHint(glfw.SAMPLES, this._msaa);
 		
 		
 		const emitter = { emit: (t, e) => this.emit(t, e) };
@@ -104,6 +109,8 @@ class Window extends EventEmitter {
 		this._title = v || 'Untitled';
 		glfw.SetWindowTitle(this._window, this._title);
 	}
+	
+	get msaa() { return this._msaa; }
 	
 	get version() {
 		return `GL ${this._major}.${this._minor}.${this._rev} Profile: ${this._prof}`;
