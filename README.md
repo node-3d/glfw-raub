@@ -2,6 +2,10 @@
 
 GLFW 3 crossplatform addon with minimized dependencies.
 
+* IMPORTANT: as of 0.7.0 all methods start lowercase, like in WebGL. This breaks compatibility
+of any old code, that would call `glfw.method()`. If you want to upgrade, consider the following
+search pattern regexp: `glfw\.\w+\(`. Any modern text editor should help to easily handle this.
+
 
 ## Install
 
@@ -29,7 +33,7 @@ const { Window } = glfw;
 Here `glfw` is low level interface container, where all `glfw*` functions are accessible as
 `glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.SetWindowTitle`.
 
-`glfw.CreateWindow(w, h, emitter, title, display)` - this function differs from GLFW Docs
+`glfw.createWindow(w, h, emitter, title, display)` - this function differs from GLFW Docs
 signature due to JS specifics. Here `emitter` is any object having `emit()` method
 **AS OWN PROPERTY**, specifically not prototype property. It will be used to transmit
 glfw events.
@@ -48,7 +52,7 @@ There are few simple rules for the above transformation to become intuitive:
 * API is available if it has `window` parameter.
 * All props start lowercase.
 * Word "Window" is omitted.
-* Whatever can have a `get/set` interface is done so.
+* Whatever could have a `get/set` interface is made so.
 
 
 Constructor:
@@ -87,17 +91,17 @@ Properties:
 
 ---
 
-* `getKey(number key)` - `glfw.GetKey(window, key)`.
-* `getMouseButton(number button)` - `glfw.GetMouseButton(window, button)`.
-* `getWindowAttrib(number attrib)` - `glfw.GetWindowAttrib(window, attrib)`.
-* `setInputMode(number mode)` - `glfw.SetInputMode(window, mode)`.
-* `swapBuffers()` - `glfw.SwapBuffers(window)`.
-* `makeCurrent()` - `glfw.MakeContextCurrent(window)`.
-* `destroy()` - `glfw.DestroyWindow(window)`.
-* `iconify()` - `glfw.IconifyWindow(window)`.
-* `restore()` - `glfw.RestoreWindow(window)`.
-* `hide()` - `glfw.HideWindow(window)`.
-* `show()` - `glfw.ShowWindow(window)`.
+* `getKey(number key)` - `glfw.getKey(window, key)`.
+* `getMouseButton(number button)` - `glfw.getMouseButton(window, button)`.
+* `getWindowAttrib(number attrib)` - `glfw.getWindowAttrib(window, attrib)`.
+* `setInputMode(number mode)` - `glfw.setInputMode(window, mode)`.
+* `swapBuffers()` - `glfw.swapBuffers(window)`.
+* `makeCurrent()` - `glfw.makeContextCurrent(window)`.
+* `destroy()` - `glfw.destroyWindow(window)`.
+* `iconify()` - `glfw.iconifyWindow(window)`.
+* `restore()` - `glfw.restoreWindow(window)`.
+* `hide()` - `glfw.hideWindow(window)`.
+* `show()` - `glfw.showWindow(window)`.
 * `on(string type, function cb)` - listen for window events.
 
 

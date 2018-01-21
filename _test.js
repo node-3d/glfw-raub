@@ -38,7 +38,7 @@ const draw = () => {
 	glfw.testScene(wsize2.width, wsize2.height);
 	w2.swapBuffers();
 	
-	glfw.PollEvents();
+	glfw.pollEvents();
 	
 };
 
@@ -58,7 +58,7 @@ const animate = () => {
 		w1.destroy();
 		w2.destroy();
 		
-		glfw.Terminate();
+		glfw.terminate();
 		
 		process.exit(0);
 	}
