@@ -3,8 +3,9 @@
 GLFW 3 crossplatform addon with minimized dependencies.
 
 * IMPORTANT: as of 0.7.0 all methods start lowercase, like in WebGL. This breaks compatibility
-of any old code, that would call `glfw.method()`. If you want to upgrade, consider the following
-search pattern regexp: `glfw\.\w+\(`. Any modern text editor should help to easily handle this.
+of any old code, that would call `glfw.Method()` instead of `glfw.method()`.
+If you want to upgrade, consider the following search pattern regexp: `glfw\.\w+\(`.
+Any modern text editor should help to easily handle this.
 
 
 ## Install
