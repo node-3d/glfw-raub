@@ -1120,7 +1120,7 @@ NAN_METHOD(extensionSupported) {
 
 
 // make sure we close everything when we exit
-void AtExit() {
+void deinit() {
 	glfwTerminate();
 }
 
@@ -1131,9 +1131,9 @@ void AtExit() {
 extern "C" {
 
 
-NAN_MODULE_INIT(init) {
+NAN_MODULE_INIT(_init) {
 	
-	atexit(glfw::AtExit);
+	atexit(glfw::deinit);
 	
 	NAN_HS;
 	
@@ -1486,6 +1486,6 @@ NAN_MODULE_INIT(init) {
 }
 
 
-NODE_MODULE(glfw, init)
+NODE_MODULE(glfw, _init)
 
 }
