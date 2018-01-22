@@ -1,6 +1,6 @@
 {
   "name": "node-glfw-raub",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "GLFW for Node.js",
   "main": "index.js",
   "author": "Luis Blanco <raubtierxxx@gmail.com>",
@@ -26,7 +26,7 @@
     "url": "https://github.com/raub/node-glfw.git"
   },
   "dependencies": {
-    "node-deps-opengl-raub": "0.3.5",
+    "node-deps-opengl-raub": "0.3.6",
     "node-addon-tools-raub": "0.1.2"
   }
 }
