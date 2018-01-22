@@ -15,29 +15,29 @@ npm i -s node-glfw-raub
 ```
 
 Note: as this is a compiled addon, compilation tools must be in place on your system.
-Such as MSVS13 for Windows, where `npm install --global windows-build-tools` most probably helps.
+Such as MSVS13 for Windows, where **ADMIN PRIVELEGED** `npm i -g windows-build-tools`
+most probably helps.
 
 
-## Use
+## Usage
 
 This is a rather low level interface, where most of the stuff is directly reflecting
 GLFW interfaces. Do not expect much. See [GLFW Docs](http://www.glfw.org/docs/latest/group__window.html)
 for useful info on what it does and doesn't.
 
-As per this lib, 2 entities are exported.
+As per this lib, 3 entities are exported: GLFW itself, and Window and Document classes.
 
 ```js
 const glfw = require('node-glfw-raub');
-const { Window } = glfw;
+const { Window, Document } = glfw;
 ```
 
 Here `glfw` is low level interface container, where all `glfw*` functions are accessible as
-`glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.SetWindowTitle`.
+`glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.setWindowTitle`.
 
 `glfw.createWindow(w, h, emitter, title, display)` - this function differs from GLFW Docs
-signature due to JS specifics. Here `emitter` is any object having `emit()` method
-**AS OWN PROPERTY**, specifically not prototype property. It will be used to transmit
-glfw events.
+signature due to JS specifics. Here `emitter` is any object having **BOUND** `emit()` method.
+It will be used to transmit GLFW events.
 
 
 ----------
@@ -46,7 +46,7 @@ glfw events.
 
 `Window` is higher level js-wrapper around the above functions, which helps in managing window
 instances. It basically has all the functionality where in GLFW Docs `window` parameter
-is mentioned. E.g. `glfwSetWindowTitle (window, title)` -> `window.title = title`.
+is mentioned. E.g. `glfwSetWindowTitle(window, title)` -> `window.title = title`.
 
 There are few simple rules for the above transformation to become intuitive:
 
@@ -103,7 +103,7 @@ Properties:
 * `restore()` - `glfw.restoreWindow(window)`.
 * `hide()` - `glfw.hideWindow(window)`.
 * `show()` - `glfw.showWindow(window)`.
-* `on(string type, function cb)` - listen for window events.
+* `on(string type, function cb)` - listen for window (GLFW) events.
 
 
 ## GLFW events:
@@ -125,3 +125,49 @@ Properties:
 * `'mouseup'` - mouse button up
 * `'click'` - mouse button clicked
 * `'mousewheel'` - mouse wheel rotation
+
+
+----------
+
+### class Document
+
+`Document` extends `Window` to provide an additional web-style compatibility layer.
+As name suggests, objects of such class will mimic the behavior and properties of
+your typical browser `window.document`. But also it is a `Window`, at the same time.
+And it is incomplete at this point: you still have to provide an `Image` class of
+your choice and WebGL context (implementation). Two static methods are designated
+for this:
+
+* static setImage(Image) - for example,
+[this Image implementation](https://github.com/raub/node-image)
+is designed to fit perfectly. Also sets `global.HTMLImageElement`.
+
+* static setWebgl(webgl) - for example,
+[this WebGL implementation](https://github.com/raub/node-webgl)
+is designed to fit perfectly.
+
+
+Properties:
+
+* `get body` - returns `this`.
+* `get ratio/devicePixelRatio` - device pixel ratio, most likely to be 1.
+* `get/set innerWidth/clientWidth` - window width.
+* `get/set innerHeight/clientHeight` - window height.
+* `get/set onkeydown` - browser-style event listening.
+* `get/set onkeyup` - browser-style event listening.
+* `get style` - mimic web-element `style` property.
+* `get context` - returns `Document.webgl`, set through `Document.setWebgl`.
+
+
+Methods:
+
+* `getContext()` - returns `Document.webgl`, set through `Document.setWebgl`.
+* `getElementById(id)` - returns `this`.
+* `getElementsByTagName(tag)` - if contains 'canvas', returns `this`, otherwise `null`.
+* `createElementNS(_0, name)` - returns the result of `createElement(name)`.
+* `createElement(name)` - for `'canvas'` returns `this`; for `'image'` returns
+`new Document.Image`, set through `Document.setImage`.
+* `dispatchEvent(event)` - invokes `emit(event.type, event)`.
+* `addEventListener(name, callback)` - adds event listener.
+* `removeEventListener(name, callback)` - removes event listener.
+* `requestAnimationFrame(cb)` - **BOUND** `requestAnimationFrame` method.
