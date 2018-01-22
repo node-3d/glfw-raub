@@ -3,6 +3,7 @@
 const glfw = require('./core');
 
 const Window = require('./js/window');
+const Document = require('./js/document');
 
 
 // Initialize GLFW
@@ -14,4 +15,4 @@ if ( ! glfw.init() ) {
 glfw.defaultWindowHints();
 
 
-module.exports = Object.assign(glfw, { Window });
+module.exports = Object.assign(glfw, { Window, Document });

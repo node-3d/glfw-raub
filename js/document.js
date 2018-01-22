@@ -16,12 +16,20 @@ class Document extends Window {
 	
 	static setWebgl(webgl) {
 		this.webgl = webgl;
+		this.isWebglInited = false;
 	};
 	
 	
 	constructor(opts = {}) {
 		
 		super(opts);
+		
+		if (Document.webgl && ! Document.isWebglInited) {
+			if (typeof Document.webgl.init === 'function') {
+				Document.webgl.init();
+			}
+			Document.isWebglInited = true;
+		}
 		
 		if ( ! opts.ignoreQuit ) {
 			
@@ -132,7 +140,7 @@ global.HTMLCanvasElement = Document;
 
 Document.setImage(class FakeImage {
 	get src() { console.error('Document.Image class not set.'); return ''; }
-	get src(v) { console.error('Document.Image class not set.'); v = v; }
+	set src(v) { console.error('Document.Image class not set.'); v = v; }
 	get complete() { return false; }
 	on() {}
 	onload() {}
