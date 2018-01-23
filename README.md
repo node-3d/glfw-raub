@@ -86,6 +86,8 @@ Properties:
 * `get/set [width, height] wh` - window width and height.
 * `get/set {width, height} size` - window width and height.
 * `get/set string title` - window title.
+* `get/set {width, height, Buffer data} icon` - window icon in RGBA format. Consider
+using [this Image implementation](https://github.com/raub/node-image).
 * `get/set boolean shouldClose` - if window is going to be closed.
 * `get/set {x, y} pos` - where window is on the screen.
 * `get/set {x, y} cursorPos` - where mouse is relative to the window.

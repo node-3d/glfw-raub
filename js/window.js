@@ -12,8 +12,14 @@ class Window extends EventEmitter {
 		super();
 		
 		this._title = opts.title;
+		this._icon = null;
 		
-		if ( ! this.title ) {
+		this._major = 0;
+		this._minor = 0;
+		this._rev   = 0;
+		this._prof  = 0;
+		
+		if ( ! this._title ) {
 			const pathMatch2 = process.mainModule.filename.replace(/\\/g, '/').match(
 				/(\/(.*))*\/(.*?)\/[^\/]*$/
 			);
@@ -62,6 +68,9 @@ class Window extends EventEmitter {
 			throw new Error('Failed to open GLFW window');
 		}
 		
+		
+		this.icon = opts.icon;
+		
 		//can only be called after window creation!
 		this._major = glfw.getWindowAttrib(this._window, glfw.CONTEXT_VERSION_MAJOR);
 		this._minor = glfw.getWindowAttrib(this._window, glfw.CONTEXT_VERSION_MINOR);
@@ -75,6 +84,7 @@ class Window extends EventEmitter {
 			this._x = x;
 			this._y = y;
 		});
+		
 		this.on('resize', ({ width, height }) => {
 			this._width = width;
 			this._height = height;
@@ -88,12 +98,21 @@ class Window extends EventEmitter {
 	get width() { return this._width; }
 	get height() { return this._height; }
 
-	set width(w)  { this._width = w; }
-	set height(h) { this._height = h; }
+	set width(w) {
+		this._width = w;
+		glfw.setWindowSize(this._window, this._width, this._height);
+	}
+	set height(h) {
+		this._height = h;
+		glfw.setWindowSize(this._window, this._width, this._height);
+	}
 	
 	get w() { return this.width; }
+	set w(v) { this.width = v; }
 	get h() { return this.height; }
+	set h(v) { this.height = v; }
 	get wh() { return [this.width, this.height]; }
+	set wh([width, height]) { this.size = { width, height }; }
 	
 	get size() {
 		const size = glfw.getWindowSize(this._window);
@@ -111,6 +130,16 @@ class Window extends EventEmitter {
 	set title(v) {
 		this._title = v || 'Untitled';
 		glfw.setWindowTitle(this._window, this._title);
+	}
+	
+	get icon() { return this._icon; }
+	set icon(v) {
+		if ( ! (v && typeof v === 'object') ) {
+			this._icon = null;
+			return;
+		}
+		this._icon = v;
+		glfw.setWindowIcon(this._window, this._icon);
 	}
 	
 	get msaa() { return this._msaa; }

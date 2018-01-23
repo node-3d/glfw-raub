@@ -61,15 +61,15 @@ class Document extends Window {
 	get ratio() { return this._ratio; }
 	get devicePixelRatio() { return this._ratio; }
 	
-	get innerWidth() { return this._width; }
-	set innerWidth(v) { this._width = v; }
-	get innerHeight() { return this._height; }
-	set innerHeight(v) { this._height = v; }
+	get innerWidth() { return this.width; }
+	set innerWidth(v) { this.width = v; }
+	get innerHeight() { return this.height; }
+	set innerHeight(v) { this.height = v; }
 	
-	get clientWidth() { return this._width; }
-	set clientWidth(v) { this._width = v; }
-	get clientHeight() { return this._height; }
-	set clientHeight(v) { this._height = v; }
+	get clientWidth() { return this.width; }
+	set clientWidth(v) { this.width = v; }
+	get clientHeight() { return this.height; }
+	set clientHeight(v) { this.height = v; }
 	
 	get onkeydown() { return this.listeners('keydown'); }
 	set onkeydown(cb) { this.on('keydown', cb); }
