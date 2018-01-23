@@ -1,6 +1,6 @@
 {
   "name": "node-glfw-raub",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "description": "GLFW for Node.js",
   "main": "index.js",
   "author": "Luis Blanco <raubtierxxx@gmail.com>",

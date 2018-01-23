@@ -89,6 +89,8 @@ Properties:
 * `get/set {width, height, Buffer data} icon` - window icon in RGBA format. Consider
 using [this Image implementation](https://github.com/raub/node-image).
 * `get/set boolean shouldClose` - if window is going to be closed.
+* `get/set number x` - window position X-coordinate on the screen.
+* `get/set number y` - window position Y-coordinate on the screen.
 * `get/set {x, y} pos` - where window is on the screen.
 * `get/set {x, y} cursorPos` - where mouse is relative to the window.
 

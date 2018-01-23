@@ -98,12 +98,18 @@ class Window extends EventEmitter {
 	get width() { return this._width; }
 	get height() { return this._height; }
 
-	set width(w) {
-		this._width = w;
+	set width(v) {
+		if (this._width === v) {
+			return;
+		}
+		this._width = v;
 		glfw.setWindowSize(this._window, this._width, this._height);
 	}
-	set height(h) {
-		this._height = h;
+	set height(v) {
+		if (this._height === v) {
+			return;
+		}
+		this._height = v;
 		glfw.setWindowSize(this._window, this._width, this._height);
 	}
 	
@@ -114,23 +120,30 @@ class Window extends EventEmitter {
 	get wh() { return [this.width, this.height]; }
 	set wh([width, height]) { this.size = { width, height }; }
 	
+	
 	get size() {
 		const size = glfw.getWindowSize(this._window);
 		this._width = size.width;
 		this._height = size.height;
 		return size;
 	}
+	
 	set size({ width, height }) {
+		if (this._width === width && this._height === height) {
+			return;
+		}
 		this._width = width;
 		this._height = height;
 		glfw.setWindowSize(this._window, width, height);
 	}
+	
 	
 	get title() { return this._title; }
 	set title(v) {
 		this._title = v || 'Untitled';
 		glfw.setWindowTitle(this._window, this._title);
 	}
+	
 	
 	get icon() { return this._icon; }
 	set icon(v) {
@@ -141,6 +154,7 @@ class Window extends EventEmitter {
 		this._icon = v;
 		glfw.setWindowIcon(this._window, this._icon);
 	}
+	
 	
 	get msaa() { return this._msaa; }
 	
@@ -154,6 +168,22 @@ class Window extends EventEmitter {
 	get platformWindow() { return glfw.platformWindow(this._window); }
 	get platformContext() { return glfw.platformContext(this._window); }
 	
+	
+	set x(v) {
+		if (this._x === v) {
+			return;
+		}
+		this._x = v;
+		glfw.setWindowSize(this._window, this._x, this._y);
+	}
+	set y(v) {
+		if (this._y === v) {
+			return;
+		}
+		this._y = v;
+		glfw.setWindowSize(this._window, this._x, this._y);
+	}
+	
 	get pos() {
 		const pos = glfw.getWindowPos(this._window);
 		this._x = pos.x;
@@ -161,10 +191,14 @@ class Window extends EventEmitter {
 		return pos;
 	}
 	set pos({ x, y }) {
+		if (this._x === x && this._y === y) {
+			return;
+		}
 		this._x = x;
 		this._y = y;
 		glfw.setWindowSize(this._window, x, y);
 	}
+	
 	
 	get framebufferSize() { return glfw.getFramebufferSize(this._window); }
 	
