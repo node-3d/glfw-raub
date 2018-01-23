@@ -87,6 +87,9 @@ class Window extends EventEmitter {
 	
 	get width() { return this._width; }
 	get height() { return this._height; }
+
+	set width(w)  { this._width = w; }
+	set height(h) { this._height = h; }
 	
 	get w() { return this.width; }
 	get h() { return this.height; }
