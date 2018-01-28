@@ -2,16 +2,11 @@
 
 GLFW 3 crossplatform addon with minimized dependencies.
 
-* IMPORTANT: as of 0.7.0 all methods start lowercase, like in WebGL. This breaks compatibility
-of any old code, that would call `glfw.Method()` instead of `glfw.method()`.
-If you want to upgrade, consider the following search pattern regexp: `glfw\.\w+\(`.
-Any modern text editor should help to easily handle this.
-
 
 ## Install
 
 ```
-npm i -s node-glfw-raub
+npm i -s glfw-raub
 ```
 
 Note: as this is a compiled addon, compilation tools must be in place on your system.
@@ -28,19 +23,40 @@ for useful info on what it does and doesn't.
 As per this lib, 3 entities are exported: GLFW itself, and Window and Document classes.
 
 ```js
-const glfw = require('node-glfw-raub');
+const glfw = require('glfw-raub');
 const { Window, Document } = glfw;
 ```
 
-Here `glfw` is low level interface container, where all `glfw*` functions are accessible as
+Here `glfw` is a low level interface container, where all `glfw*` functions are accessible as
 `glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.setWindowTitle`.
 
 `glfw.createWindow(w, h, emitter, title, display)` - this function differs from GLFW Docs
 signature due to JS specifics. Here `emitter` is any object having **BOUND** `emit()` method.
 It will be used to transmit GLFW events.
 
-
 ----------
+
+
+### GLFW events:
+
+* `'window_pos'` - window moved
+* `'resize'` - window frame resized
+* `'framebuffer_resize'` - render-surface resized
+* `'drop'` - drag-dropped some files on the window
+* `'quit'` - window closed
+* `'refresh'` - window needs to be redrawn
+* `'iconified'` - window was iconified
+* `'focused'` - focus gained/lost
+* `'keyup'` - keyboard key up
+* `'keydown'` - keyboard key down
+* `'keypress'` - keyboard key pressed
+* `'mousemove'` - mouse moved
+* `'mouseenter'` - mouse entered/left the window
+* `'mousedown'` - mouse button down
+* `'mouseup'` - mouse button up
+* `'click'` - mouse button clicked
+* `'mousewheel'` - mouse wheel rotation
+
 
 ### class Window
 
@@ -79,8 +95,6 @@ Properties:
 * `get number currentContext` - what GLFW window is now current.
 * `get number samples` - number of msaa samples passed to the constructor.
 
----
-
 * `get/set number width|w` - window width.
 * `get/set number height|h` - window height.
 * `get/set [width, height] wh` - window width and height.
@@ -96,6 +110,8 @@ using [this Image implementation](https://github.com/raub/node-image).
 
 ---
 
+Methods:
+
 * `getKey(number key)` - `glfw.getKey(window, key)`.
 * `getMouseButton(number button)` - `glfw.getMouseButton(window, button)`.
 * `getWindowAttrib(number attrib)` - `glfw.getWindowAttrib(window, attrib)`.
@@ -108,27 +124,6 @@ using [this Image implementation](https://github.com/raub/node-image).
 * `hide()` - `glfw.hideWindow(window)`.
 * `show()` - `glfw.showWindow(window)`.
 * `on(string type, function cb)` - listen for window (GLFW) events.
-
-
-## GLFW events:
-
-* `'window_pos'` - window moved
-* `'resize'` - window frame resized
-* `'framebuffer_resize'` - render-surface resized
-* `'drop'` - drag-dropped some files on the window
-* `'quit'` - window closed
-* `'refresh'` - window needs to be redrawn
-* `'iconified'` - window was iconified
-* `'focused'` - focus gained/lost
-* `'keyup'` - keyboard key up
-* `'keydown'` - keyboard key down
-* `'keypress'` - keyboard key pressed
-* `'mousemove'` - mouse moved
-* `'mouseenter'` - mouse entered/left the window
-* `'mousedown'` - mouse button down
-* `'mouseup'` - mouse button up
-* `'click'` - mouse button clicked
-* `'mousewheel'` - mouse wheel rotation
 
 
 ----------
