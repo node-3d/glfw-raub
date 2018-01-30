@@ -1,7 +1,7 @@
 {
 	'variables': {
 		'_del'           : '<!(node -e "console.log(require(\'addon-tools-raub\')._del)")',
-		'_rd'            : '<!(node -e "console.log(require(\'addon-tools-raub\')._rd)")',
+		'_md'            : '<!(node -e "console.log(require(\'addon-tools-raub\')._md)")',
 		'opengl_include' : '<!(node -e "console.log(require(\'deps-opengl-raub\').include)")',
 		'opengl_bin'     : '<!(node -e "console.log(require(\'deps-opengl-raub\').bin)")',
 	},
@@ -73,10 +73,7 @@
 				'conditions'  : [
 					[ 'OS=="linux"', { 'action': ['mkdir', '-p', 'binary'] } ],
 					[ 'OS=="mac"', { 'action': ['mkdir', '-p', 'binary'] } ],
-					[ 'OS=="win"', { 'action': [
-						'<(_rd) "<(module_root_dir)/binary" && ' +
-						'md "<(module_root_dir)/binary"'
-					] } ],
+					[ 'OS=="win"', { 'action': ['<(_md)', 'binary'] } ],
 				],
 			}],
 		},
@@ -127,8 +124,9 @@
 						'<(module_root_dir)/build/Release/glfw.node'
 					] } ],
 					[ 'OS=="win"', { 'action' : [
-						'<(_del) "<(module_root_dir)/build/Release/glfw.*" && ' +
-						'<(_del) "<(module_root_dir)/build/Release/obj/glfw/*.*"'
+						'<(_del)',
+						'<(module_root_dir)/build/Release/glfw.*',
+						'<(module_root_dir)/build/Release/obj/glfw/*.*'
 					] } ],
 				],
 			}],
