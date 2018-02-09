@@ -2,12 +2,12 @@
 
 const util = require('util');
 
-const glfw = require('.');
+const glfw = require('../');
 const { Window } = glfw;
 
 
-const w1 = new Window({ title: 'GLFW Simple Test 1' });
-const w2 = new Window({ title: 'GLFW Simple Test 2' });
+const w1 = new Window({ title: 'GLFW Simple Test 1', msaa: 0 });
+const w2 = new Window({ title: 'GLFW Simple Test 2', msaa: 4 });
 
 
 const iconData = [];
