@@ -1,6 +1,6 @@
 {
   "name": "glfw-raub",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "GLFW for Node.js",
   "author": "Luis Blanco <raubtierxxx@gmail.com>",
   "main": "index.js",

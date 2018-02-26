@@ -92,8 +92,10 @@ class Document extends Window {
 	getContext() { return Document.webgl }
 	
 	
-	getElementById(id) { return /canvas/i.test(id) ? this : null; }
-	getElementsByTagName(tag) { return /canvas/i.test(tag) ? this : null; }
+	getElementById() { return this; }
+	getElementsByTagName() { return this; }
+	
+	appendChild() {}
 	
 	
 	createElementNS(_0, name) { return this.createElement(name); }
