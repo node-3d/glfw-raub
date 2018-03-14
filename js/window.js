@@ -52,6 +52,7 @@ class Window extends EventEmitter {
 		glfw.windowHint(glfw.DEPTH_BITS, 24);
 		glfw.windowHint(glfw.REFRESH_RATE, 0);
 		glfw.windowHint(glfw.DOUBLEBUFFER, glfw.TRUE);
+		glfw.windowHint(glfw.AUTO_ICONIFY, glfw.FALSE);
 		glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
 		glfw.windowHint(glfw.SAMPLES, this._msaa);
 		
