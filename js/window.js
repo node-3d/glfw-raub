@@ -196,7 +196,7 @@ class Window extends EventEmitter {
 		}
 		this._x = x;
 		this._y = y;
-		glfw.setWindowSize(this._window, x, y);
+		glfw.setWindowPos(this._window, x, y);
 	}
 	
 	
