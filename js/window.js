@@ -33,6 +33,7 @@ class Window extends EventEmitter {
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
 		
 		this._fullscreen = opts.fullscreen ? true : false;
+		this._autoIconify = opts.autoIconify === false ? false : true;
 		this._decorated = opts.decorated === false ? false : true;
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
@@ -52,6 +53,7 @@ class Window extends EventEmitter {
 		glfw.windowHint(glfw.DEPTH_BITS, 24);
 		glfw.windowHint(glfw.REFRESH_RATE, 0);
 		glfw.windowHint(glfw.DOUBLEBUFFER, glfw.TRUE);
+		glfw.windowHint(glfw.AUTO_ICONIFY, this._autoIconify ? glfw.TRUE : glfw.FALSE);
 		glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
 		glfw.windowHint(glfw.SAMPLES, this._msaa);
 		
