@@ -74,14 +74,14 @@ There are few simple rules for the above transformation to become intuitive:
 
 Constructor:
 
-* `Window({ title, width, height, display, vsync, fullscreen, msaa })`
+* `Window({ title, width, height, display, vsync, fullscreen, autoIconify, msaa })`
 	* `string title $PWD` - window title, takes current directory as default.
 	* `number width 800` - window initial width.
 	* `number height 600` - window initial height.
 	* `number display undefined` - display id to open window on a specific display.
 	* `boolean vsync false` - if vsync should be used.
 	* `boolean fullscreen false` - if fullscreen should be used.
-	* `boolean auto_iconify false` - if fullscreen windows should iconify automatically on focus loss (default: true).
+	* `boolean autoIconify true` - if fullscreen windows should iconify automatically on focus loss.
 	* `number msaa 2` - multisample antialiasing level.
 	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
 
