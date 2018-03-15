@@ -81,6 +81,7 @@ Constructor:
 	* `number display undefined` - display id to open window on a specific display.
 	* `boolean vsync false` - if vsync should be used.
 	* `boolean fullscreen false` - if fullscreen should be used.
+	* `boolean auto_iconify false` - if fullscreen windows should iconify automatically on focus loss (default: true).
 	* `number msaa 2` - multisample antialiasing level.
 	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
 
