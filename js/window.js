@@ -13,6 +13,7 @@ class Window extends EventEmitter {
 		
 		this._title = opts.title;
 		this._icon = null;
+		this._modeCache = {};
 		
 		this._major = 0;
 		this._minor = 0;
@@ -31,13 +32,20 @@ class Window extends EventEmitter {
 		
 		this._display = opts.display;
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
-		
-		this._fullscreen = opts.fullscreen ? true : false;
 		this._autoIconify = opts.autoIconify === false ? false : true;
-		this._decorated = opts.decorated === false ? false : true;
+		
+		const mode = opts.mode ? opts.mode : 'windowed';
+		if (opts.fullscreen) {
+			mode = 'fullscreen';
+		}
+		this._decorated = mode === 'windowed';
+		if (opts.decorated !== undefined) {
+			this._decorated = opts.decorated;
+		}
+		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
-		const attribs = this._fullscreen ? glfw.WINDOW : glfw.FULLSCREEN;
+		const attribs = mode === 'fullscreen' ? glfw.FULLSCREEN : glfw.WINDOW;
 		
 		// we use OpenGL 2.1, GLSL 1.20. Comment this for now as this is for GLSL 1.50
 		//glfw.openWindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
@@ -58,17 +66,11 @@ class Window extends EventEmitter {
 		glfw.windowHint(glfw.SAMPLES, this._msaa);
 		
 		
-		const emitter = { emit: (t, e) => this.emit(t, e) };
+		this._emitter = { emit: (t, e) => this.emit(t, e) };
 		
-		if (this._display !== undefined) {
-			this._window = glfw.createWindow(this._width, this._height, emitter, this._title, this._display);
-		} else {
-			this._window = glfw.createWindow(this._width, this._height, emitter, this._title);
-		}
 		
-		if ( ! this._window ) {
-			throw new Error('Failed to open GLFW window');
-		}
+		// This CREATES window, as mode switches from `undefined`
+		this.mode = mode;
 		
 		
 		this.icon = opts.icon;
@@ -95,11 +97,107 @@ class Window extends EventEmitter {
 	}
 	
 	
+	_create() {
+		
+		const displays = glfw.getMonitors();
+		
+		if (displays.length < 1) {
+			throw new Error('No suitable display found for a new GLFW Window.');
+		}
+		
+		const mainScreen = displays.filter(d => d.is_primary)[0];
+		
+		if (this._mode === 'windowed') {
+			
+			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
+			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
+			
+		} else if (this._mode === 'borderless') {
+			
+			this._prevDecorated = this._decorated;
+			this._prevWidth = this._width;
+			this._prevHeight = this._height;
+			this._width = mainScreen.width;
+			this._height = mainScreen.height;
+			this._decorated = false;
+			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
+			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
+			glfw.setWindowPos(this._window, 0, 0);
+			
+		} else if (this._mode === 'fullscreen') {
+			
+			const isBadId = this._display === undefined || this._display >= displays.length;
+			const dispId = isBadId ? 0 : this._display;
+			
+			const currentScreen = displays[dispId];
+			
+			this._prevWidth = this._width;
+			this._prevHeight = this._height;
+			this._width = currentScreen.width;
+			this._height = currentScreen.height;
+			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title, this._display);
+			
+		} else {
+			
+			throw new Error(`Not supported display mode: '${this._mode}'.`);
+			
+		}
+		
+		if ( ! this._window ) {
+			throw new Error('Failed to open a new GLFW Window');
+		}
+		
+	}
+	
+	
 	get handle() { return this._window; }
+	
+	
+	get mode() { return this._mode; }
+	set mode(v) {
+		
+		if (this._mode === v) {
+			return;
+		}
+		const prevMode = this._mode;
+		this._mode = v;
+		
+		if (this._window) {
+			
+			// Fullscreen can't be hidden (uh-oh)
+			if (prevMode === 'fullscreen') {
+				this.destroy();
+				this._modeCache[prevMode] = null;
+			} else {
+				this.hide();
+			}
+			
+		}
+		
+		if ( ! this._modeCache[this._mode] ) {
+			
+			this._create();
+			this._modeCache[this._mode] = this._window;
+			
+		} else {
+			
+			this._window = this._modeCache[this._mode];
+			this.show();
+			
+		}
+		
+		this._width = this._prevWidth || this._width;
+		this._height = this._prevHeight || this._height;
+		this._decorated = this._prevDecorated || this._decorated;
+		
+		this.makeCurrent();
+		
+	}
+	
 	
 	get width() { return this._width; }
 	get height() { return this._height; }
-
+	
 	set width(v) {
 		if (this._width === v) {
 			return;

@@ -5,6 +5,7 @@ const Window  = require('./window');
 
 
 const ESC_KEY = 27;
+const F_KEY = 70;
 
 
 class Document extends Window {
@@ -42,7 +43,19 @@ class Document extends Window {
 			
 		}
 		
-		
+		if (opts.autoFullscreen) {
+			
+			this.on('keydown', e => {
+				if (e.keyCode === F_KEY && e.ctrlKey && e.shiftKey) {
+					this.mode = 'windowed';
+				} else if (e.keyCode === F_KEY && e.ctrlKey && e.altKey) {
+					this.mode = 'fullscreen';
+				} else if (e.keyCode === F_KEY && e.ctrlKey) {
+					this.mode = 'borderless';
+				}
+			});
+			
+		}
 		
 		this.swapBuffers();
 		

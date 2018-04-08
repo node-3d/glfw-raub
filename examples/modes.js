@@ -3,19 +3,16 @@
 const util = require('util');
 
 const glfw = require('../');
-const { Window } = glfw;
+const { Document } = glfw;
 
 
-const w1 = new Window({ title: 'GLFW Simple Test 1' });
-
-console.log(w1.version);
-
+const doc = new Document({ title: 'GLFW Simple Test 1', autoFullscreen: true });
 
 const draw = () => {
 	
-	const wsize1 = w1.framebufferSize;
+	const wsize1 = doc.framebufferSize;
 	glfw.testScene(wsize1.width, wsize1.height);
-	w1.swapBuffers();
+	doc.swapBuffers();
 	
 	glfw.pollEvents();
 	
@@ -24,17 +21,14 @@ const draw = () => {
 
 const animate = () => {
 	
-	if ( ! (
-		w1.shouldClose ||
-		w1.getKey(glfw.KEY_ESCAPE)
-	) ) {
+	if ( ! doc.shouldClose ) {
 		
 		draw();
 		setTimeout(animate, 16);
 		
 	} else {
 		// Close OpenGL window and terminate GLFW
-		w1.destroy();
+		doc.destroy();
 		
 		glfw.terminate();
 		

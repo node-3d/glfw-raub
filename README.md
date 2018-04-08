@@ -74,13 +74,13 @@ There are few simple rules for the above transformation to become intuitive:
 
 Constructor:
 
-* `Window({ title, width, height, display, vsync, fullscreen, autoIconify, msaa })`
+* `Window({ title, width, height, display, vsync, mode, autoIconify, msaa })`
 	* `string title $PWD` - window title, takes current directory as default.
 	* `number width 800` - window initial width.
 	* `number height 600` - window initial height.
 	* `number display undefined` - display id to open window on a specific display.
 	* `boolean vsync false` - if vsync should be used.
-	* `boolean fullscreen false` - if fullscreen should be used.
+	* `string mode 'windowed'` - one of `'windowed', 'borderless', 'fullscreen'`.
 	* `boolean autoIconify true` - if fullscreen windows should iconify automatically on focus loss.
 	* `number msaa 2` - multisample antialiasing level.
 	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
@@ -96,6 +96,9 @@ Properties:
 * `get number currentContext` - what GLFW window is now current.
 * `get number samples` - number of msaa samples passed to the constructor.
 
+* `get/set string mode` - one of `'windowed', 'borderless', 'fullscreen'`. Here
+`'borderless'` emulates fullscreen by a frameless, screen-sized window.
+This when this property is changed, a new window is created and the old is hidden.
 * `get/set number width|w` - window width.
 * `get/set number height|h` - window height.
 * `get/set [width, height] wh` - window width and height.
