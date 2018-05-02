@@ -34,10 +34,8 @@ class Window extends EventEmitter {
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
 		this._autoIconify = opts.autoIconify === false ? false : true;
 		
-		const mode = opts.mode ? opts.mode : 'windowed';
-		if (opts.fullscreen) {
-			mode = 'fullscreen';
-		}
+		const mode = opts.fullscreen ? 'fullscreen' : (opts.mode ? opts.mode : 'windowed');
+		
 		this._decorated = mode === 'windowed';
 		if (opts.decorated !== undefined) {
 			this._decorated = opts.decorated;
@@ -99,14 +97,6 @@ class Window extends EventEmitter {
 	
 	_create() {
 		
-		const displays = glfw.getMonitors();
-		
-		if (displays.length < 1) {
-			throw new Error('No suitable display found for a new GLFW Window.');
-		}
-		
-		const mainScreen = displays.filter(d => d.is_primary)[0];
-		
 		if (this._mode === 'windowed') {
 			
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
@@ -115,10 +105,7 @@ class Window extends EventEmitter {
 		} else if (this._mode === 'borderless') {
 			
 			this._prevDecorated = this._decorated;
-			this._prevWidth = this._width;
-			this._prevHeight = this._height;
-			this._width = mainScreen.width;
-			this._height = mainScreen.height;
+			
 			this._decorated = false;
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
 			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
@@ -126,15 +113,6 @@ class Window extends EventEmitter {
 			
 		} else if (this._mode === 'fullscreen') {
 			
-			const isBadId = this._display === undefined || this._display >= displays.length;
-			const dispId = isBadId ? 0 : this._display;
-			
-			const currentScreen = displays[dispId];
-			
-			this._prevWidth = this._width;
-			this._prevHeight = this._height;
-			this._width = currentScreen.width;
-			this._height = currentScreen.height;
 			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title, this._display);
 			
 		} else {
@@ -174,6 +152,51 @@ class Window extends EventEmitter {
 			
 		}
 		
+		const displays = glfw.getMonitors();
+		
+		if (displays.length < 1) {
+			throw new Error('No suitable display found for a new GLFW Window.');
+		}
+		
+		const isBadId = this._display === undefined || this._display >= displays.length;
+		const dispId = isBadId ? -1 : this._display;
+		
+		const currentScreen = dispId > -1 ? displays[dispId] : displays.filter(d => d.is_primary)[0];
+		
+		let isResized = false;
+		
+		if (this._mode === 'windowed') {
+			
+			if (
+				this._prevWidth && this._width !== this._prevWidth ||
+				this._prevHeight && this._height !== this._prevHeight
+			) {
+				isResized = true;
+			}
+			
+			this._width = this._prevWidth || this._width;
+			this._height = this._prevHeight || this._height;
+			this._decorated = this._prevDecorated || this._decorated;
+			delete this._prevWidth;
+			delete this._prevHeight;
+			delete this._prevDecorated;
+			
+		} else {
+			
+			if (
+				this._width !== currentScreen.width ||
+				this._height !== currentScreen.height
+			) {
+				isResized = true;
+			}
+			
+			this._prevWidth = this._width;
+			this._prevHeight = this._height;
+			this._width = currentScreen.width;
+			this._height = currentScreen.height;
+			
+		}
+		
 		if ( ! this._modeCache[this._mode] ) {
 			
 			this._create();
@@ -186,11 +209,11 @@ class Window extends EventEmitter {
 			
 		}
 		
-		this._width = this._prevWidth || this._width;
-		this._height = this._prevHeight || this._height;
-		this._decorated = this._prevDecorated || this._decorated;
-		
 		this.makeCurrent();
+		
+		if (isResized) {
+			this.emit('resize', { width: this._width, height: this._height })
+		}
 		
 	}
 	
