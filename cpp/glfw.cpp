@@ -165,7 +165,8 @@ void NAN_INLINE(_emit(GLFWwindow *window, int argc, Local<Value> argv[])) { NAN_
 		Nan::Callback callback(Nan::New(state.events)->Get(JS_STR("emit")).As<Function>());
 		
 		if ( ! callback.IsEmpty() ) {
-			callback.Call(argc, argv);
+			Nan::AsyncResource async("glfw::_emit()");
+			callback.Call(argc, argv, &async);
 		}
 		
 	}
@@ -242,7 +243,7 @@ void windowRefreshCB(GLFWwindow *window) { NAN_HS;
 	
 	Local<Object> evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("refresh"));
-	SET_PROP(evt, "window", JS_NUM((uint64_t) window));
+	SET_PROP(evt, "window", JS_OFFS(reinterpret_cast<uint64_t>(window)));
 	
 	Local<Value> argv[2] = { JS_STR("refresh"), evt };
 	_emit(window, 2, argv);
@@ -746,7 +747,7 @@ NAN_METHOD(createWindow) {
 	glfwSetCursorEnterCallback(window, cursorEnterCB);
 	glfwSetScrollCallback(window, scrollCB);
 	
-	RET_VALUE(JS_NUM((uint64_t) window));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(window)));
 	
 }
 
@@ -754,11 +755,11 @@ NAN_METHOD(createWindow) {
 NAN_METHOD(platformWindow) { THIS_WINDOW;
 	
 #ifdef _WIN32
-	RET_VALUE(JS_NUM((uint64_t) glfwGetWin32Window(window)));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetWin32Window(window))));
 #elif __linux__
-	RET_VALUE(JS_NUM((uint64_t) glfwGetX11Window(window)));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetX11Window(window))));
 #elif __APPLE__
-	RET_VALUE(JS_NUM((uint64_t) glfwGetCocoaWindow(window)));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetCocoaWindow(window))));
 #endif
 	
 }
@@ -767,11 +768,11 @@ NAN_METHOD(platformWindow) { THIS_WINDOW;
 NAN_METHOD(platformContext) { THIS_WINDOW;
 	
 #ifdef _WIN32
-	RET_VALUE(JS_NUM((uint64_t) glfwGetWGLContext(window)));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetWGLContext(window))));
 #elif __linux__
-	RET_VALUE(JS_NUM((uint64_t) glfwGetGLXContext(window)));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetGLXContext(window))));
 #elif __APPLE__
-	RET_VALUE(JS_NUM((uint64_t) glfwGetNSGLContext(window)));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetNSGLContext(window))));
 #endif
 	
 }
@@ -1088,7 +1089,7 @@ NAN_METHOD(getCurrentContext) {
 	
 	GLFWwindow *window = glfwGetCurrentContext();
 	
-	RET_VALUE(JS_NUM((uint64_t) window));
+	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(window)));
 	
 }
 

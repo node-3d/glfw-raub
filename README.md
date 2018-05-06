@@ -1,6 +1,16 @@
 # GLFW for Node.js
 
-GLFW 3 crossplatform addon with minimized dependencies.
+This is a part of [Node3D](https://github.com/node-3d) project.
+
+
+## Synopsis
+
+**Node.js** addon with **GLFW3** bindings.
+
+* Exposes low-level **GLFW** interface.
+* Multiple windows for a single **Node.js** process - easy.
+* Goes fullscreen and back fluently.
+* Has `Document` class, capable of tricking other libs, as if we are in a browser.
 
 
 ## Install
@@ -9,9 +19,10 @@ GLFW 3 crossplatform addon with minimized dependencies.
 npm i -s glfw-raub
 ```
 
-Note: as this is a compiled addon, compilation tools must be in place on your system.
-Such as MSVS13 for Windows, where **ADMIN PRIVELEGED** `npm i -g windows-build-tools`
-most probably helps.
+> Note: compilation tools must be in place on your system.
+For Windows, use **ADMIN PRIVELEGED** command line:
+\`npm i -g windows-build-tools\`.
+Also **Windows** needs **vcredist 2013** to be installed.
 
 
 ## Usage

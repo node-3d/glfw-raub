@@ -2,16 +2,7 @@
 #define _COMMON_HPP_
 
 
-#include <node.h>
-
-#ifdef _WIN32
-	#pragma warning(push)
-	#pragma warning(disable:4244)
-#endif
-#include <nan.h>
-#ifdef _WIN32
-	#pragma warning(pop)
-#endif
+#include <addon-tools.hpp>
 
 
 // OpenGL stuff
@@ -39,11 +30,6 @@
 
 #undef True
 #undef False
-
-
-// Cool macros
-
-#include <addon-tools.hpp>
 
 
 #endif /* _COMMON_HPP_ */
