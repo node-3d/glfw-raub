@@ -15,14 +15,9 @@ class Window extends EventEmitter {
 		this._icon = null;
 		this._modeCache = {};
 		
-		this._major = 0;
-		this._minor = 0;
-		this._rev   = 0;
-		this._prof  = 0;
-		
 		if ( ! this._title ) {
 			const pathMatch2 = process.mainModule.filename.replace(/\\/g, '/').match(
-				/(\/(.*))*\/(.*?)\/[^\/]*$/
+				/(\/(.*))*\/(.*?)\/[^/]*$/
 			);
 			this._title = pathMatch2 ? pathMatch2[pathMatch2.length - 1] : 'Untitled';
 		}
@@ -42,8 +37,6 @@ class Window extends EventEmitter {
 		}
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
-		
-		const attribs = mode === 'fullscreen' ? glfw.FULLSCREEN : glfw.WINDOW;
 		
 		// we use OpenGL 2.1, GLSL 1.20. Comment this for now as this is for GLSL 1.50
 		//glfw.openWindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
@@ -76,8 +69,8 @@ class Window extends EventEmitter {
 		//can only be called after window creation!
 		this._major = glfw.getWindowAttrib(this._window, glfw.CONTEXT_VERSION_MAJOR);
 		this._minor = glfw.getWindowAttrib(this._window, glfw.CONTEXT_VERSION_MINOR);
-		this._rev   = glfw.getWindowAttrib(this._window, glfw.CONTEXT_REVISION);
-		this._prof  = glfw.getWindowAttrib(this._window, glfw.OPENGL_PROFILE);
+		this._rev = glfw.getWindowAttrib(this._window, glfw.CONTEXT_REVISION);
+		this._prof = glfw.getWindowAttrib(this._window, glfw.OPENGL_PROFILE);
 		
 		// Vertical sync (on cards that support it)
 		glfw.swapInterval(this._vsync);
@@ -113,7 +106,9 @@ class Window extends EventEmitter {
 			
 		} else if (this._mode === 'fullscreen') {
 			
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title, this._display);
+			this._window = glfw.createWindow(
+				this._width, this._height, this._emitter, this._title, this._display
+			);
 			
 		} else {
 			
@@ -212,7 +207,7 @@ class Window extends EventEmitter {
 		this.makeCurrent();
 		
 		if (isResized) {
-			this.emit('resize', { width: this._width, height: this._height })
+			this.emit('resize', { width: this._width, height: this._height });
 		}
 		
 	}
@@ -357,7 +352,7 @@ class Window extends EventEmitter {
 	emit(type, event) {
 		
 		if (event) {
-			event.preventDefault  = () => {};
+			event.preventDefault = () => {};
 			event.stopPropagation = () => {};
 		}
 		
