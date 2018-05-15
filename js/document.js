@@ -13,12 +13,12 @@ class Document extends Window {
 	static setImage(Image) {
 		this.Image = Image;
 		global.HTMLImageElement = Image;
-	};
+	}
 	
 	static setWebgl(webgl) {
 		this.webgl = webgl;
 		this.isWebglInited = false;
-	};
+	}
 	
 	
 	constructor(opts = {}) {
@@ -62,7 +62,7 @@ class Document extends Window {
 		const sizeWin = this.size;
 		const sizeFB  = this.framebufferSize;
 		
-		this._ratio  = sizeFB.width / sizeWin.width;
+		this._ratio = sizeFB.width / sizeWin.width;
 		
 		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
 		
@@ -102,7 +102,7 @@ class Document extends Window {
 	
 	
 	get context() { return Document.webgl; }
-	getContext() { return Document.webgl }
+	getContext() { return Document.webgl; }
 	
 	
 	getElementById() { return this; }
@@ -147,7 +147,7 @@ class Document extends Window {
 		setImmediate(() => cb(Date.now()));
 	}
 	
-};
+}
 
 
 global.HTMLCanvasElement = Document;
@@ -155,7 +155,7 @@ global.HTMLCanvasElement = Document;
 
 Document.setImage(class FakeImage {
 	get src() { console.error('Document.Image class not set.'); return ''; }
-	set src(v) { console.error('Document.Image class not set.'); v = v; }
+	set src(v) { console.error('Document.Image class not set.'); v = null; }
 	get complete() { return false; }
 	on() {}
 	onload() {}
