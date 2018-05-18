@@ -10,7 +10,8 @@ using namespace v8;
 using namespace node;
 using namespace std;
 
-#define JS_GLFW_CONSTANT(name) target->Set(JS_STR( #name ), JS_INT(GLFW_ ## name))
+#define JS_GLFW_CONSTANT(name) target->Set(JS_STR(#name), JS_INT(GLFW_ ## name));
+
 #define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
 
 #define THIS_WINDOW                                                           \
@@ -63,7 +64,7 @@ NAN_METHOD(getVersion) {
 	int major, minor, rev;
 	glfwGetVersion(&major, &minor, &rev);
 	
-	Local<Object> obj = Nan::New<Object>();
+	V8_VAR_OBJ obj = Nan::New<Object>();
 	SET_PROP(obj, "major", JS_INT(major));
 	SET_PROP(obj, "minor", JS_INT(minor));
 	SET_PROP(obj, "rev", JS_INT(rev));
@@ -107,9 +108,9 @@ NAN_METHOD(getMonitors) {
 	GLFWmonitor *primary = glfwGetPrimaryMonitor();
 	const GLFWvidmode *mode, *modes;
 	
-	Local<Array> js_monitors = Nan::New<Array>(monitor_count);
-	Local<Object> js_monitor, js_mode;
-	Local<Array> js_modes;
+	V8_VAR_ARR js_monitors = Nan::New<Array>(monitor_count);
+	V8_VAR_OBJ js_monitor, js_mode;
+	V8_VAR_ARR js_modes;
 	
 	for (int i = 0; i < monitor_count; i++) {
 		
@@ -134,7 +135,7 @@ NAN_METHOD(getMonitors) {
 		modes = glfwGetVideoModes(monitors[i], &mode_count);
 		js_modes = Nan::New<Array>(mode_count);
 		
-		for(int j = 0; j < mode_count; j++){
+		for (int j = 0; j < mode_count; j++) {
 			
 			js_mode = Nan::New<Object>();
 			SET_PROP(js_mode, "width", JS_INT(modes[j].width));
@@ -156,7 +157,7 @@ NAN_METHOD(getMonitors) {
 }
 
 
-void NAN_INLINE(_emit(GLFWwindow *window, int argc, Local<Value> argv[])) { NAN_HS;
+void NAN_INLINE(_emit(GLFWwindow *window, int argc, V8_VAR_VAL argv[])) { NAN_HS;
 	
 	WinState &state = states[window];
 	
@@ -176,12 +177,12 @@ void NAN_INLINE(_emit(GLFWwindow *window, int argc, Local<Value> argv[])) { NAN_
 
 void windowPosCB(GLFWwindow *window, int xpos, int ypos) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("window_pos"));
 	SET_PROP(evt, "x", JS_INT(xpos));
 	SET_PROP(evt, "y", JS_INT(ypos));
 	
-	Local<Value> argv[2] = { JS_STR("window_pos"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("window_pos"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -189,12 +190,12 @@ void windowPosCB(GLFWwindow *window, int xpos, int ypos) { NAN_HS;
 
 void windowSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("resize"));
 	SET_PROP(evt, "width", JS_INT(w));
 	SET_PROP(evt, "height", JS_INT(h));
 	
-	Local<Value> argv[2] = { JS_STR("resize"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("resize"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -202,12 +203,12 @@ void windowSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 
 void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("framebuffer_resize"));
 	SET_PROP(evt, "width", JS_INT(w));
 	SET_PROP(evt, "height", JS_INT(h));
 	
-	Local<Value> argv[2] = { JS_STR("framebuffer_resize"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("framebuffer_resize"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -215,17 +216,17 @@ void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 
 void windowDropCB(GLFWwindow *window, int count, const char **paths) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("drop"));
 	
-	Local<Array> list = Nan::New<Array>(count);
+	V8_VAR_ARR list = Nan::New<Array>(count);
 	for (int i = 0; i < count; i++) {
 		list->Set(i, JS_STR(paths[i]));
 	}
 	
 	SET_PROP(evt, "list", list);
 	
-	Local<Value> argv[2] = { JS_STR("drop"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("drop"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -233,7 +234,7 @@ void windowDropCB(GLFWwindow *window, int count, const char **paths) { NAN_HS;
 
 void windowCloseCB(GLFWwindow *window) { NAN_HS;
 	
-	Local<Value> argv[1] = { JS_STR("quit") };
+	V8_VAR_VAL argv[1] = { JS_STR("quit") };
 	_emit(window, 1, argv);
 	
 }
@@ -241,11 +242,11 @@ void windowCloseCB(GLFWwindow *window) { NAN_HS;
 
 void windowRefreshCB(GLFWwindow *window) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("refresh"));
 	SET_PROP(evt, "window", JS_OFFS(reinterpret_cast<uint64_t>(window)));
 	
-	Local<Value> argv[2] = { JS_STR("refresh"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("refresh"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -253,11 +254,11 @@ void windowRefreshCB(GLFWwindow *window) { NAN_HS;
 
 void windowIconifyCB(GLFWwindow *window, int iconified) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("iconified"));
 	SET_PROP(evt, "iconified", JS_BOOL(iconified));
 	
-	Local<Value> argv[2] = { JS_STR("iconified"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("iconified"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -265,11 +266,11 @@ void windowIconifyCB(GLFWwindow *window, int iconified) { NAN_HS;
 
 void windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("focused"));
 	SET_PROP(evt, "focused", JS_BOOL(focused));
 	
-	Local<Value> argv[2] = { JS_STR("focused"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("focused"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -279,8 +280,8 @@ void keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) { NA
 	
 	const char *actionNames = "keyup\0  keydown\0keypress";
 	
-	Local<Object> evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR( &actionNames[action << 3] ));
+	V8_VAR_OBJ evt = Nan::New<Object>();
+	SET_PROP(evt, "type", JS_STR(&actionNames[action << 3]));
 	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
 	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
 	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
@@ -376,7 +377,7 @@ void keyCB(GLFWwindow *window, int key, int scancode, int action, int mods) { NA
 	SET_PROP(evt, "keyCode", JS_INT(key));
 	SET_PROP(evt, "charCode", JS_INT(charCode));
 	
-	Local<Value> argv[2] = { JS_STR(&actionNames[action << 3]), evt };
+	V8_VAR_VAL argv[2] = { JS_STR(&actionNames[action << 3]), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -398,7 +399,7 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 	
 	NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	
 	SET_PROP(evt, "type", JS_STR("mousemove"));
 	SET_PROP(evt, "clientX", JS_NUM(x));
@@ -424,7 +425,7 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 	SET_PROP(evt, "x", JS_NUM(x));
 	SET_PROP(evt, "y", JS_NUM(y));
 	
-	Local<Value> argv[2] = { JS_STR("mousemove"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("mousemove"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -432,11 +433,11 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 
 void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("mouseenter"));
 	SET_PROP(evt, "entered", JS_INT(entered));
 	
-	Local<Value> argv[2] = { JS_STR("mouseenter"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("mouseenter"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -446,7 +447,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 	
 	const WinState &state = states[window];
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	
 	SET_PROP(evt, "type", JS_STR(action ? "mousedown" : "mouseup"));
 	SET_PROP(evt, "button", JS_INT(button));
@@ -463,12 +464,12 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
 	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
 	
-	Local<Value> argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt };
 	_emit(window, 2, argv);
 	
 	if ( ! action ) {
 		
-		Local<Object> evt = Nan::New<Object>();
+		V8_VAR_OBJ evt = Nan::New<Object>();
 		
 		SET_PROP(evt, "type", JS_STR("click"));
 		SET_PROP(evt, "button", JS_INT(button));
@@ -482,7 +483,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 		SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
 		SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
 		
-		Local<Value> argv[2] = { JS_STR("click"), evt };
+		V8_VAR_VAL argv[2] = { JS_STR("click"), evt };
 		_emit(window, 2, argv);
 		
 	}
@@ -492,13 +493,13 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 
 void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	
-	Local<Object> evt = Nan::New<Object>();
+	V8_VAR_OBJ evt = Nan::New<Object>();
 	SET_PROP(evt, "type", JS_STR("mousewheel"));
 	SET_PROP(evt, "wheelDeltaX", JS_NUM(xoffset*120));
 	SET_PROP(evt, "wheelDeltaY", JS_NUM(yoffset*120));
 	SET_PROP(evt, "wheelDelta", JS_NUM(yoffset*120));
 	
-	Local<Value> argv[2] = { JS_STR("mousewheel"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR("mousewheel"), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -808,7 +809,9 @@ NAN_METHOD(getRenderTarget) {
 		// glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAX_LEVEL, 0);
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, width, height, true);
-		// glFramebufferTexture2DMultisampleEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0, samples);
+		// glFramebufferTexture2DMultisampleEXT(
+		// 	GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0, samples
+		// );
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, tex, 0);
 	} else {
 		glBindTexture(GL_TEXTURE_2D, tex);
@@ -824,7 +827,7 @@ NAN_METHOD(getRenderTarget) {
 	
 	if (framebufferStatus == GL_FRAMEBUFFER_COMPLETE) {
 		
-		Local<Array> result = Nan::New<Array>(2);
+		V8_VAR_ARR result = Nan::New<Array>(2);
 		result->Set(0, JS_NUM(fbo));
 		result->Set(1, JS_NUM(tex));
 		
@@ -897,10 +900,10 @@ NAN_METHOD(setWindowIcon) { THIS_WINDOW;
 
 NAN_METHOD(getWindowSize) { THIS_WINDOW;
 	
-	int w,h;
+	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 	
-	Local<Object> obj = Nan::New<Object>();
+	V8_VAR_OBJ obj = Nan::New<Object>();
 	SET_PROP(obj, "width", JS_INT(w));
 	SET_PROP(obj, "height", JS_INT(h));
 	
@@ -934,7 +937,7 @@ NAN_METHOD(getWindowPos) { THIS_WINDOW;
 	int xpos, ypos;
 	glfwGetWindowPos(window, &xpos, &ypos);
 	
-	Local<Object> obj = Nan::New<Object>();
+	V8_VAR_OBJ obj = Nan::New<Object>();
 	SET_PROP(obj, "x", JS_INT(xpos));
 	SET_PROP(obj, "y", JS_INT(ypos));
 	
@@ -948,7 +951,7 @@ NAN_METHOD(getFramebufferSize) { THIS_WINDOW;
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	
-	Local<Object> obj = Nan::New<Object>();
+	V8_VAR_OBJ obj = Nan::New<Object>();
 	SET_PROP(obj, "width", JS_INT(width));
 	SET_PROP(obj, "height", JS_INT(height));
 	
@@ -1055,10 +1058,10 @@ NAN_METHOD(getMouseButton) { THIS_WINDOW;
 
 NAN_METHOD(getCursorPos) { THIS_WINDOW;
 	
-	double x,y;
+	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	
-	Local<Object> obj = Nan::New<Object>();
+	V8_VAR_OBJ obj = Nan::New<Object>();
 	SET_PROP(obj, "x", JS_NUM(x));
 	SET_PROP(obj, "y", JS_NUM(y));
 	
