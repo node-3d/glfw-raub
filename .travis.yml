@@ -10,33 +10,21 @@ node_js:
 addons:
   apt:
     sources:
-      # - sourceline: 'ppa:ubuntu-toolchain-r/test'
-      # - sourceline: 'deb https://packagecloud.io/chef/stable/ubuntu/precise main'
       - ubuntu-toolchain-r-test
       - llvm-toolchain-precise-3.5
     packages:
       - clang-3.5
-      # - mesa-utils
-      # - libgl1-mesa-swx11
 
 
 before_install:
-  # cloud-init breaks updates sometimes and we don't need it anyways
   - if [[ $(uname -s) == 'Linux' ]]; then
        export CXX="clang++-3.5";
        export CC="clang-3.5";
     fi;
   - npm install -g npm@5.6.0
-  # prepare software rendering
-  # - sudo apt-get -y update
-  # - sudo apt-get -y remove cloud-init
-  # - sudo apt-get -y install mesa-utils
-  # - sudo apt-get -y install libgl1-mesa-swx11
-  # - sudo apt-get -y install libgl1-mesa-swx11-dev
-  # - sudo apt-get -y install xvfb
   - export DISPLAY=:99
-  # - export LIBGL_ALWAYS_SOFTWARE=1
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
+
 
 install:
   - npm i --clang=1
