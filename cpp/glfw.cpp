@@ -21,10 +21,14 @@ namespace glfw {
 
 GLFWwindow *_share = nullptr;
 
-
+void GLFW_error(int error, const char* description)
+{
+	consoleLog("GLFW FAIL");
+	consoleLog(description);
+}
 NAN_METHOD(init) {
-	
-	RET_BOOL(glfwInit() == 1);
+	glfwSetErrorCallback(GLFW_error);
+	RET_BOOL(glfwInit() == GLFW_TRUE );
 	
 }
 
