@@ -18,7 +18,7 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 
 > Note: for `npm i` to succeed, compilation tools must be in place on your system.
 For Windows, use **ADMIN PRIVELEGED** command line:
-\`npm i -g windows-build-tools\`.
+`npm i -g windows-build-tools`.
 Also **Windows** needs **vcredist 2013** to be installed.
 
 
@@ -156,6 +156,16 @@ is designed to fit perfectly. Also sets `global.HTMLImageElement`.
 * static setWebgl(webgl) - for example,
 [this WebGL implementation](https://github.com/raub/node-webgl)
 is designed to fit perfectly.
+
+
+Constructor:
+
+* `Document({ ...<Window opts>, ignoreQuit, autoFullscreen })`
+	* `boolean ignoreQuit false` - if the window should ignore the default quit signals, e.g. ESC key.
+	* `boolean autoFullscreen false` - if window has default key handlers for fullscreen:
+		* CTRL+F - borderless fullscreen window.
+		* CTRL+ALT+F - real, exclusive fullscreen mode.
+		* CTRL+SHIFT+F - back to windowed.
 
 
 Properties:
