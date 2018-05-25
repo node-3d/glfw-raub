@@ -1,8 +1,5 @@
-#ifndef _COMMON_HPP_
-#define _COMMON_HPP_
-
-
-#include <addon-tools.hpp>
+#ifndef _PLATFORM_HPP_
+#define _PLATFORM_HPP_
 
 
 // OpenGL stuff
@@ -32,4 +29,4 @@
 #undef False
 
 
-#endif /* _COMMON_HPP_ */
+#endif /* _PLATFORM_HPP_ */

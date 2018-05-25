@@ -10,7 +10,7 @@
 	'targets': [
 		{
 			'target_name': 'glfw',
-			'sources': [ 'cpp/glfw.cpp' ],
+			'sources': [ 'cpp/bindings.cpp', 'cpp/events.cpp', 'cpp/glfw.cpp' ],
 			'include_dirs': [
 				'<!@(node -e "require(\'addon-tools-raub\').include()")',
 				'<(opengl_include)',
@@ -93,22 +93,23 @@
 				'inputs'      : [],
 				'outputs'     : ['cpp'],
 				'conditions'  : [
-					[ 'OS=="linux"', { 'action' : [
-						'<(rm)',
-						'<(module_root_dir)/build/Release/obj.target/glfw/cpp/glfw.o',
-						'<(module_root_dir)/build/Release/obj.target/glfw.node',
-						'<(module_root_dir)/build/Release/glfw.node'
-					] } ],
-					[ 'OS=="mac"', { 'action' : [
-						'<(rm)',
-						'<(module_root_dir)/build/Release/obj.target/glfw/cpp/glfw.o',
-						'<(module_root_dir)/build/Release/glfw.node'
-					] } ],
-					[ 'OS=="win"', { 'action' : [
-						'<(rm)',
-						'<(module_root_dir)/build/Release/glfw.*',
-						'<(module_root_dir)/build/Release/obj/glfw/*.*'
-					] } ],
+					[
+						# IF WINDOWS
+						'OS=="win"',
+						{ 'action' : [
+							'<(rm)',
+							'<(module_root_dir)/build/Release/glfw.*',
+							'<(module_root_dir)/build/Release/obj/glfw/*.*'
+						] },
+						# ELSE
+						{ 'action' : [
+							'<(rm)',
+							'<(module_root_dir)/build/Release/obj.target/glfw/cpp/bindings.o',
+							'<(module_root_dir)/build/Release/obj.target/glfw/cpp/events.o',
+							'<(module_root_dir)/build/Release/obj.target/glfw/cpp/glfw.o',
+							'<(module_root_dir)/build/Release/glfw.node'
+						] }
+					],
 				],
 			}],
 		},
