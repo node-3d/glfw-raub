@@ -2,6 +2,9 @@
 #define _PLATFORM_HPP_
 
 
+#include <addon-tools.hpp>
+
+
 // OpenGL stuff
 
 #include <GL/glew.h>
