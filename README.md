@@ -2,6 +2,10 @@
 
 This is a part of [Node3D](https://github.com/node-3d) project.
 
+![NPM](https://nodei.co/npm/glfw-raub.png?compact=true)
+
+![Build Status](https://api.travis-ci.org/node-3d/glfw-raub.svg?branch=master)
+
 
 ## Synopsis
 
@@ -12,14 +16,7 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 * Goes fullscreen and back fluently.
 * Has `Document` class, capable of tricking other libs, as if we are in a browser.
 
-
-## Install
-
-```
-npm i -s glfw-raub
-```
-
-> Note: compilation tools must be in place on your system.
+> Note: for `npm i` to succeed, compilation tools must be in place on your system.
 For Windows, use **ADMIN PRIVELEGED** command line:
 \`npm i -g windows-build-tools\`.
 Also **Windows** needs **vcredist 2013** to be installed.
@@ -48,7 +45,7 @@ It will be used to transmit GLFW events.
 ----------
 
 
-### GLFW events:
+### GLFW window events:
 
 * `'window_pos'` - window moved
 * `'resize'` - window frame resized
