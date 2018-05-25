@@ -1,4 +1,5 @@
-sudo: false
+sudo: true
+dist: trusty
 
 language: node_js
 
@@ -9,10 +10,14 @@ node_js:
 addons:
   apt:
     sources:
+      # - sourceline: 'ppa:ubuntu-toolchain-r/test'
+      # - sourceline: 'deb https://packagecloud.io/chef/stable/ubuntu/precise main'
       - ubuntu-toolchain-r-test
       - llvm-toolchain-precise-3.5
     packages:
       - clang-3.5
+      # - mesa-utils
+      # - libgl1-mesa-swx11
 
 
 before_install:
@@ -23,23 +28,26 @@ before_install:
     fi;
   - npm install -g npm@5.6.0
   # prepare software rendering
-  - sudo apt-get -y update
-  - sudo apt-get -y remove cloud-init
-  - sudo apt-get -y install mesa-utils
-  - sudo apt-get -y install libgl1-mesa-swx11
-  - sudo apt-get -y install libgl1-mesa-swx11-dev
-  - sudo apt-get -y install xvfb
+  # - sudo apt-get -y update
+  # - sudo apt-get -y remove cloud-init
+  # - sudo apt-get -y install mesa-utils
+  # - sudo apt-get -y install libgl1-mesa-swx11
+  # - sudo apt-get -y install libgl1-mesa-swx11-dev
+  # - sudo apt-get -y install xvfb
   - export DISPLAY=:99
-  - export LIBGL_ALWAYS_SOFTWARE=1
-  - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid
-    --make-pidfile --background --exec /usr/bin/Xvfb --
-    :99 -screen 0 1400x900x24 -ac +extension GLX +render
-
+  # - export LIBGL_ALWAYS_SOFTWARE=1
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24"
 
 install:
   - npm i --clang=1
   - cd test && npm i --clang=1
   - cd ..
+
+
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 
 
 script:
