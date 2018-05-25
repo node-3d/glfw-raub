@@ -42,7 +42,7 @@ const classes = {
 
 describe('GLFW', () => {
 	
-	it(`exports an object`, () => {
+	it('exports an object', () => {
 		expect(glfw).to.be.an('object');
 	});
 	
@@ -58,21 +58,22 @@ describe('GLFW', () => {
 	Object.keys(classes).forEach(c => describe(c, () => {
 		
 		const current = classes[c];
+		const instance = current.create();
 		
-		it(`can be created`, () => {
-			expect(current.create()).to.be.an('object');
+		it('can be created', () => {
+			expect(instance).to.be.an.instanceOf(glfw[c]);
 		});
 		
 		
 		current.props.forEach(prop => {
 			it(`#${prop} property exposed`, () => {
-				expect(current.create()).to.have.property(prop);
+				expect(instance).to.have.property(prop);
 			});
 		});
 		
 		current.methods.forEach(method => {
 			it(`#${method}() method exposed`, () => {
-				expect(current.create()).to.respondTo(method);
+				expect(instance).to.respondTo(method);
 			});
 		});
 		
