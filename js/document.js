@@ -20,6 +20,9 @@ class Document extends Window {
 		this.isWebglInited = false;
 	}
 	
+	static exit() {
+		process.exit(0);
+	}
 	
 	constructor(opts = {}) {
 		
@@ -34,8 +37,9 @@ class Document extends Window {
 		
 		if ( ! opts.ignoreQuit ) {
 			
-			if (process.platform !== 'win32') {
-				process.on('SIGINT', () => process.exit(0));
+			const isUnix = process.platform !== 'win32';
+			if ( isUnix && process.listeners('SIGINT').indexOf(Document.exit) < 0 ) {
+				process.on('SIGINT', Document.exit);
 			}
 			
 			this.on('quit', () => process.exit(0));
