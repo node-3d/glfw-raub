@@ -26,6 +26,9 @@ class Window extends EventEmitter {
 		this._height = opts.height || 600;
 		
 		this._display = opts.display;
+		this._monitors = glfw.getMonitors();
+		this._primaryDisplay = this._monitors.filter(d => d.is_primary)[0];
+		
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
 		this._autoIconify = opts.autoIconify === false ? false : true;
 		
@@ -39,10 +42,10 @@ class Window extends EventEmitter {
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
 		// we use OpenGL 2.1, GLSL 1.20. Comment this for now as this is for GLSL 1.50
-		//glfw.openWindowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
-		//glfw.openWindowHint(glfw.OPENGL_VERSION_MAJOR, 3);
-		//glfw.openWindowHint(glfw.OPENGL_VERSION_MINOR, 2);
-		//glfw.openWindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
+		//glfw.windowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
+		//glfw.windowHint(glfw.OPENGL_VERSION_MAJOR, 3);
+		//glfw.windowHint(glfw.OPENGL_VERSION_MINOR, 2);
+		//glfw.windowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
 		glfw.windowHint(glfw.RESIZABLE, 1);
 		glfw.windowHint(glfw.VISIBLE, 1);
 		glfw.windowHint(glfw.DECORATED, 1);
@@ -88,41 +91,6 @@ class Window extends EventEmitter {
 	}
 	
 	
-	_create() {
-		
-		if (this._mode === 'windowed') {
-			
-			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
-			
-		} else if (this._mode === 'borderless') {
-			
-			this._prevDecorated = this._decorated;
-			
-			this._decorated = false;
-			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
-			glfw.setWindowPos(this._window, 0, 0);
-			
-		} else if (this._mode === 'fullscreen') {
-			
-			this._window = glfw.createWindow(
-				this._width, this._height, this._emitter, this._title, this._display
-			);
-			
-		} else {
-			
-			throw new Error(`Not supported display mode: '${this._mode}'.`);
-			
-		}
-		
-		if ( ! this._window ) {
-			throw new Error('Failed to open a new GLFW Window');
-		}
-		
-	}
-	
-	
 	get handle() { return this._window; }
 	
 	
@@ -147,16 +115,15 @@ class Window extends EventEmitter {
 			
 		}
 		
-		const displays = glfw.getMonitors();
-		
-		if (displays.length < 1) {
+		if (this._monitors.length < 1) {
 			throw new Error('No suitable display found for a new GLFW Window.');
 		}
 		
-		const isBadId = this._display === undefined || this._display >= displays.length;
+		const isBadId = this._display === undefined || this._display >= this._monitors.length;
 		const dispId = isBadId ? -1 : this._display;
+		const currentScreen = dispId > -1 ? this._monitors[dispId] : this._primaryDisplay;
 		
-		const currentScreen = dispId > -1 ? displays[dispId] : displays.filter(d => d.is_primary)[0];
+		this._display = this._monitors.indexOf(currentScreen);
 		
 		let isResized = false;
 		
@@ -357,6 +324,87 @@ class Window extends EventEmitter {
 		}
 		
 		super.emit(type, event);
+		
+	}
+	
+	
+	// Create a new window according to the current 'mode'
+	_create() {
+		
+		if (this._mode === 'windowed') {
+			
+			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
+			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
+			
+		} else if (this._mode === 'borderless') {
+			
+			this._prevDecorated = this._decorated;
+			this._decorated = false;
+			
+			glfw.windowHint(glfw.DECORATED, glfw.FALSE);
+			
+			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
+			
+			glfw.setWindowPos(this._window, 0, 0);
+			
+		} else if (this._mode === 'fullscreen') {
+			
+			this._adjustFullscreen();
+			
+			this._window = glfw.createWindow(
+				this._width, this._height, this._emitter, this._title, this._display
+			);
+			
+		} else {
+			
+			throw new Error(`Not supported display mode: '${this._mode}'.`);
+			
+		}
+		
+		if ( ! this._window ) {
+			throw new Error('Failed to open a new GLFW Window');
+		}
+		
+	}
+	
+	
+	// ----- Fullscreen mode helpers
+	
+	_areaDiff(mode) {
+		return Math.abs(mode.width * mode.height - this._width * this._height);
+	}
+	
+	
+	_sizeEqual(mode) {
+		return mode.width === this._width && mode.height === this._height;
+	}
+	
+	
+	_sortByAreaDiff(modes) {
+		const sorted = modes.sort((a, b) => this._areaDiff(a) - this._areaDiff(b));
+		const best = this._areaDiff(sorted[0]);
+		return sorted.filter(mode => this._areaDiff(mode) === best);
+	}
+	
+	
+	_sortByRate(modes) {
+		return modes.sort((a, b) => this._areaDiff(a) - this._areaDiff(b));
+	}
+	
+	
+	_adjustFullscreen() {
+		
+		const mode = (() => {
+			const modes = this._monitors[this._display].modes;
+			const exact = modes.filter(mode => this._sizeEqual(mode));
+			const chosen = (exact.length ? exact : this._sortByAreaDiff(modes));
+			return chosen.sort((a, b) => b.rate - a.rate)[0];
+		})();
+		
+		this._width = mode.width;
+		this._height = mode.height;
+		
+		glfw.windowHint(glfw.REFRESH_RATE, mode.rate);
 		
 	}
 	

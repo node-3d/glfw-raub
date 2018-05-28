@@ -19,15 +19,23 @@ GLFWwindow *window = reinterpret_cast<GLFWwindow*>(__win_handle);
 
 namespace glfw {
 
+// The default context for all to share
 GLFWwindow *_share = nullptr;
 
-void GLFW_error(int error, const char* description)
-{
-	consoleLog("GLFW FAIL");
-	consoleLog(description);
+// Cached visibility hint value
+bool hintVisible = true;
+
+
+void errorCb(int error, const char* description) {
+	V8_VAR_VAL argv[] = { JS_STR("GLFW Error"), JS_INT(error), JS_STR(description) };
+	consoleLog(3, argv);
 }
+
+
 NAN_METHOD(init) {
-	glfwSetErrorCallback(GLFW_error);
+	
+	glfwSetErrorCallback(errorCb);
+	
 	RET_BOOL(glfwInit() == GLFW_TRUE );
 	
 }
@@ -210,6 +218,10 @@ NAN_METHOD(windowHint) {
 	REQ_UINT32_ARG(0, target);
 	REQ_UINT32_ARG(1, hint);
 	
+	if (target == GLFW_VISIBLE) {
+		hintVisible = hint != 0;
+	}
+	
 	glfwWindowHint(target, hint);
 	
 }
@@ -233,25 +245,25 @@ NAN_METHOD(joystickPresent) {
 }
 
 
-std::string intToString(int number) {
+string intToString(int number) {
 	
-	std::ostringstream buff;
+	ostringstream buff;
 	buff << number;
 	return buff.str();
 	
 }
 
 
-std::string floatToString(float number) {
+string floatToString(float number) {
 	
-	std::ostringstream buff;
+	ostringstream buff;
 	buff << number;
 	return buff.str();
 	
 }
 
 
-std::string buttonToString(unsigned char c) {
+string buttonToString(unsigned char c) {
 	
 	int number = static_cast<int>(c);
 	return intToString(number);
@@ -328,7 +340,9 @@ NAN_METHOD(createWindow) {
 	}
 	
 	if ( ! _share ) {
+		glfwWindowHint(GLFW_VISIBLE, false);
 		_share = glfwCreateWindow(128, 128, "_GLFW_ROOT_SHARED", nullptr, nullptr);
+		glfwWindowHint(GLFW_VISIBLE, hintVisible);
 	}
 	
 	GLFWwindow *window = glfwCreateWindow(width, height, *str, monitor, _share);
