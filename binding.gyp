@@ -92,25 +92,23 @@
 				'action_name' : 'Build intermediates removed.',
 				'inputs'      : [],
 				'outputs'     : ['cpp'],
-				'conditions'  : [
-					[
-						# IF WINDOWS
-						'OS=="win"',
-						{ 'action' : [
-							'<(rm)',
-							'<(module_root_dir)/build/Release/glfw.*',
-							'<(module_root_dir)/build/Release/obj/glfw/*.*'
-						] },
-						# ELSE
-						{ 'action' : [
-							'<(rm)',
-							'<(module_root_dir)/build/Release/obj.target/glfw/cpp/bindings.o',
-							'<(module_root_dir)/build/Release/obj.target/glfw/cpp/events.o',
-							'<(module_root_dir)/build/Release/obj.target/glfw/cpp/glfw.o',
-							'<(module_root_dir)/build/Release/glfw.node'
-						] }
-					],
-				],
+				'conditions'  : [[
+					# IF WINDOWS
+					'OS=="win"',
+					{ 'action' : [
+						'<(rm)',
+						'<(module_root_dir)/build/Release/glfw.*',
+						'<(module_root_dir)/build/Release/obj/glfw/*.*'
+					] },
+					# ELSE
+					{ 'action' : [
+						'<(rm)',
+						'<(module_root_dir)/build/Release/obj.target/glfw/cpp/bindings.o',
+						'<(module_root_dir)/build/Release/obj.target/glfw/cpp/events.o',
+						'<(module_root_dir)/build/Release/obj.target/glfw/cpp/glfw.o',
+						'<(module_root_dir)/build/Release/glfw.node'
+					] }
+				]],
 			}],
 		},
 	]
