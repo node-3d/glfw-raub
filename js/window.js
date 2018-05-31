@@ -125,16 +125,7 @@ class Window extends EventEmitter {
 		
 		this._display = this._monitors.indexOf(currentScreen);
 		
-		let isResized = false;
-		
 		if (this._mode === 'windowed') {
-			
-			if (
-				this._prevWidth && this._width !== this._prevWidth ||
-				this._prevHeight && this._height !== this._prevHeight
-			) {
-				isResized = true;
-			}
 			
 			this._width = this._prevWidth || this._width;
 			this._height = this._prevHeight || this._height;
@@ -149,13 +140,11 @@ class Window extends EventEmitter {
 				this._width !== currentScreen.width ||
 				this._height !== currentScreen.height
 			) {
-				isResized = true;
+				this._prevWidth = this._width;
+				this._prevHeight = this._height;
+				this._width = currentScreen.width;
+				this._height = currentScreen.height;
 			}
-			
-			this._prevWidth = this._width;
-			this._prevHeight = this._height;
-			this._width = currentScreen.width;
-			this._height = currentScreen.height;
 			
 		}
 		
@@ -173,9 +162,7 @@ class Window extends EventEmitter {
 		
 		this.makeCurrent();
 		
-		if (isResized) {
-			this.emit('resize', { width: this._width, height: this._height });
-		}
+		this.emit('resize', { width: this._width, height: this._height });
 		
 	}
 	

@@ -1,12 +1,15 @@
 'use strict';
 
-const util = require('util');
-
 const glfw = require('../');
 const { Document } = glfw;
 
 
 const doc = new Document({ title: 'GLFW Simple Test 1', autoFullscreen: true });
+
+doc.on(
+	'resize',
+	({ width, height}) => console.log('Resized to', width, 'x', height)
+);
 
 const draw = () => {
 	
