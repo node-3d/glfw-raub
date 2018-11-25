@@ -12,7 +12,7 @@
 extern "C" {
 
 
-void init(V8_VAR_OBJ target) {
+void initBindings(V8_VAR_OBJ target) {
 	
 	atexit(glfw::deinit);
 	
@@ -368,7 +368,7 @@ void init(V8_VAR_OBJ target) {
 }
 
 
-NODE_MODULE(glfw, init);
+NODE_MODULE(glfw, initBindings);
 
 
 } // extern "C"

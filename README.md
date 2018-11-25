@@ -158,6 +158,8 @@ is designed to fit perfectly. Also sets `global.HTMLImageElement`.
 is designed to fit perfectly.
 
 
+
+
 Constructor:
 
 * `Document({ ...<Window opts>, ignoreQuit, autoFullscreen })`

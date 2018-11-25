@@ -1,7 +1,7 @@
 'use strict';
 
-const glfw = require('../core');
-const Window  = require('./window');
+const glfw   = require('../core');
+const Window = require('./window');
 
 
 const ESC_KEY = 27;
@@ -106,10 +106,14 @@ class Document extends Window {
 	
 	
 	get context() { return Document.webgl; }
-	getContext() { return Document.webgl; }
+	
+	getContext(kind) {
+		return kind === '2d' ? new new Document.Image() : Document.webgl;
+	}
 	
 	
 	getElementById() { return this; }
+	
 	getElementsByTagName() { return this; }
 	
 	appendChild() {}
@@ -123,13 +127,15 @@ class Document extends Window {
 		
 		if (name.indexOf('canvas') >= 0) {
 			
-			return this;
+			return {
+				width      : this.width,
+				height     : this.height,
+				getContext : () => this.getContext(kind),
+			};
 			
 		} else if (name.indexOf('img') >= 0) {
 			
-			const img = new Document.Image();
-			img.addEventListener = img.on;
-			return img;
+			return new Document.Image();
 			
 		}
 		
@@ -158,8 +164,14 @@ global.HTMLCanvasElement = Document;
 
 
 Document.setImage(class FakeImage {
-	get src() { console.error('Document.Image class not set.'); return ''; }
-	set src(v) { console.error('Document.Image class not set.'); v = null; }
+	get src() {
+		console.error('Document.Image class not set.');
+		return '';
+	}
+	set src(v) {
+		console.error('Document.Image class not set.');
+		v = null;
+	}
 	get complete() { return false; }
 	on() {}
 	onload() {}
