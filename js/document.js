@@ -127,10 +127,27 @@ class Document extends Window {
 		
 		if (name.indexOf('canvas') >= 0) {
 			
+			if ( ! this._isCanvasRequested ) {
+				this._isCanvasRequested = true;
+				return this;
+			}
+			
 			return {
+				
 				width      : this.width,
 				height     : this.height,
+				
 				getContext : () => this.getContext(kind),
+				
+				onkeydown : () => {},
+				onkeydown : () => {},
+				onkeyup   : () => {},
+				onkeyup   : () => {},
+				
+				dispatchEvent       : () => {},
+				addEventListener    : () => {},
+				removeEventListener : () => {},
+				
 			};
 			
 		} else if (name.indexOf('img') >= 0) {
