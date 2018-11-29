@@ -137,7 +137,7 @@ class Document extends Window {
 				width      : this.width,
 				height     : this.height,
 				
-				getContext : () => this.getContext(kind),
+				getContext : (kind) => this.getContext(kind),
 				
 				onkeydown : () => {},
 				onkeydown : () => {},
