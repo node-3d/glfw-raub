@@ -108,7 +108,7 @@ class Document extends Window {
 	get context() { return Document.webgl; }
 	
 	getContext(kind) {
-		return kind === '2d' ? new new Document.Image() : Document.webgl;
+		return kind === '2d' ? new Document.Image() : Document.webgl;
 	}
 	
 	
@@ -137,7 +137,7 @@ class Document extends Window {
 				width      : this.width,
 				height     : this.height,
 				
-				getContext : (kind) => this.getContext(kind),
+				getContext : kind => this.getContext(kind),
 				
 				onkeydown : () => {},
 				onkeydown : () => {},
