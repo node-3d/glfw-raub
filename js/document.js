@@ -132,12 +132,21 @@ class Document extends Window {
 				return this;
 			}
 			
+			const that = this;
+			
 			return {
 				
 				width      : this.width,
 				height     : this.height,
 				
-				getContext : kind => this.getContext(kind),
+				getContext(kind) {
+					this._ctx = that.getContext(kind);
+					return this._ctx;
+				},
+				
+				get data() {
+					return this._ctx.data;
+				},
 				
 				onkeydown : () => {},
 				onkeydown : () => {},
