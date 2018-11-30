@@ -35,7 +35,6 @@ void initBindings(V8_VAR_OBJ target) {
 	JS_GLFW_SET_METHOD(createWindow);
 	JS_GLFW_SET_METHOD(getRenderTarget);
 	JS_GLFW_SET_METHOD(bindFrameBuffer);
-	JS_GLFW_SET_METHOD(blitFrameBuffer);
 	JS_GLFW_SET_METHOD(windowHint);
 	JS_GLFW_SET_METHOD(defaultWindowHints);
 	JS_GLFW_SET_METHOD(platformWindow);
