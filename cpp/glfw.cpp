@@ -422,17 +422,6 @@ NAN_METHOD(platformContext) { THIS_WINDOW;
 }
 
 
-
-
-NAN_METHOD(bindFrameBuffer) {
-	
-	REQ_UINT32_ARG(0, fbo);
-	
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	
-}
-
-
 NAN_METHOD(destroyWindow) { THIS_WINDOW;
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
