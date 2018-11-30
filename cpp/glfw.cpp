@@ -357,16 +357,6 @@ NAN_METHOD(createWindow) {
 	// make sure cursor is always shown
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	
-	GLenum err = glewInit();
-	
-	if (err) {
-		/* Problem: glewInit failed, something is seriously wrong. */
-		string msg="Can't init GLEW (glew error ";
-		msg += (const char*) glewGetErrorString(err);
-		msg += ")";
-		return Nan::ThrowError(msg.c_str());
-	}
-	
 	
 	// Store WinState as user pointer
 	WinState *state = new WinState(emitter);

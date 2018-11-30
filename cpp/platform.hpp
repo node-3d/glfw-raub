@@ -7,8 +7,6 @@
 
 // OpenGL stuff
 
-#include <GL/glew.h>
-
 #define GLFW_NO_GLU
 #define GLFW_DLL
 #include <GLFW/glfw3.h>
