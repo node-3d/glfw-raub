@@ -37,7 +37,6 @@ NAN_METHOD(getCurrentContext);
 
 NAN_METHOD(getRenderTarget);
 NAN_METHOD(bindFrameBuffer);
-NAN_METHOD(blitFrameBuffer);
 NAN_METHOD(getFramebufferSize);
 
 NAN_METHOD(windowHint);
