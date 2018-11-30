@@ -35,7 +35,6 @@ NAN_METHOD(platformContext);
 NAN_METHOD(makeContextCurrent);
 NAN_METHOD(getCurrentContext);
 
-NAN_METHOD(getRenderTarget);
 NAN_METHOD(bindFrameBuffer);
 NAN_METHOD(getFramebufferSize);
 
