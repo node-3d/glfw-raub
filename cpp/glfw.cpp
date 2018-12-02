@@ -436,8 +436,8 @@ NAN_METHOD(setWindowIcon) { THIS_WINDOW;
 	REQ_OBJ_ARG(1, icon);
 	
 	GLFWimage image;
-	image.width = icon->Get(JS_STR("width"))->Int32Value();
-	image.height = icon->Get(JS_STR("height"))->Int32Value();
+	image.width = icon->Get(JS_STR("width")).As<v8::Int32>()->Value();
+	image.height = icon->Get(JS_STR("height")).As<v8::Int32>()->Value();
 	image.pixels = reinterpret_cast<unsigned char*>(getData(icon));
 	
 	glfwSetWindowIcon(window, 1, &image);
