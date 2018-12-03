@@ -17,7 +17,7 @@ matrix:
     os: osx
     before_install:
       - export DISPLAY=:99
-      - sudo Xvfb :99 -ac -screen 0 1024x768x8
+      - ( sudo Xvfb :99 -ac -screen 0 1024x768x8 && echo ok )&
       # - "sh -e /etc/init.d/xvfb start"
       - sleep 3 # give xvfb some time to start
 
