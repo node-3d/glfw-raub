@@ -17,6 +17,8 @@ matrix:
       - npm test
   - name: "MacOS"
     os: osx
+    script:
+      - echo OK.
 
 
 install:
