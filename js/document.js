@@ -135,9 +135,9 @@ class Document extends Window {
 			const that = this;
 			
 			return {
-				
-				width      : this.width,
-				height     : this.height,
+				_ctx   : null,
+				width  : this.width,
+				height : this.height,
 				
 				getContext(kind) {
 					this._ctx = that.getContext(kind);
@@ -145,7 +145,7 @@ class Document extends Window {
 				},
 				
 				get data() {
-					return this._ctx.data;
+					return this._ctx && this._ctx.data;
 				},
 				
 				onkeydown : () => {},

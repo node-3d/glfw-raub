@@ -188,8 +188,10 @@ Methods:
 * `getElementById(id)` - returns `this`.
 * `getElementsByTagName(tag)` - if contains 'canvas', returns `this`, otherwise `null`.
 * `createElementNS(_0, name)` - returns the result of `createElement(name)`.
-* `createElement(name)` - for `'canvas'` returns `this`; for `'image'` returns
-`new Document.Image`, set through `Document.setImage`.
+* `createElement(name)` - for `'canvas'` returns `this` for *the first call*,
+then returns new instances of canvas-like object capable of using 2d or 3d context.
+This is done for some web APIs like three.js, which create additional canvases.
+For `'image'` returns `new Document.Image`, set through `Document.setImage`.
 * `dispatchEvent(event)` - invokes `emit(event.type, event)`.
 * `addEventListener(name, callback)` - adds event listener.
 * `removeEventListener(name, callback)` - removes event listener.
