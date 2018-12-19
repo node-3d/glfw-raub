@@ -310,6 +310,8 @@ class Window extends EventEmitter {
 			event.stopPropagation = () => {};
 		}
 		
+		this.makeCurrent();
+		
 		super.emit(type, event);
 		
 	}
