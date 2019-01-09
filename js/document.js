@@ -149,9 +149,9 @@ class Document extends Window {
 				},
 				
 				onkeydown : () => {},
-				onkeydown : () => {},
+				onmousedown : () => {},
 				onkeyup   : () => {},
-				onkeyup   : () => {},
+				onmouseup   : () => {},
 				
 				dispatchEvent       : () => {},
 				addEventListener    : () => {},

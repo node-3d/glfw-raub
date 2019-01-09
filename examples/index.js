@@ -1,7 +1,5 @@
 'use strict';
 
-const util = require('util');
-
 const glfw = require('../');
 const { Window } = glfw;
 

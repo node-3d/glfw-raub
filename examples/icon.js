@@ -1,7 +1,5 @@
 'use strict';
 
-const util = require('util');
-
 const glfw = require('../');
 const { Window } = glfw;
 
@@ -17,7 +15,7 @@ const icon = {
 	width  : 18,
 	height : 18,
 	data: Buffer.from(iconData),
-}
+};
 
 w1.icon = icon;
 

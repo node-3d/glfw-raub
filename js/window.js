@@ -1,6 +1,7 @@
 'use strict';
 
 const EventEmitter = require('events');
+const path = require('path');
 
 const glfw = require('../core');
 
@@ -16,10 +17,9 @@ class Window extends EventEmitter {
 		this._modeCache = {};
 		
 		if ( ! this._title ) {
-			const pathMatch2 = process.mainModule.filename.replace(/\\/g, '/').match(
-				/(\/(.*))*\/(.*?)\/[^/]*$/
-			);
-			this._title = pathMatch2 ? pathMatch2[pathMatch2.length - 1] : 'Untitled';
+			const dirpath = path.dirname(process.mainModule.filename);
+			const dirname = path.basename(dirpath);
+			this._title = dirname;
 		}
 		
 		this._width = opts.width || 800;
