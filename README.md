@@ -11,6 +11,8 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 
 **Node.js** addon with **GLFW3** bindings.
 
+![Example](examples/screenshot.jpg)
+
 * Exposes low-level **GLFW** interface.
 * Multiple windows for a single **Node.js** process - easy.
 * Goes fullscreen and back fluently.
