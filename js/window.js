@@ -12,15 +12,9 @@ class Window extends EventEmitter {
 		
 		super();
 		
-		this._title = opts.title;
+		this._title = null;
 		this._icon = null;
 		this._modeCache = {};
-		
-		if ( ! this._title ) {
-			const dirpath = path.dirname(process.mainModule.filename);
-			const dirname = path.basename(dirpath);
-			this._title = dirname;
-		}
 		
 		this._width = opts.width || 800;
 		this._height = opts.height || 600;
@@ -68,6 +62,14 @@ class Window extends EventEmitter {
 		
 		
 		this.icon = opts.icon;
+		
+		if ( ! opts.title ) {
+			const dirpath = path.dirname(process.mainModule.filename);
+			const dirname = path.basename(dirpath);
+			this.title = dirname;
+		} else {
+			this.title = opts.title;
+		}
 		
 		//can only be called after window creation!
 		this._major = glfw.getWindowAttrib(this._window, glfw.CONTEXT_VERSION_MAJOR);
