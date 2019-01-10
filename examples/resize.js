@@ -1,7 +1,5 @@
 'use strict';
 
-const util = require('util');
-
 const glfw = require('../');
 const { Window } = glfw;
 
@@ -9,8 +7,8 @@ const { Window } = glfw;
 const w1 = new Window({ title: 'GLFW Simple Test 1' });
 
 // testing events
-w1.on('keydown', e => w1.height += 10);
-w1.on('mousedown', e => w1.width += 10);
+w1.on('keydown', () => w1.height += 10);
+w1.on('mousedown', () => w1.width += 10);
 
 console.log(w1.version);
 
