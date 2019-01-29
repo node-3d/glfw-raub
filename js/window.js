@@ -77,9 +77,6 @@ class Window extends EventEmitter {
 		this._rev = glfw.getWindowAttrib(this._window, glfw.CONTEXT_REVISION);
 		this._prof = glfw.getWindowAttrib(this._window, glfw.OPENGL_PROFILE);
 		
-		// Vertical sync (on cards that support it)
-		glfw.swapInterval(this._vsync);
-		
 		this.on('window_pos', ({ x, y }) => {
 			this._x = x;
 			this._y = y;
@@ -163,6 +160,9 @@ class Window extends EventEmitter {
 		}
 		
 		this.makeCurrent();
+		
+		// Vertical sync (on cards that support it)
+		glfw.swapInterval(this._vsync);
 		
 		this.emit('resize', { width: this._width, height: this._height });
 		
