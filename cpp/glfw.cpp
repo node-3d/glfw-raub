@@ -375,7 +375,7 @@ NAN_METHOD(createWindow) {
 	
 	// Input callbacks
 	glfwSetKeyCallback(window, keyCB);
-	// glfwSetCharCallback(window, charCB);
+	glfwSetCharCallback(window, charCB);
 	glfwSetMouseButtonCallback(window, mouseButtonCB);
 	glfwSetCursorPosCallback(window, cursorPosCB);
 	glfwSetCursorEnterCallback(window, cursorEnterCB);

@@ -151,21 +151,39 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 		typeFound = typeKeyUp;
 	}
 	
-	SET_PROP(evt, "type", JS_STR(typeFound));
-	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
-	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
+	const char *keyName = glfwGetKeyName(glfwKey, scancode);
+	
 	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
+	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
 	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
+	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
 	
-	int which = scancode;
-	int charCode = 0;
 	
-	SET_PROP(evt, "which", JS_INT(which));
-	SET_PROP(evt, "keyCode", JS_INT(which));
-	SET_PROP(evt, "charCode", JS_INT(charCode));
-	SET_PROP(evt, "code", JS_STR(glfwGetKeyName(glfwKey, scancode)));
+	SET_PROP(evt, "charCode", JS_INT(0));
+	if (keyName) {
+		SET_PROP(evt, "code", JS_STR(keyName));
+		SET_PROP(evt, "key", JS_STR(keyName));
+	} else {
+		SET_PROP(evt, "code", Nan::Null());
+		SET_PROP(evt, "key", Nan::Null());
+	}
+	
+	SET_PROP(evt, "type", JS_STR(typeFound));
+	SET_PROP(evt, "which", JS_INT(glfwKey));
 	
 	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
+	_emit(window, 2, argv);
+	
+}
+
+
+void charCB(GLFWwindow* window, unsigned codepoint) { NAN_HS;
+	
+	V8_VAR_OBJ evt = Nan::New<Object>();
+	
+	SET_PROP(evt, "charCode", JS_INT(codepoint));
+	
+	V8_VAR_VAL argv[2] = { JS_STR("char"), evt };
 	_emit(window, 2, argv);
 	
 }

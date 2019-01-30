@@ -18,6 +18,7 @@ void windowRefreshCB(GLFWwindow *window);
 void windowIconifyCB(GLFWwindow *window, int iconified);
 void windowFocusCB(GLFWwindow *window, int focused);
 void keyCB(GLFWwindow *window, int key, int scancode, int action, int mods);
+void charCB(GLFWwindow* window, unsigned codepoint);
 void cursorPosCB(GLFWwindow* window, double x, double y);
 void cursorEnterCB(GLFWwindow* window, int entered);
 void mouseButtonCB(GLFWwindow *window, int button, int action, int mods);

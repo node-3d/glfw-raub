@@ -15,6 +15,7 @@ class Window extends EventEmitter {
 		this._title = null;
 		this._icon = null;
 		this._modeCache = {};
+		this._pendingKeydown = null;
 		
 		this._width = opts.width || 800;
 		this._height = opts.height || 600;
@@ -307,14 +308,39 @@ class Window extends EventEmitter {
 	
 	emit(type, event) {
 		
-		if (event) {
-			event.preventDefault = () => {};
-			event.stopPropagation = () => {};
+		let finalType = type;
+		let finalEvent = event;
+		
+		if (finalEvent) {
+			
+			if (type === 'keydown' || type === 'keyup') {
+				
+				finalEvent.which = Window.extraCodes[finalEvent.which] || finalEvent.which;
+				finalEvent.keyCode = finalEvent.which;
+				
+				if (type === 'keydown' && finalEvent.code) {
+					this._pendingKeydown = finalEvent;
+					return;
+				} else {
+					finalEvent.code = Window.keyNames[finalEvent.which];
+				}
+				
+			} else if (type === 'char' && this._pendingKeydown) {
+				finalEvent = this._pendingKeydown;
+				finalType = 'keydown';
+				this._pendingKeydown = null;
+				finalEvent.charCode = event.charCode;
+				finalEvent.key = String.fromCharCode(event.charCode);
+			}
+			
+			finalEvent.preventDefault = () => {};
+			finalEvent.stopPropagation = () => {};
+			
 		}
 		
 		this.makeCurrent();
 		
-		super.emit(type, event);
+		super.emit(finalType, finalEvent);
 		
 	}
 	
@@ -400,6 +426,175 @@ class Window extends EventEmitter {
 	}
 	
 }
+
+
+Window.keyNames = {
+	27 : 'ESCAPE',
+	13 : 'ENTER',
+	9 : 'TAB',
+	8 : 'BACKSPACE',
+	45 : 'INSERT',
+	46 : 'DELETE',
+	39 : 'RIGHT',
+	37 : 'LEFT',
+	40 : 'DOWN',
+	38 : 'UP',
+	33 : 'PAGE_UP',
+	34 : 'PAGE_DOWN',
+	36 : 'HOME',
+	35 : 'END',
+	20 : 'CAPS_LOCK',
+	145 : 'SCROLL_LOCK',
+	144 : 'NUM_LOCK',
+	144 : 'PRINT_SCREEN',
+	19 : 'PAUSE',
+	112 : 'F1',
+	113 : 'F2',
+	114 : 'F3',
+	115 : 'F4',
+	116 : 'F5',
+	117 : 'F6',
+	118 : 'F7',
+	119 : 'F8',
+	120 : 'F9',
+	121 : 'F10',
+	122 : 'F11',
+	123 : 'F12',
+	123 : 'F13',
+	123 : 'F14',
+	123 : 'F15',
+	123 : 'F16',
+	123 : 'F17',
+	123 : 'F18',
+	123 : 'F19',
+	123 : 'F20',
+	123 : 'F21',
+	123 : 'F22',
+	123 : 'F23',
+	123 : 'F24',
+	123 : 'F25',
+	96 : 'KP_0',
+	97 : 'KP_1',
+	98 : 'KP_2',
+	99 : 'KP_3',
+	100 : 'KP_4',
+	101 : 'KP_5',
+	102 : 'KP_6',
+	103 : 'KP_7',
+	104 : 'KP_8',
+	105 : 'KP_9',
+	110 : 'KP_DECIMAL',
+	111 : 'KP_DIVIDE',
+	106 : 'KP_MULTIPLY',
+	109 : 'KP_SUBTRACT',
+	107 : 'KP_ADD',
+	13 : 'KP_ENTER',
+	187 : 'KP_EQUAL',
+	16 : 'LEFT_SHIFT',
+	17 : 'LEFT_CONTROL',
+	18 : 'LEFT_ALT',
+	91 : 'LEFT_SUPER',
+	16 : 'RIGHT_SHIFT',
+	17 : 'RIGHT_CONTROL',
+	18 : 'RIGHT_ALT',
+	93 : 'RIGHT_SUPER',
+	18 : 'MENU',
+	186 : 'SEMICOLON',
+	187 : 'EQUAL',
+	188 : 'COMMA',
+	189 : 'MINUS',
+	190 : 'PERIOD',
+	191 : 'SLASH',
+	192 : 'GRAVE_ACCENT',
+	219 : 'LEFT_BRACKET',
+	220 : 'BACKSLASH',
+	221 : 'RIGHT_BRACKET',
+	222 : 'APOSTROPHE',
+}
+
+Window.extraCodes = {
+	[glfw.KEY_ESCAPE] : 27,
+	[glfw.KEY_ENTER] : 13,
+	[glfw.KEY_TAB] : 9,
+	[glfw.KEY_BACKSPACE] : 8,
+	[glfw.KEY_INSERT] : 45,
+	[glfw.KEY_DELETE] : 46,
+	[glfw.KEY_RIGHT] : 39,
+	[glfw.KEY_LEFT] : 37,
+	[glfw.KEY_DOWN] : 40,
+	[glfw.KEY_UP] : 38,
+	[glfw.KEY_PAGE_UP] : 33,
+	[glfw.KEY_PAGE_DOWN] : 34,
+	[glfw.KEY_HOME] : 36,
+	[glfw.KEY_END] : 35,
+	[glfw.KEY_CAPS_LOCK] : 20,
+	[glfw.KEY_SCROLL_LOCK] : 145,
+	[glfw.KEY_NUM_LOCK] : 144,
+	[glfw.KEY_PRINT_SCREEN] : 144,
+	[glfw.KEY_PAUSE] : 19,
+	[glfw.KEY_F1] : 112,
+	[glfw.KEY_F2] : 113,
+	[glfw.KEY_F3] : 114,
+	[glfw.KEY_F4] : 115,
+	[glfw.KEY_F5] : 116,
+	[glfw.KEY_F6] : 117,
+	[glfw.KEY_F7] : 118,
+	[glfw.KEY_F8] : 119,
+	[glfw.KEY_F9] : 120,
+	[glfw.KEY_F10] : 121,
+	[glfw.KEY_F11] : 122,
+	[glfw.KEY_F12] : 123,
+	[glfw.KEY_F13] : 123,
+	[glfw.KEY_F14] : 123,
+	[glfw.KEY_F15] : 123,
+	[glfw.KEY_F16] : 123,
+	[glfw.KEY_F17] : 123,
+	[glfw.KEY_F18] : 123,
+	[glfw.KEY_F19] : 123,
+	[glfw.KEY_F20] : 123,
+	[glfw.KEY_F21] : 123,
+	[glfw.KEY_F22] : 123,
+	[glfw.KEY_F23] : 123,
+	[glfw.KEY_F24] : 123,
+	[glfw.KEY_F25] : 123,
+	[glfw.KEY_KP_0] : 96,
+	[glfw.KEY_KP_1] : 97,
+	[glfw.KEY_KP_2] : 98,
+	[glfw.KEY_KP_3] : 99,
+	[glfw.KEY_KP_4] : 100,
+	[glfw.KEY_KP_5] : 101,
+	[glfw.KEY_KP_6] : 102,
+	[glfw.KEY_KP_7] : 103,
+	[glfw.KEY_KP_8] : 104,
+	[glfw.KEY_KP_9] : 105,
+	[glfw.KEY_KP_DECIMAL] : 110,
+	[glfw.KEY_KP_DIVIDE] : 111,
+	[glfw.KEY_KP_MULTIPLY] : 106,
+	[glfw.KEY_KP_SUBTRACT] : 109,
+	[glfw.KEY_KP_ADD] : 107,
+	[glfw.KEY_KP_ENTER] : 13,
+	[glfw.KEY_KP_EQUAL] : 187,
+	[glfw.KEY_LEFT_SHIFT] : 16,
+	[glfw.KEY_LEFT_CONTROL] : 17,
+	[glfw.KEY_LEFT_ALT] : 18,
+	[glfw.KEY_LEFT_SUPER] : 91,
+	[glfw.KEY_RIGHT_SHIFT] : 16,
+	[glfw.KEY_RIGHT_CONTROL] : 17,
+	[glfw.KEY_RIGHT_ALT] : 18,
+	[glfw.KEY_RIGHT_SUPER] : 93,
+	[glfw.KEY_MENU] : 18,
+	[glfw.KEY_SEMICOLON] : 186,
+	[glfw.KEY_EQUAL] : 187,
+	[glfw.KEY_COMMA] : 188,
+	[glfw.KEY_MINUS] : 189,
+	[glfw.KEY_PERIOD] : 190,
+	[glfw.KEY_SLASH] : 191,
+	[glfw.KEY_GRAVE_ACCENT] : 192,
+	[glfw.KEY_LEFT_BRACKET] : 219,
+	[glfw.KEY_BACKSLASH] : 220,
+	[glfw.KEY_RIGHT_BRACKET] : 221,
+	[glfw.KEY_APOSTROPHE] : 222,
+};
 
 
 module.exports = Window;

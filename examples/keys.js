@@ -10,6 +10,10 @@ const w1 = new Window({ title: 'GLFW Simple Test 1' });
 
 // testing events
 w1.on('keydown', e => console.log(`[#1 keydown] ${util.inspect(e)}`));
+w1.on('char', e => {
+	console.log(`[#1 char] ${util.inspect(e)}`);
+	console.log(String.fromCharCode(e.charCode));
+});
 
 
 console.log(w1.version);
