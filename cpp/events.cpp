@@ -170,6 +170,7 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 	
 	SET_PROP(evt, "type", JS_STR(typeFound));
 	SET_PROP(evt, "which", JS_INT(glfwKey));
+	SET_PROP(evt, "scancode", JS_INT(scancode));
 	
 	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
 	_emit(window, 2, argv);

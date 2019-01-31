@@ -318,19 +318,36 @@ class Window extends EventEmitter {
 				finalEvent.which = Window.extraCodes[finalEvent.which] || finalEvent.which;
 				finalEvent.keyCode = finalEvent.which;
 				
-				if (type === 'keydown' && finalEvent.code) {
+				const initialCode = finalEvent.code;
+				
+				finalEvent.code = (
+					Window.keyNames[finalEvent.which] ||
+					finalEvent.code ||
+					'UNKNOWN'
+				);
+				// finalEvent.key = (
+				// 	Window.auxChars[finalEvent.which] ||
+				// 	finalEvent.key
+				// );
+				
+				if (type === 'keydown' && initialCode) {
 					this._pendingKeydown = finalEvent;
 					return;
-				} else {
-					finalEvent.code = Window.keyNames[finalEvent.which];
 				}
 				
-			} else if (type === 'char' && this._pendingKeydown) {
+			} else if (type === 'char') {
+				
+				if ( ! this._pendingKeydown ) {
+					return;
+				}
+				
 				finalEvent = this._pendingKeydown;
-				finalType = 'keydown';
 				this._pendingKeydown = null;
+				
+				finalType = 'keydown';
 				finalEvent.charCode = event.charCode;
 				finalEvent.key = String.fromCharCode(event.charCode);
+				
 			}
 			
 			finalEvent.preventDefault = () => {};
@@ -429,25 +446,17 @@ class Window extends EventEmitter {
 
 
 Window.keyNames = {
-	27 : 'ESCAPE',
-	13 : 'ENTER',
-	9 : 'TAB',
-	8 : 'BACKSPACE',
-	45 : 'INSERT',
-	46 : 'DELETE',
-	39 : 'RIGHT',
-	37 : 'LEFT',
-	40 : 'DOWN',
-	38 : 'UP',
-	33 : 'PAGE_UP',
-	34 : 'PAGE_DOWN',
-	36 : 'HOME',
-	35 : 'END',
-	20 : 'CAPS_LOCK',
-	145 : 'SCROLL_LOCK',
-	144 : 'NUM_LOCK',
-	144 : 'PRINT_SCREEN',
-	19 : 'PAUSE',
+	100 : 'Numpad4',
+	101 : 'Numpad5',
+	102 : 'Numpad6',
+	103 : 'Numpad7',
+	104 : 'Numpad8',
+	105 : 'Numpad9',
+	106 : 'NumpadMultiply',
+	107 : 'NumpadAdd',
+	109 : 'NumpadSubtract',
+	110 : 'NumpadDecimal',
+	111 : 'NumpadDivide',
 	112 : 'F1',
 	113 : 'F2',
 	114 : 'F3',
@@ -460,57 +469,50 @@ Window.keyNames = {
 	121 : 'F10',
 	122 : 'F11',
 	123 : 'F12',
-	123 : 'F13',
-	123 : 'F14',
-	123 : 'F15',
-	123 : 'F16',
-	123 : 'F17',
-	123 : 'F18',
-	123 : 'F19',
-	123 : 'F20',
-	123 : 'F21',
-	123 : 'F22',
-	123 : 'F23',
-	123 : 'F24',
-	123 : 'F25',
-	96 : 'KP_0',
-	97 : 'KP_1',
-	98 : 'KP_2',
-	99 : 'KP_3',
-	100 : 'KP_4',
-	101 : 'KP_5',
-	102 : 'KP_6',
-	103 : 'KP_7',
-	104 : 'KP_8',
-	105 : 'KP_9',
-	110 : 'KP_DECIMAL',
-	111 : 'KP_DIVIDE',
-	106 : 'KP_MULTIPLY',
-	109 : 'KP_SUBTRACT',
-	107 : 'KP_ADD',
-	13 : 'KP_ENTER',
-	187 : 'KP_EQUAL',
-	16 : 'LEFT_SHIFT',
-	17 : 'LEFT_CONTROL',
-	18 : 'LEFT_ALT',
-	91 : 'LEFT_SUPER',
-	16 : 'RIGHT_SHIFT',
-	17 : 'RIGHT_CONTROL',
-	18 : 'RIGHT_ALT',
-	93 : 'RIGHT_SUPER',
-	18 : 'MENU',
-	186 : 'SEMICOLON',
-	187 : 'EQUAL',
-	188 : 'COMMA',
-	189 : 'MINUS',
-	190 : 'PERIOD',
-	191 : 'SLASH',
-	192 : 'GRAVE_ACCENT',
-	219 : 'LEFT_BRACKET',
-	220 : 'BACKSLASH',
-	221 : 'RIGHT_BRACKET',
-	222 : 'APOSTROPHE',
-}
+	13 : 'Enter',
+	144 : 'NumLock',
+	145 : 'ScrollLock',
+	16 : 'Shift',
+	17 : 'Control',
+	18 : 'Alt',
+	186 : 'Semicolon',
+	187 : 'Equal',
+	188 : 'Comma',
+	189 : 'Minus',
+	19 : 'Pause',
+	190 : 'Period',
+	191 : 'Slash',
+	192 : 'Tilda',
+	20 : 'CapsLock',
+	219 : 'LeftBracket',
+	220 : 'Backslash',
+	221 : 'RightBracket',
+	222 : 'Apostrophe',
+	27 : 'Escape',
+	33 : 'PageUp',
+	34 : 'PageDown',
+	35 : 'End',
+	36 : 'Home',
+	37 : 'Left',
+	38 : 'Up',
+	39 : 'Right',
+	40 : 'Down',
+	45 : 'Insert',
+	46 : 'Delete',
+	8 : 'Backspace',
+	9 : 'Tab',
+	91 : 'LeftSuper',
+	93 : 'RightSuper',
+	96 : 'Numpad0',
+	97 : 'Numpad1',
+	98 : 'Numpad2',
+	99 : 'Numpad3',
+};
+
+Window.auxChars = {
+	13 : '\n',
+	9  : '\t',
+};
 
 Window.extraCodes = {
 	[glfw.KEY_ESCAPE] : 27,
