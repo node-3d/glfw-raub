@@ -50,23 +50,24 @@ It will be used to transmit GLFW events.
 
 ### GLFW window events:
 
-* `'window_pos'` - window moved
-* `'resize'` - window frame resized
-* `'framebuffer_resize'` - render-surface resized
-* `'drop'` - drag-dropped some files on the window
-* `'quit'` - window closed
-* `'refresh'` - window needs to be redrawn
-* `'iconified'` - window was iconified
-* `'focused'` - focus gained/lost
-* `'keyup'` - keyboard key up
-* `'keydown'` - keyboard key down
-* `'keypress'` - keyboard key pressed
-* `'mousemove'` - mouse moved
-* `'mouseenter'` - mouse entered/left the window
-* `'mousedown'` - mouse button down
-* `'mouseup'` - mouse button up
 * `'click'` - mouse button clicked
+* `'drop'` - drag-dropped some files on the window
+* `'focused'` - focus gained/lost
+* `'framebuffer_resize'` - render-surface resized
+* `'iconified'` - window was iconified
+* `'keydown'` - keyboard key down
+* `'keyup'` - keyboard key up
+* `'mousedown'` - mouse button down
+* `'mouseenter'` - mouse entered/left the window
+* `'mousemove'` - mouse moved
+* `'mouseup'` - mouse button up
 * `'mousewheel'` - mouse wheel rotation
+* `'quit'` - window closed
+* `'refresh'` - window sure needs to be redrawn
+* `'resize'` - window frame resized
+* `'window_pos'` - window moved
+
+> Note: `keypress` event is not supported.
 
 
 ### class Window

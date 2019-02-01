@@ -13,6 +13,12 @@ using namespace std;
 
 namespace glfw {
 
+const char typeKeyup[] = "keyup";
+const char typeKeydown[] = "keydown";
+const char typeMouseenter[] = "mouseenter";
+const char typeMouseleave[] = "mouseleave";
+
+
 void NAN_INLINE(_emit(GLFWwindow *window, int argc, V8_VAR_VAL argv[])) {
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
@@ -132,26 +138,13 @@ void windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
 }
 
 
-#define KEY_CASE(NAME, ID) case NAME: which = ID; break;
-
-void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) { NAN_HS;
-	
-	const char typeKeyUp[] = "keyup";
-	const char typeKeyDown[] = "keydown";
-	const char *typeFound = nullptr;
-	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	
-	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
-		typeFound = typeKeyDown;
-		if (action == GLFW_REPEAT) {
-			SET_PROP(evt, "repeat", JS_BOOL(true));
-		}
-	} else {
-		typeFound = typeKeyUp;
-	}
+void fillKey(V8_VAR_OBJ &evt, int glfwKey, int scancode, int action, int mods) {
 	
 	const char *keyName = glfwGetKeyName(glfwKey, scancode);
+	
+	if (action == GLFW_REPEAT) {
+		SET_PROP(evt, "repeat", JS_BOOL(true));
+	}
 	
 	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
 	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
@@ -159,7 +152,6 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
 	
 	
-	SET_PROP(evt, "charCode", JS_INT(0));
 	if (keyName) {
 		SET_PROP(evt, "code", JS_STR(keyName));
 		SET_PROP(evt, "key", JS_STR(keyName));
@@ -168,9 +160,41 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 		SET_PROP(evt, "key", Nan::Null());
 	}
 	
-	SET_PROP(evt, "type", JS_STR(typeFound));
 	SET_PROP(evt, "which", JS_INT(glfwKey));
-	SET_PROP(evt, "scancode", JS_INT(scancode));
+	
+}
+
+
+void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) { NAN_HS;
+	
+	const char *keyName = glfwGetKeyName(glfwKey, scancode);
+	
+	bool isAltPressed = mods & GLFW_MOD_ALT;
+	bool isCtrlPressed = mods & GLFW_MOD_CONTROL;
+	
+	if (
+		keyName && (action == GLFW_PRESS || action == GLFW_REPEAT) &&
+		! (isAltPressed || isCtrlPressed)
+	) {
+		WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+		state->pendingKey = glfwKey;
+		state->pendingScan = scancode;
+		state->pendingAction = action;
+		state->pendingMods = mods;
+		return;
+	}
+	
+	const char *typeFound;
+	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+		typeFound = typeKeydown;
+	} else {
+		typeFound = typeKeyup;
+	}
+	
+	V8_VAR_OBJ evt = Nan::New<Object>();
+	fillKey(evt, glfwKey, scancode, action, mods);
+	SET_PROP(evt, "charCode", JS_INT(0));
+	SET_PROP(evt, "type", JS_STR(typeFound));
 	
 	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
 	_emit(window, 2, argv);
@@ -180,17 +204,73 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 
 void charCB(GLFWwindow* window, unsigned codepoint) { NAN_HS;
 	
+	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+	
+	if ( ! state->pendingKey ) {
+		return;
+	}
+	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	
+	fillKey(
+		evt,
+		state->pendingKey,
+		state->pendingScan,
+		state->pendingAction,
+		state->pendingMods
+	);
 	SET_PROP(evt, "charCode", JS_INT(codepoint));
+	SET_PROP(evt, "type", JS_STR(typeKeydown));
 	
-	V8_VAR_VAL argv[2] = { JS_STR("char"), evt };
+	state->pendingKey = 0;
+	state->pendingScan = 0;
+	state->pendingAction = 0;
+	state->pendingMods = 0;
+	
+	V8_VAR_VAL argv[2] = { JS_STR(typeKeydown), evt };
 	_emit(window, 2, argv);
 	
 }
 
 
-void cursorPosCB(GLFWwindow* window, double x, double y) {
+void fillMouse(V8_VAR_OBJ &evt, GLFWwindow *window, int mods = -1) {
+	
+	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+	
+	SET_PROP(evt, "clientX", JS_NUM(state->mouseX));
+	SET_PROP(evt, "clientY", JS_NUM(state->mouseY));
+	SET_PROP(evt, "pageX", JS_NUM(state->mouseX));
+	SET_PROP(evt, "pageY", JS_NUM(state->mouseY));
+	SET_PROP(evt, "x", JS_NUM(state->mouseX));
+	SET_PROP(evt, "y", JS_NUM(state->mouseY));
+	
+	if (mods > -1) {
+		SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
+		SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
+		SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
+		SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
+	} else {
+		SET_PROP(evt, "ctrlKey", JS_BOOL(
+			glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
+			glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS
+		));
+		SET_PROP(evt, "shiftKey", JS_BOOL(
+			glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
+			glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS
+		));
+		SET_PROP(evt, "altKey", JS_BOOL(
+			glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
+			glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS
+		));
+		SET_PROP(evt, "metaKey", JS_BOOL(
+			glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
+			glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS
+		));
+	}
+	
+}
+
+
+void cursorPosCB(GLFWwindow* window, double x, double y) { NAN_HS;
 	
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
@@ -200,37 +280,12 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 	}
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
-	
 	state->mouseX = static_cast<int>(x);
 	state->mouseY = static_cast<int>(y);
 	
-	NAN_HS;
-	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	
+	fillMouse(evt, window);
 	SET_PROP(evt, "type", JS_STR("mousemove"));
-	SET_PROP(evt, "clientX", JS_NUM(x));
-	SET_PROP(evt, "clientY", JS_NUM(y));
-	SET_PROP(evt, "pageX", JS_NUM(x));
-	SET_PROP(evt, "pageY", JS_NUM(y));
-	SET_PROP(evt, "ctrlKey", JS_BOOL(
-		glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
-		glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS
-	));
-	SET_PROP(evt, "shiftKey", JS_BOOL(
-		glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
-		glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS
-	));
-	SET_PROP(evt, "altKey", JS_BOOL(
-		glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
-		glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS
-	));
-	SET_PROP(evt, "metaKey", JS_BOOL(
-		glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
-		glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS
-	));
-	SET_PROP(evt, "x", JS_NUM(x));
-	SET_PROP(evt, "y", JS_NUM(y));
 	
 	V8_VAR_VAL argv[2] = { JS_STR("mousemove"), evt };
 	_emit(window, 2, argv);
@@ -240,11 +295,18 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 
 void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("mouseenter"));
-	SET_PROP(evt, "entered", JS_INT(entered));
+	const char *typeFound;
+	if (entered) {
+		typeFound = typeMouseenter;
+	} else {
+		typeFound = typeMouseleave;
+	}
 	
-	V8_VAR_VAL argv[2] = { JS_STR("mouseenter"), evt };
+	V8_VAR_OBJ evt = Nan::New<Object>();
+	fillMouse(evt, window);
+	SET_PROP(evt, "type", JS_STR(typeFound));
+	
+	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
 	_emit(window, 2, argv);
 	
 }
@@ -252,45 +314,24 @@ void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
 
 void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_HS;
 	
-	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+	V8_VAR_OBJ evt1 = Nan::New<Object>();
+	fillMouse(evt1, window);
+	SET_PROP(evt1, "type", JS_STR(action ? "mousedown" : "mouseup"));
+	SET_PROP(evt1, "button", JS_INT(button));
+	SET_PROP(evt1, "which", JS_INT(button));
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	
-	SET_PROP(evt, "type", JS_STR(action ? "mousedown" : "mouseup"));
-	SET_PROP(evt, "button", JS_INT(button));
-	SET_PROP(evt, "which", JS_INT(button));
-	SET_PROP(evt, "clientX", JS_INT(state->mouseX));
-	SET_PROP(evt, "clientY", JS_INT(state->mouseY));
-	SET_PROP(evt, "pageX", JS_INT(state->mouseX));
-	SET_PROP(evt, "pageY", JS_INT(state->mouseY));
-	
-	SET_PROP(evt, "x", JS_INT(state->mouseX));
-	SET_PROP(evt, "y", JS_INT(state->mouseY));
-	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
-	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
-	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
-	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
-	
-	V8_VAR_VAL argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt };
+	V8_VAR_VAL argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt1 };
 	_emit(window, 2, argv);
 	
 	if ( ! action ) {
 		
-		V8_VAR_OBJ evt = Nan::New<Object>();
+		V8_VAR_OBJ evt2 = Nan::New<Object>();
+		fillMouse(evt2, window);
+		SET_PROP(evt2, "type", JS_STR("click"));
+		SET_PROP(evt2, "button", JS_INT(button));
+		SET_PROP(evt2, "which", JS_INT(button));
 		
-		SET_PROP(evt, "type", JS_STR("click"));
-		SET_PROP(evt, "button", JS_INT(button));
-		SET_PROP(evt, "which", JS_INT(button));
-		SET_PROP(evt, "clientX", JS_INT(state->mouseX));
-		SET_PROP(evt, "clientY", JS_INT(state->mouseY));
-		SET_PROP(evt, "pageX", JS_INT(state->mouseX));
-		SET_PROP(evt, "pageY", JS_INT(state->mouseY));
-		SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
-		SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
-		SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
-		SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
-		
-		V8_VAR_VAL argv[2] = { JS_STR("click"), evt };
+		V8_VAR_VAL argv[2] = { JS_STR("click"), evt2 };
 		_emit(window, 2, argv);
 		
 	}
@@ -300,13 +341,17 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 
 void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("mousewheel"));
-	SET_PROP(evt, "wheelDeltaX", JS_NUM(xoffset*120));
-	SET_PROP(evt, "wheelDeltaY", JS_NUM(yoffset*120));
-	SET_PROP(evt, "wheelDelta", JS_NUM(yoffset*120));
+	double dx = xoffset * 100;
+	double dy = yoffset * 100;
 	
-	V8_VAR_VAL argv[2] = { JS_STR("mousewheel"), evt };
+	V8_VAR_OBJ evt = Nan::New<Object>();
+	fillMouse(evt, window);
+	SET_PROP(evt, "type", JS_STR("wheel"));
+	SET_PROP(evt, "wheelDeltaX", JS_NUM(dx));
+	SET_PROP(evt, "wheelDeltaY", JS_NUM(dy));
+	SET_PROP(evt, "wheelDelta", JS_NUM(dy));
+	
+	V8_VAR_VAL argv[2] = { JS_STR("wheel"), evt };
 	_emit(window, 2, argv);
 	
 }

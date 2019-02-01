@@ -11,11 +11,18 @@ struct WinState {
 	
 	int mouseX;
 	int mouseY;
+	int pendingKey;
+	int pendingScan;
+	int pendingAction;
+	int pendingMods;
 	V8_STORE_OBJ events;
 	
 	explicit WinState(V8_VAR_OBJ obj) {
 		mouseX = 0;
 		mouseY = 0;
+		pendingKey = 0;
+		pendingScan = 0;
+		pendingAction = 0;
 		events.Reset(obj);
 	}
 	

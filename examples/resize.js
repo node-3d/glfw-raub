@@ -10,7 +10,7 @@ const w1 = new Window({ title: 'GLFW Simple Test 1' });
 w1.on('keydown', () => w1.height += 10);
 w1.on('mousedown', () => w1.width += 10);
 
-console.log(w1.version);
+console.log('Press a key to resize Height.\nClick mouse to resize Width.');
 
 
 const draw = () => {

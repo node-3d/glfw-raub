@@ -308,56 +308,24 @@ class Window extends EventEmitter {
 	
 	emit(type, event) {
 		
-		let finalType = type;
-		let finalEvent = event;
-		
-		if (finalEvent) {
+		if (event) {
 			
 			if (type === 'keydown' || type === 'keyup') {
-				
-				finalEvent.which = Window.extraCodes[finalEvent.which] || finalEvent.which;
-				finalEvent.keyCode = finalEvent.which;
-				
-				const initialCode = finalEvent.code;
-				
-				finalEvent.code = (
-					Window.keyNames[finalEvent.which] ||
-					finalEvent.code ||
-					'UNKNOWN'
-				);
-				// finalEvent.key = (
-				// 	Window.auxChars[finalEvent.which] ||
-				// 	finalEvent.key
-				// );
-				
-				if (type === 'keydown' && initialCode) {
-					this._pendingKeydown = finalEvent;
-					return;
-				}
-				
-			} else if (type === 'char') {
-				
-				if ( ! this._pendingKeydown ) {
-					return;
-				}
-				
-				finalEvent = this._pendingKeydown;
-				this._pendingKeydown = null;
-				
-				finalType = 'keydown';
-				finalEvent.charCode = event.charCode;
-				finalEvent.key = String.fromCharCode(event.charCode);
-				
+				event.which = Window.extraCodes[event.which] || event.which;
+				event.keyCode = event.which;
+				event.code = Window.keyNames[event.which] || event.code || 'UNKNOWN';
+				event.key = event.charCode ? String.fromCharCode(event.charCode) : '';
+				// event.key = Window.auxChars[event.which] || event.key;
 			}
 			
-			finalEvent.preventDefault = () => {};
-			finalEvent.stopPropagation = () => {};
+			event.preventDefault = () => {};
+			event.stopPropagation = () => {};
 			
 		}
 		
 		this.makeCurrent();
 		
-		super.emit(finalType, finalEvent);
+		super.emit(type, event);
 		
 	}
 	
