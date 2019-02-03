@@ -50,22 +50,25 @@ It will be used to transmit GLFW events.
 
 ### GLFW window events:
 
-* `'click'` - mouse button clicked
-* `'drop'` - drag-dropped some files on the window
-* `'focused'` - focus gained/lost
-* `'framebuffer_resize'` - render-surface resized
-* `'iconified'` - window was iconified
-* `'keydown'` - keyboard key down
-* `'keyup'` - keyboard key up
-* `'mousedown'` - mouse button down
-* `'mouseenter'` - mouse entered/left the window
-* `'mousemove'` - mouse moved
-* `'mouseup'` - mouse button up
-* `'mousewheel'` - mouse wheel rotation
+* `'blur'` - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/blur)
+* `'click'` - mouse button [clicked](https://developer.mozilla.org/en-US/docs/Web/Events/click)
+* `'drop'` - drag-[dropped](https://developer.mozilla.org/en-US/docs/Web/Events/drop) some files on the window
+* `'focus'` - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
+* `'focusin'` - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focusin)
+* `'focusout'` - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/focusout)
+* `'fbresize'` - render-surface resized `{ width, height }`
+* `'iconifiy'` - window was iconified
+* `'keydown'` - keyboard [key down](https://developer.mozilla.org/en-US/docs/Web/Events/keydown)
+* `'keyup'` - keyboard [key up](https://developer.mozilla.org/en-US/docs/Web/Events/keyup)
+* `'mousedown'` - mouse [button down](https://developer.mozilla.org/en-US/docs/Web/Events/mousedown)
+* `'mouseenter'` - mouse [entered](https://developer.mozilla.org/en-US/docs/Web/Events/mouseenter) the window
+* `'mouseleave'` - mouse [left](https://developer.mozilla.org/en-US/docs/Web/Events/mouseleave) the window
+* `'mouseup'` - mouse [button up](https://developer.mozilla.org/en-US/docs/Web/Events/mouseup)
 * `'quit'` - window closed
-* `'refresh'` - window sure needs to be redrawn
-* `'resize'` - window frame resized
-* `'window_pos'` - window moved
+* `'refresh'` - window needs to be redrawn
+* `'resize'` - window frame resized `{ width, height }`
+* `'wheel'` - mouse [wheel rotation](https://developer.mozilla.org/en-US/docs/Web/Events/wheel)
+* `'move'` - window moved `{ x, y }`
 
 > Note: `keypress` event is not supported.
 

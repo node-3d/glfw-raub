@@ -308,20 +308,15 @@ class Window extends EventEmitter {
 	
 	emit(type, event) {
 		
-		if (event) {
-			
-			if (type === 'keydown' || type === 'keyup') {
-				event.which = Window.extraCodes[event.which] || event.which;
-				event.keyCode = event.which;
-				event.code = Window.keyNames[event.which] || event.code || 'UNKNOWN';
-				event.key = event.charCode ? String.fromCharCode(event.charCode) : '';
-				// event.key = Window.auxChars[event.which] || event.key;
-			}
-			
-			event.preventDefault = () => {};
-			event.stopPropagation = () => {};
-			
+		if (type === 'keydown' || type === 'keyup') {
+			event.which = Window.extraCodes[event.which] || event.which;
+			event.keyCode = event.which;
+			event.code = Window.keyNames[event.which] || event.code || 'UNKNOWN';
+			event.key = event.charCode ? String.fromCharCode(event.charCode) : '';
 		}
+		
+		event.preventDefault = () => {};
+		event.stopPropagation = () => {};
 		
 		this.makeCurrent();
 		
