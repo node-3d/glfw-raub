@@ -34,6 +34,6 @@
 	},
 	"dependencies": {
 		"addon-tools-raub": "4.2.0",
-		"deps-opengl-raub": "2.2.0"
+		"deps-opengl-raub": "https://github.com/node-3d/deps-opengl-raub.git"
 	}
 }
