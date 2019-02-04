@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <sstream>
+#include <locale.h>
 
 #include "platform.hpp"
 #include "win-state.hpp"
@@ -33,6 +34,8 @@ void errorCb(int error, const char* description) {
 
 
 NAN_METHOD(init) {
+	
+	setlocale(LC_ALL, "");
 	
 	glfwSetErrorCallback(errorCb);
 	
