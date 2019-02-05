@@ -397,15 +397,15 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 
 void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	
-	double dx = xoffset * 100;
-	double dy = yoffset * 100;
-	
 	V8_VAR_OBJ evt = Nan::New<Object>();
 	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR("wheel"));
-	SET_PROP(evt, "wheelDeltaX", JS_NUM(dx));
-	SET_PROP(evt, "wheelDeltaY", JS_NUM(dy));
-	SET_PROP(evt, "wheelDelta", JS_NUM(dy));
+	SET_PROP(evt, "deltaX", JS_NUM(xoffset * 100));
+	SET_PROP(evt, "deltaY", JS_NUM(yoffset * 100));
+	SET_PROP(evt, "deltaZ", JS_NUM(0));
+	SET_PROP(evt, "wheelDeltaX", JS_NUM(xoffset * 120));
+	SET_PROP(evt, "wheelDeltaY", JS_NUM(yoffset * 120));
+	SET_PROP(evt, "wheelDelta", JS_NUM(yoffset * 120));
 	
 	V8_VAR_VAL argv[2] = { JS_STR("wheel"), evt };
 	_emit(window, 2, argv);
