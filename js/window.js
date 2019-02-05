@@ -314,7 +314,11 @@ class Window extends EventEmitter {
 			event.key = event.charCode ?
 				String.fromCharCode(event.charCode) :
 				(event.code || ' ');
-			event.code = Window.keyNames[event.which] || `Key${event.code}` || 'UNKNOWN';
+			event.code = (
+				Window.keyNames[event.which] ||
+				(event.code && `Key${event.code}`) ||
+				'UNKNOWN'
+			);
 		}
 		
 		event.preventDefault = () => {};

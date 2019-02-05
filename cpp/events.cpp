@@ -320,10 +320,17 @@ void cursorPosCB(GLFWwindow* window, double x, double y) { NAN_HS;
 	}
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
-	state->mouseX = static_cast<int>(x);
-	state->mouseY = static_cast<int>(y);
+	
+	int newX = static_cast<int>(x);
+	int newY = static_cast<int>(y);
 	
 	V8_VAR_OBJ evt = Nan::New<Object>();
+	SET_PROP(evt, "movementX", JS_INT(newX - state->mouseX));
+	SET_PROP(evt, "movementY", JS_INT(newY - state->mouseY));
+	
+	state->mouseX = newX;
+	state->mouseY = newY;
+	
 	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR("mousemove"));
 	
