@@ -311,8 +311,10 @@ class Window extends EventEmitter {
 		if (type === 'keydown' || type === 'keyup') {
 			event.which = Window.extraCodes[event.which] || event.which;
 			event.keyCode = event.which;
-			event.code = Window.keyNames[event.which] || event.code || 'UNKNOWN';
-			event.key = event.charCode ? String.fromCharCode(event.charCode) : ' ';
+			event.key = event.charCode ?
+				String.fromCharCode(event.charCode) :
+				(event.code || ' ');
+			event.code = Window.keyNames[event.which] || `Key${event.code}` || 'UNKNOWN';
 		}
 		
 		event.preventDefault = () => {};
