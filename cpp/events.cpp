@@ -99,10 +99,7 @@ void fillKey(V8_VAR_OBJ *_evt, int glfwKey, int scancode, int action, int mods) 
 	
 	const char *keyName = glfwGetKeyName(glfwKey, scancode);
 	
-	if (action == GLFW_REPEAT) {
-		SET_PROP(evt, "repeat", JS_BOOL(true));
-	}
-	
+	SET_PROP(evt, "repeat", JS_BOOL(action == GLFW_REPEAT));
 	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
 	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
 	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
