@@ -59,12 +59,12 @@ void fillMouse(V8_VAR_OBJ *_evt, GLFWwindow *window, int mods = -1) {
 	}
 	SET_PROP(evt, "buttons", JS_INT(buttons));
 	
-	SET_PROP(evt, "clientX", JS_NUM(state->mouseX));
-	SET_PROP(evt, "clientY", JS_NUM(state->mouseY));
-	SET_PROP(evt, "pageX", JS_NUM(state->mouseX));
-	SET_PROP(evt, "pageY", JS_NUM(state->mouseY));
-	SET_PROP(evt, "x", JS_NUM(state->mouseX));
-	SET_PROP(evt, "y", JS_NUM(state->mouseY));
+	SET_PROP(evt, "clientX", JS_INT(state->mouseX));
+	SET_PROP(evt, "clientY", JS_INT(state->mouseY));
+	SET_PROP(evt, "pageX", JS_INT(state->mouseX));
+	SET_PROP(evt, "pageY", JS_INT(state->mouseY));
+	SET_PROP(evt, "x", JS_INT(state->mouseX));
+	SET_PROP(evt, "y", JS_INT(state->mouseY));
 	
 	if (mods > -1) {
 		SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
@@ -400,12 +400,12 @@ void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	V8_VAR_OBJ evt = Nan::New<Object>();
 	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR("wheel"));
-	SET_PROP(evt, "deltaX", JS_NUM(xoffset * 100));
-	SET_PROP(evt, "deltaY", JS_NUM(yoffset * 100));
-	SET_PROP(evt, "deltaZ", JS_NUM(0));
-	SET_PROP(evt, "wheelDeltaX", JS_NUM(xoffset * 120));
-	SET_PROP(evt, "wheelDeltaY", JS_NUM(yoffset * 120));
-	SET_PROP(evt, "wheelDelta", JS_NUM(yoffset * 120));
+	SET_PROP(evt, "deltaX", JS_INT(static_cast<int>(xoffset * 100)));
+	SET_PROP(evt, "deltaY", JS_INT(static_cast<int>(yoffset * 100)));
+	SET_PROP(evt, "deltaZ", JS_INT(0));
+	SET_PROP(evt, "wheelDeltaX", JS_INT(static_cast<int>(xoffset * 120)));
+	SET_PROP(evt, "wheelDeltaY", JS_INT(static_cast<int>(yoffset * 120)));
+	SET_PROP(evt, "wheelDelta", JS_INT(static_cast<int>(yoffset * 120)));
 	
 	V8_VAR_VAL argv[2] = { JS_STR("wheel"), evt };
 	_emit(window, 2, argv);
