@@ -97,6 +97,22 @@ class Document extends Window {
 	get onkeyup() { return this.listeners('keyup'); }
 	set onkeyup(cb) { this.on('keyup', cb); }
 	
+	get onmousedown() { return this.listeners('mousedown'); }
+	set onmousedown(cb) { this.on('mousedown', cb); }
+	
+	get onmouseup() { return this.listeners('mouseup'); }
+	set onmouseup(cb) { this.on('mouseup', cb); }
+	
+	get onwheel() { return this.listeners('wheel'); }
+	set onwheel(cb) { this.on('wheel', cb); }
+	
+	get onmousewheel() { return this.listeners('mousewheel'); }
+	set onmousewheel(cb) { this.on('mousewheel', cb); }
+	
+	get onresize() { return this.listeners('resize'); }
+	set onresize(cb) { this.on('resize', cb); }
+	
+	
 	get style() {
 		const that = this;
 		return {
@@ -151,10 +167,13 @@ class Document extends Window {
 					return this._ctx && this._ctx.data;
 				},
 				
-				onkeydown : () => {},
-				onmousedown : () => {},
-				onkeyup   : () => {},
-				onmouseup   : () => {},
+				onkeydown    : () => {},
+				onkeyup      : () => {},
+				onmousedown  : () => {},
+				onmouseup    : () => {},
+				onwheel      : () => {},
+				onmousewheel : () => {},
+				onresize     : () => {},
 				
 				dispatchEvent       : () => {},
 				addEventListener    : () => {},

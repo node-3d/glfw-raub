@@ -410,6 +410,9 @@ void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	V8_VAR_VAL argv[2] = { JS_STR("wheel"), evt };
 	_emit(window, 2, argv);
 	
+	V8_VAR_VAL argv2[2] = { JS_STR("mousewheel"), evt };
+	_emit(window, 2, argv2);
+	
 }
 
 
