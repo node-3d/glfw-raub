@@ -29,7 +29,7 @@ class Window extends EventEmitter {
 		
 		const mode = opts.fullscreen ? 'fullscreen' : (opts.mode ? opts.mode : 'windowed');
 		
-		this._decorated = mode === 'windowed';
+		this._decorated = true;
 		if (opts.decorated !== undefined) {
 			this._decorated = opts.decorated;
 		}
@@ -388,7 +388,7 @@ class Window extends EventEmitter {
 	_create() {
 		
 		if (this._mode === 'windowed') {
-			
+			console.log('window.js', 'DECO', this._decorated);
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
 			this._window = glfw.createWindow(
 				this._width,

@@ -3,8 +3,15 @@
 const glfw = require('../');
 const { Document } = glfw;
 
+let mode = 'windowed';
 
-const doc = new Document({ title: 'GLFW Simple Test 1', autoFullscreen: true });
+if (process.argv.includes('--fullscreen')) {
+	mode = 'fullscreen';
+} else if (process.argv.includes('--borderless')) {
+	mode = 'borderless';
+}
+
+const doc = new Document({ title: 'GLFW Simple Test 1', mode });
 
 doc.on(
 	'resize',
