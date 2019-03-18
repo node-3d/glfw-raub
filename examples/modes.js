@@ -14,7 +14,7 @@ doc.on(
 const F_KEY = 70;
 
 doc.on('keydown', e => {
-	console.log('modes.js', e.keyCode === F_KEY, e.ctrlKey, e.shiftKey);
+	
 	if (e.keyCode === F_KEY && e.ctrlKey && e.shiftKey) {
 		doc.mode = 'windowed';
 	} else if (e.keyCode === F_KEY && e.ctrlKey && e.altKey) {

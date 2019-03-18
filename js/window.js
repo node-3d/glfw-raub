@@ -94,12 +94,47 @@ class Window extends EventEmitter {
 	get handle() { return this._window; }
 	
 	
+	getCurrentMonitor() {
+		
+		if ( ! this._window ) {
+			return this._primaryDisplay;
+		}
+		
+		let bestoverlap = 0;
+		let bestmonitor = null;
+		
+		const { x: wx, y: wy } = this.pos;
+		const { width: ww, height: wh } = this.size;
+		
+		this._monitors = glfw.getMonitors();
+		
+		this._monitors.forEach(monitor => {
+			const { width: mw, height: mh } = monitor;
+			const { pos_x: mx, pos_y: my } = monitor;
+			let overlap = (
+				Math.max(0, Math.min(wx + ww, mx + mw) - Math.max(wx, mx)) *
+				Math.max(0, Math.min(wy + wh, my + mh) - Math.max(wy, my))
+			);
+			if (bestoverlap < overlap) {
+				bestoverlap = overlap;
+				bestmonitor = monitor;
+			}
+		});
+		
+		return bestmonitor;
+		
+	}
+	
+	
 	get mode() { return this._mode; }
 	set mode(v) {
 		
 		if (this._mode === v) {
 			return;
 		}
+		
+		const currentMonitor = this.getCurrentMonitor();
+		
 		const prevMode = this._mode;
 		this._mode = v;
 		
@@ -119,17 +154,17 @@ class Window extends EventEmitter {
 			throw new Error('No suitable display found for a new GLFW Window.');
 		}
 		
-		const isBadId = this._display === undefined || this._display >= this._monitors.length;
-		const dispId = isBadId ? -1 : this._display;
-		const currentScreen = dispId > -1 ? this._monitors[dispId] : this._primaryDisplay;
-		
-		this._display = this._monitors.indexOf(currentScreen);
+		this._display = this._monitors.indexOf(currentMonitor);
 		
 		if (this._mode === 'windowed') {
 			
+			this._x = this._prevX || this._x;
+			this._y = this._prevY || this._y;
 			this._width = this._prevWidth || this._width;
 			this._height = this._prevHeight || this._height;
 			this._decorated = this._prevDecorated || this._decorated;
+			delete this._prevX;
+			delete this._prevY;
 			delete this._prevWidth;
 			delete this._prevHeight;
 			delete this._prevDecorated;
@@ -137,13 +172,17 @@ class Window extends EventEmitter {
 		} else {
 			
 			if (
-				this._width !== currentScreen.width ||
-				this._height !== currentScreen.height
+				this._width !== currentMonitor.width ||
+				this._height !== currentMonitor.height
 			) {
+				this._prevX = this._x;
+				this._prevY = this._y;
 				this._prevWidth = this._width;
 				this._prevHeight = this._height;
-				this._width = currentScreen.width;
-				this._height = currentScreen.height;
+				this._x = currentMonitor.pos_x;
+				this._y = currentMonitor.pos_y;
+				this._width = currentMonitor.width;
+				this._height = currentMonitor.height;
 			}
 			
 		}
@@ -157,6 +196,20 @@ class Window extends EventEmitter {
 			
 			this._window = this._modeCache[this._mode];
 			this.show();
+			
+		}
+		
+		if (this._mode === 'windowed') {
+			
+			if (this._x && this._y) {
+				glfw.setWindowPos(this._window, this._x, this._y);
+			}
+			
+		} else if (this._mode === 'borderless') {
+			
+			const monitor = this._monitors[this._display];
+			glfw.setWindowPos(this._window, monitor.pos_x, monitor.pos_y);
+			glfw.setWindowSize(this._window, monitor.width, monitor.height);
 			
 		}
 		
@@ -249,14 +302,14 @@ class Window extends EventEmitter {
 			return;
 		}
 		this._x = v;
-		glfw.setWindowSize(this._window, this._x, this._y);
+		glfw.setWindowPos(this._window, this._x, this._y);
 	}
 	set y(v) {
 		if (this._y === v) {
 			return;
 		}
 		this._y = v;
-		glfw.setWindowSize(this._window, this._x, this._y);
+		glfw.setWindowPos(this._window, this._x, this._y);
 	}
 	
 	get pos() {
@@ -337,7 +390,12 @@ class Window extends EventEmitter {
 		if (this._mode === 'windowed') {
 			
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
+			this._window = glfw.createWindow(
+				this._width,
+				this._height,
+				this._emitter,
+				this._title
+			);
 			
 		} else if (this._mode === 'borderless') {
 			
@@ -346,16 +404,23 @@ class Window extends EventEmitter {
 			
 			glfw.windowHint(glfw.DECORATED, glfw.FALSE);
 			
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
-			
-			glfw.setWindowPos(this._window, 0, 0);
+			this._window = glfw.createWindow(
+				this._width,
+				this._height,
+				this._emitter,
+				this._title
+			);
 			
 		} else if (this._mode === 'fullscreen') {
 			
 			this._adjustFullscreen();
 			
 			this._window = glfw.createWindow(
-				this._width, this._height, this._emitter, this._title, this._display
+				this._width,
+				this._height,
+				this._emitter,
+				this._title,
+				this._display
 			);
 			
 		} else {

@@ -474,8 +474,8 @@ NAN_METHOD(setWindowSize) { THIS_WINDOW;
 
 NAN_METHOD(setWindowPos) { THIS_WINDOW;
 	
-	REQ_UINT32_ARG(1, x);
-	REQ_UINT32_ARG(2, y);
+	REQ_INT32_ARG(1, x);
+	REQ_INT32_ARG(2, y);
 	
 	glfwSetWindowPos(window, x, y);
 	
