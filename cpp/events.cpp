@@ -27,7 +27,7 @@ void NAN_INLINE(_emit(GLFWwindow *window, int argc, V8_VAR_VAL argv[])) {
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
 	
-	if (Nan::New(state->events)->Has(JS_STR("emit"))) {
+	if (Nan::New(state->events)->Has(Nan::GetCurrentContext(), JS_STR("emit")).ToChecked()) {
 		
 		Nan::Callback callback(Nan::New(state->events)->Get(JS_STR("emit")).As<Function>());
 		
