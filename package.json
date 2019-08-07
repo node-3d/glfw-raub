@@ -1,7 +1,7 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
 	"name": "glfw-raub",
-	"version": "3.0.0",
+	"version": "4.0.0",
 	"description": "GLFW for Node.js",
 	"license": "MIT",
 	"main": "index.js",
@@ -18,22 +18,21 @@
 		"gyp"
 	],
 	"engines": {
-		"node": ">=10.13.0",
-		"npm": ">=6.4.1"
+		"node": ">=10.16.1",
+		"npm": ">=6.9.0"
 	},
-	"maintainers": [
-		{
-			"name": "Luis Blanco",
-			"email": "luisblanco1337@gmail.com",
-			"skype": "rauber666"
-		}
-	],
+	"config": {
+		"install": "v4.0.0"
+	},
+	"scripts": {
+		"postinstall": "node install"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/node-3d/glfw-raub.git"
 	},
 	"dependencies": {
-		"addon-tools-raub": "4.2.0",
-		"deps-opengl-raub": "2.2.0"
+		"addon-tools-raub": "https://github.com/node-3d/addon-tools-raub",
+		"deps-opengl-raub": "https://github.com/node-3d/deps-opengl-raub"
 	}
 }

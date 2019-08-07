@@ -2,9 +2,6 @@
 #define _EVENTS_HPP_
 
 
-#include <addon-tools.hpp>
-
-
 struct GLFWwindow;
 
 namespace glfw {

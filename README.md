@@ -12,17 +12,16 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 
 **Node.js** addon with **GLFW3** bindings.
 
+> Note: this **addon uses N-API**, and therefore is ABI-compatible across different
+Node.js versions. Addon binaries are precompiled and **there is no compilation**
+step during the `npm i` command.
+
 ![Example](examples/screenshot.jpg)
 
 * Exposes low-level **GLFW** interface.
 * Multiple windows for a single **Node.js** process - easy.
 * Goes fullscreen and back fluently.
 * Has `Document` class, capable of tricking other libs, as if we are in a browser.
-
-> Note: for `npm i` to succeed, compilation tools must be in place on your system.
-For Windows, use **ADMIN PRIVELEGED** command line:
-`npm i -g windows-build-tools`.
-Also **Windows** needs **vcredist 2013** to be installed.
 
 
 ## Usage

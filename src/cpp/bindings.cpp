@@ -1,22 +1,20 @@
-#include <cstdlib>
-
 #include "platform.hpp"
 #include "glfw.hpp"
 
 
-#define JS_GLFW_CONSTANT(name) target->Set(JS_STR(#name), JS_INT(GLFW_ ## name));
+#define JS_GLFW_CONSTANT(name)                                                \
+	exports.Set(#name, static_cast<double>(GLFW_ ## name));
 
-#define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
+// #define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
+#define JS_GLFW_SET_METHOD(name)                                              \
+	exports.DefineProperty(                                                   \
+		Napi::PropertyDescriptor::Function(env, #name, glfw::name)            \
+	);
 
 
-extern "C" {
-
-
-void initBindings(V8_VAR_OBJ target) {
+Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
 	atexit(glfw::deinit);
-	
-	NAN_HS;
 	
 	/* GLFW initialization, termination and version querying */
 	JS_GLFW_SET_METHOD(init);
@@ -362,10 +360,9 @@ void initBindings(V8_VAR_OBJ target) {
 	JS_GLFW_SET_METHOD(testScene);
 	JS_GLFW_SET_METHOD(testJoystick);
 	
+	return exports;
+	
 }
 
 
-NODE_MODULE(glfw, initBindings);
-
-
-} // extern "C"
+NODE_API_MODULE(glfw, initModule)
