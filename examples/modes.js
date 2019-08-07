@@ -3,8 +3,15 @@
 const glfw = require('../');
 const { Document } = glfw;
 
+let mode = 'windowed';
 
-const doc = new Document({ title: 'GLFW Simple Test 1', autoFullscreen: true });
+if (process.argv.includes('--fullscreen')) {
+	mode = 'fullscreen';
+} else if (process.argv.includes('--borderless')) {
+	mode = 'borderless';
+}
+
+const doc = new Document({ title: 'GLFW Simple Test 1', mode });
 
 doc.on(
 	'resize',
@@ -14,7 +21,7 @@ doc.on(
 const F_KEY = 70;
 
 doc.on('keydown', e => {
-	console.log('modes.js', e.keyCode === F_KEY, e.ctrlKey, e.shiftKey);
+	
 	if (e.keyCode === F_KEY && e.ctrlKey && e.shiftKey) {
 		doc.mode = 'windowed';
 	} else if (e.keyCode === F_KEY && e.ctrlKey && e.altKey) {

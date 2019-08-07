@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <sstream>
+#include <locale.h>
 
 #include "platform.hpp"
 #include "win-state.hpp"
@@ -33,6 +34,8 @@ void errorCb(int error, const char* description) {
 
 
 NAN_METHOD(init) {
+	
+	setlocale(LC_ALL, "");
 	
 	glfwSetErrorCallback(errorCb);
 	
@@ -471,8 +474,8 @@ NAN_METHOD(setWindowSize) { THIS_WINDOW;
 
 NAN_METHOD(setWindowPos) { THIS_WINDOW;
 	
-	REQ_UINT32_ARG(1, x);
-	REQ_UINT32_ARG(2, y);
+	REQ_INT32_ARG(1, x);
+	REQ_INT32_ARG(2, y);
 	
 	glfwSetWindowPos(window, x, y);
 	

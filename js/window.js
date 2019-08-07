@@ -29,7 +29,7 @@ class Window extends EventEmitter {
 		
 		const mode = opts.fullscreen ? 'fullscreen' : (opts.mode ? opts.mode : 'windowed');
 		
-		this._decorated = mode === 'windowed';
+		this._decorated = true;
 		if (opts.decorated !== undefined) {
 			this._decorated = opts.decorated;
 		}
@@ -94,12 +94,47 @@ class Window extends EventEmitter {
 	get handle() { return this._window; }
 	
 	
+	getCurrentMonitor() {
+		
+		if ( ! this._window ) {
+			return this._primaryDisplay;
+		}
+		
+		let bestoverlap = 0;
+		let bestmonitor = null;
+		
+		const { x: wx, y: wy } = this.pos;
+		const { width: ww, height: wh } = this.size;
+		
+		this._monitors = glfw.getMonitors();
+		
+		this._monitors.forEach(monitor => {
+			const { width: mw, height: mh } = monitor;
+			const { pos_x: mx, pos_y: my } = monitor;
+			let overlap = (
+				Math.max(0, Math.min(wx + ww, mx + mw) - Math.max(wx, mx)) *
+				Math.max(0, Math.min(wy + wh, my + mh) - Math.max(wy, my))
+			);
+			if (bestoverlap < overlap) {
+				bestoverlap = overlap;
+				bestmonitor = monitor;
+			}
+		});
+		
+		return bestmonitor;
+		
+	}
+	
+	
 	get mode() { return this._mode; }
 	set mode(v) {
 		
 		if (this._mode === v) {
 			return;
 		}
+		
+		const currentMonitor = this.getCurrentMonitor();
+		
 		const prevMode = this._mode;
 		this._mode = v;
 		
@@ -119,17 +154,17 @@ class Window extends EventEmitter {
 			throw new Error('No suitable display found for a new GLFW Window.');
 		}
 		
-		const isBadId = this._display === undefined || this._display >= this._monitors.length;
-		const dispId = isBadId ? -1 : this._display;
-		const currentScreen = dispId > -1 ? this._monitors[dispId] : this._primaryDisplay;
-		
-		this._display = this._monitors.indexOf(currentScreen);
+		this._display = this._monitors.indexOf(currentMonitor);
 		
 		if (this._mode === 'windowed') {
 			
+			this._x = this._prevX || this._x;
+			this._y = this._prevY || this._y;
 			this._width = this._prevWidth || this._width;
 			this._height = this._prevHeight || this._height;
 			this._decorated = this._prevDecorated || this._decorated;
+			delete this._prevX;
+			delete this._prevY;
 			delete this._prevWidth;
 			delete this._prevHeight;
 			delete this._prevDecorated;
@@ -137,13 +172,17 @@ class Window extends EventEmitter {
 		} else {
 			
 			if (
-				this._width !== currentScreen.width ||
-				this._height !== currentScreen.height
+				this._width !== currentMonitor.width ||
+				this._height !== currentMonitor.height
 			) {
+				this._prevX = this._x;
+				this._prevY = this._y;
 				this._prevWidth = this._width;
 				this._prevHeight = this._height;
-				this._width = currentScreen.width;
-				this._height = currentScreen.height;
+				this._x = currentMonitor.pos_x;
+				this._y = currentMonitor.pos_y;
+				this._width = currentMonitor.width;
+				this._height = currentMonitor.height;
 			}
 			
 		}
@@ -157,6 +196,20 @@ class Window extends EventEmitter {
 			
 			this._window = this._modeCache[this._mode];
 			this.show();
+			
+		}
+		
+		if (this._mode === 'windowed') {
+			
+			if (this._x && this._y) {
+				glfw.setWindowPos(this._window, this._x, this._y);
+			}
+			
+		} else if (this._mode === 'borderless') {
+			
+			const monitor = this._monitors[this._display];
+			glfw.setWindowPos(this._window, monitor.pos_x, monitor.pos_y);
+			glfw.setWindowSize(this._window, monitor.width, monitor.height);
 			
 		}
 		
@@ -249,14 +302,14 @@ class Window extends EventEmitter {
 			return;
 		}
 		this._x = v;
-		glfw.setWindowSize(this._window, this._x, this._y);
+		glfw.setWindowPos(this._window, this._x, this._y);
 	}
 	set y(v) {
 		if (this._y === v) {
 			return;
 		}
 		this._y = v;
-		glfw.setWindowSize(this._window, this._x, this._y);
+		glfw.setWindowPos(this._window, this._x, this._y);
 	}
 	
 	get pos() {
@@ -311,8 +364,14 @@ class Window extends EventEmitter {
 		if (type === 'keydown' || type === 'keyup') {
 			event.which = Window.extraCodes[event.which] || event.which;
 			event.keyCode = event.which;
-			event.code = Window.keyNames[event.which] || event.code || 'UNKNOWN';
-			event.key = event.charCode ? String.fromCharCode(event.charCode) : '';
+			event.key = event.charCode ?
+				String.fromCharCode(event.charCode) :
+				(event.code || ' ');
+			event.code = (
+				Window.keyNames[event.which] ||
+				(event.code && `Key${event.code}`) ||
+				'UNKNOWN'
+			);
 		}
 		
 		event.preventDefault = () => {};
@@ -331,7 +390,12 @@ class Window extends EventEmitter {
 		if (this._mode === 'windowed') {
 			
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
+			this._window = glfw.createWindow(
+				this._width,
+				this._height,
+				this._emitter,
+				this._title
+			);
 			
 		} else if (this._mode === 'borderless') {
 			
@@ -340,16 +404,23 @@ class Window extends EventEmitter {
 			
 			glfw.windowHint(glfw.DECORATED, glfw.FALSE);
 			
-			this._window = glfw.createWindow(this._width, this._height, this._emitter, this._title);
-			
-			glfw.setWindowPos(this._window, 0, 0);
+			this._window = glfw.createWindow(
+				this._width,
+				this._height,
+				this._emitter,
+				this._title
+			);
 			
 		} else if (this._mode === 'fullscreen') {
 			
 			this._adjustFullscreen();
 			
 			this._window = glfw.createWindow(
-				this._width, this._height, this._emitter, this._title, this._display
+				this._width,
+				this._height,
+				this._emitter,
+				this._title,
+				this._display
 			);
 			
 		} else {
@@ -432,133 +503,131 @@ Window.keyNames = {
 	121 : 'F10',
 	122 : 'F11',
 	123 : 'F12',
-	13 : 'Enter',
+	13  : 'Enter',
 	144 : 'NumLock',
 	145 : 'ScrollLock',
-	16 : 'Shift',
-	17 : 'Control',
-	18 : 'Alt',
+	16  : 'Shift',
+	17  : 'Control',
+	18  : 'Alt',
 	186 : 'Semicolon',
 	187 : 'Equal',
 	188 : 'Comma',
 	189 : 'Minus',
-	19 : 'Pause',
+	19  : 'Pause',
 	190 : 'Period',
 	191 : 'Slash',
 	192 : 'Tilda',
-	20 : 'CapsLock',
+	20  : 'CapsLock',
 	219 : 'LeftBracket',
 	220 : 'Backslash',
 	221 : 'RightBracket',
 	222 : 'Apostrophe',
-	27 : 'Escape',
-	33 : 'PageUp',
-	34 : 'PageDown',
-	35 : 'End',
-	36 : 'Home',
-	37 : 'Left',
-	38 : 'Up',
-	39 : 'Right',
-	40 : 'Down',
-	45 : 'Insert',
-	46 : 'Delete',
-	8 : 'Backspace',
-	9 : 'Tab',
-	91 : 'LeftSuper',
-	93 : 'RightSuper',
-	96 : 'Numpad0',
-	97 : 'Numpad1',
-	98 : 'Numpad2',
-	99 : 'Numpad3',
+	27  : 'Escape',
+	32  : 'Space',
+	33  : 'PageUp',
+	34  : 'PageDown',
+	35  : 'End',
+	36  : 'Home',
+	37  : 'Left',
+	38  : 'Up',
+	39  : 'Right',
+	40  : 'Down',
+	45  : 'Insert',
+	46  : 'Delete',
+	8   : 'Backspace',
+	9   : 'Tab',
+	91  : 'LeftSuper',
+	93  : 'RightSuper',
+	96  : 'Numpad0',
+	97  : 'Numpad1',
+	98  : 'Numpad2',
+	99  : 'Numpad3',
 };
 
-Window.auxChars = {
-	13 : '\n',
-	9  : '\t',
-};
 
 Window.extraCodes = {
-	[glfw.KEY_ESCAPE] : 27,
-	[glfw.KEY_ENTER] : 13,
-	[glfw.KEY_TAB] : 9,
-	[glfw.KEY_BACKSPACE] : 8,
-	[glfw.KEY_INSERT] : 45,
-	[glfw.KEY_DELETE] : 46,
-	[glfw.KEY_RIGHT] : 39,
-	[glfw.KEY_LEFT] : 37,
-	[glfw.KEY_DOWN] : 40,
-	[glfw.KEY_UP] : 38,
-	[glfw.KEY_PAGE_UP] : 33,
-	[glfw.KEY_PAGE_DOWN] : 34,
-	[glfw.KEY_HOME] : 36,
-	[glfw.KEY_END] : 35,
-	[glfw.KEY_CAPS_LOCK] : 20,
-	[glfw.KEY_SCROLL_LOCK] : 145,
-	[glfw.KEY_NUM_LOCK] : 144,
-	[glfw.KEY_PRINT_SCREEN] : 144,
-	[glfw.KEY_PAUSE] : 19,
-	[glfw.KEY_F1] : 112,
-	[glfw.KEY_F2] : 113,
-	[glfw.KEY_F3] : 114,
-	[glfw.KEY_F4] : 115,
-	[glfw.KEY_F5] : 116,
-	[glfw.KEY_F6] : 117,
-	[glfw.KEY_F7] : 118,
-	[glfw.KEY_F8] : 119,
-	[glfw.KEY_F9] : 120,
-	[glfw.KEY_F10] : 121,
-	[glfw.KEY_F11] : 122,
-	[glfw.KEY_F12] : 123,
-	[glfw.KEY_F13] : 123,
-	[glfw.KEY_F14] : 123,
-	[glfw.KEY_F15] : 123,
-	[glfw.KEY_F16] : 123,
-	[glfw.KEY_F17] : 123,
-	[glfw.KEY_F18] : 123,
-	[glfw.KEY_F19] : 123,
-	[glfw.KEY_F20] : 123,
-	[glfw.KEY_F21] : 123,
-	[glfw.KEY_F22] : 123,
-	[glfw.KEY_F23] : 123,
-	[glfw.KEY_F24] : 123,
-	[glfw.KEY_F25] : 123,
-	[glfw.KEY_KP_0] : 96,
-	[glfw.KEY_KP_1] : 97,
-	[glfw.KEY_KP_2] : 98,
-	[glfw.KEY_KP_3] : 99,
-	[glfw.KEY_KP_4] : 100,
-	[glfw.KEY_KP_5] : 101,
-	[glfw.KEY_KP_6] : 102,
-	[glfw.KEY_KP_7] : 103,
-	[glfw.KEY_KP_8] : 104,
-	[glfw.KEY_KP_9] : 105,
-	[glfw.KEY_KP_DECIMAL] : 110,
-	[glfw.KEY_KP_DIVIDE] : 111,
-	[glfw.KEY_KP_MULTIPLY] : 106,
-	[glfw.KEY_KP_SUBTRACT] : 109,
-	[glfw.KEY_KP_ADD] : 107,
-	[glfw.KEY_KP_ENTER] : 13,
-	[glfw.KEY_KP_EQUAL] : 187,
-	[glfw.KEY_LEFT_SHIFT] : 16,
-	[glfw.KEY_LEFT_CONTROL] : 17,
-	[glfw.KEY_LEFT_ALT] : 18,
-	[glfw.KEY_LEFT_SUPER] : 91,
-	[glfw.KEY_RIGHT_SHIFT] : 16,
-	[glfw.KEY_RIGHT_CONTROL] : 17,
-	[glfw.KEY_RIGHT_ALT] : 18,
-	[glfw.KEY_RIGHT_SUPER] : 93,
-	[glfw.KEY_MENU] : 18,
-	[glfw.KEY_SEMICOLON] : 186,
-	[glfw.KEY_EQUAL] : 187,
-	[glfw.KEY_COMMA] : 188,
-	[glfw.KEY_MINUS] : 189,
-	[glfw.KEY_PERIOD] : 190,
-	[glfw.KEY_SLASH] : 191,
-	[glfw.KEY_GRAVE_ACCENT] : 192,
-	[glfw.KEY_LEFT_BRACKET] : 219,
-	[glfw.KEY_BACKSLASH] : 220,
+	[glfw.KEY_APOSTROPHE]    : 222,
+	[glfw.KEY_BACKSLASH]     : 220,
+	[glfw.KEY_BACKSPACE]     : 8,
+	[glfw.KEY_CAPS_LOCK]     : 20,
+	[glfw.KEY_COMMA]         : 188,
+	[glfw.KEY_DELETE]        : 46,
+	[glfw.KEY_DOWN]          : 40,
+	[glfw.KEY_END]           : 35,
+	[glfw.KEY_ENTER]         : 13,
+	[glfw.KEY_EQUAL]         : 187,
+	[glfw.KEY_ESCAPE]        : 27,
+	[glfw.KEY_F10]           : 121,
+	[glfw.KEY_F11]           : 122,
+	[glfw.KEY_F12]           : 123,
+	[glfw.KEY_F13]           : 123,
+	[glfw.KEY_F14]           : 123,
+	[glfw.KEY_F15]           : 123,
+	[glfw.KEY_F16]           : 123,
+	[glfw.KEY_F17]           : 123,
+	[glfw.KEY_F18]           : 123,
+	[glfw.KEY_F19]           : 123,
+	[glfw.KEY_F1]            : 112,
+	[glfw.KEY_F20]           : 123,
+	[glfw.KEY_F21]           : 123,
+	[glfw.KEY_F22]           : 123,
+	[glfw.KEY_F23]           : 123,
+	[glfw.KEY_F24]           : 123,
+	[glfw.KEY_F25]           : 123,
+	[glfw.KEY_F2]            : 113,
+	[glfw.KEY_F3]            : 114,
+	[glfw.KEY_F4]            : 115,
+	[glfw.KEY_F5]            : 116,
+	[glfw.KEY_F6]            : 117,
+	[glfw.KEY_F7]            : 118,
+	[glfw.KEY_F8]            : 119,
+	[glfw.KEY_F9]            : 120,
+	[glfw.KEY_GRAVE_ACCENT]  : 192,
+	[glfw.KEY_HOME]          : 36,
+	[glfw.KEY_INSERT]        : 45,
+	[glfw.KEY_KP_0]          : 96,
+	[glfw.KEY_KP_1]          : 97,
+	[glfw.KEY_KP_2]          : 98,
+	[glfw.KEY_KP_3]          : 99,
+	[glfw.KEY_KP_4]          : 100,
+	[glfw.KEY_KP_5]          : 101,
+	[glfw.KEY_KP_6]          : 102,
+	[glfw.KEY_KP_7]          : 103,
+	[glfw.KEY_KP_8]          : 104,
+	[glfw.KEY_KP_9]          : 105,
+	[glfw.KEY_KP_ADD]        : 107,
+	[glfw.KEY_KP_DECIMAL]    : 110,
+	[glfw.KEY_KP_DIVIDE]     : 111,
+	[glfw.KEY_KP_ENTER]      : 13,
+	[glfw.KEY_KP_EQUAL]      : 187,
+	[glfw.KEY_KP_MULTIPLY]   : 106,
+	[glfw.KEY_KP_SUBTRACT]   : 109,
+	[glfw.KEY_LEFT]          : 37,
+	[glfw.KEY_LEFT_ALT]      : 18,
+	[glfw.KEY_LEFT_BRACKET]  : 219,
+	[glfw.KEY_LEFT_CONTROL]  : 17,
+	[glfw.KEY_LEFT_SHIFT]    : 16,
+	[glfw.KEY_LEFT_SUPER]    : 91,
+	[glfw.KEY_MENU]          : 18,
+	[glfw.KEY_MINUS]         : 189,
+	[glfw.KEY_NUM_LOCK]      : 144,
+	[glfw.KEY_PAGE_DOWN]     : 34,
+	[glfw.KEY_PAGE_UP]       : 33,
+	[glfw.KEY_PAUSE]         : 19,
+	[glfw.KEY_PERIOD]        : 190,
+	[glfw.KEY_PRINT_SCREEN]  : 144,
+	[glfw.KEY_RIGHT]         : 39,
+	[glfw.KEY_RIGHT_ALT]     : 18,
 	[glfw.KEY_RIGHT_BRACKET] : 221,
-	[glfw.KEY_APOSTROPHE] : 222,
+	[glfw.KEY_RIGHT_CONTROL] : 17,
+	[glfw.KEY_RIGHT_SHIFT]   : 16,
+	[glfw.KEY_RIGHT_SUPER]   : 93,
+	[glfw.KEY_SCROLL_LOCK]   : 145,
+	[glfw.KEY_SEMICOLON]     : 186,
+	[glfw.KEY_SLASH]         : 191,
+	[glfw.KEY_SPACE]         : 32,
+	[glfw.KEY_TAB]           : 9,
+	[glfw.KEY_UP]            : 38,
 };
 
 

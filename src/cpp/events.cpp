@@ -41,7 +41,9 @@ void NAN_INLINE(_emit(GLFWwindow *window, int argc, V8_VAR_VAL argv[])) {
 }
 
 
-void fillMouse(V8_VAR_OBJ &evt, GLFWwindow *window, int mods = -1) {
+void fillMouse(V8_VAR_OBJ *_evt, GLFWwindow *window, int mods = -1) {
+	
+	V8_VAR_OBJ &evt = *_evt;
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
 	
@@ -55,14 +57,14 @@ void fillMouse(V8_VAR_OBJ &evt, GLFWwindow *window, int mods = -1) {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE)) {
 		buttons |= 4;
 	}
-	SET_PROP(evt1, "buttons", JS_INT(buttons));
+	SET_PROP(evt, "buttons", JS_INT(buttons));
 	
-	SET_PROP(evt, "clientX", JS_NUM(state->mouseX));
-	SET_PROP(evt, "clientY", JS_NUM(state->mouseY));
-	SET_PROP(evt, "pageX", JS_NUM(state->mouseX));
-	SET_PROP(evt, "pageY", JS_NUM(state->mouseY));
-	SET_PROP(evt, "x", JS_NUM(state->mouseX));
-	SET_PROP(evt, "y", JS_NUM(state->mouseY));
+	SET_PROP(evt, "clientX", JS_INT(state->mouseX));
+	SET_PROP(evt, "clientY", JS_INT(state->mouseY));
+	SET_PROP(evt, "pageX", JS_INT(state->mouseX));
+	SET_PROP(evt, "pageY", JS_INT(state->mouseY));
+	SET_PROP(evt, "x", JS_INT(state->mouseX));
+	SET_PROP(evt, "y", JS_INT(state->mouseY));
 	
 	if (mods > -1) {
 		SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
@@ -91,14 +93,13 @@ void fillMouse(V8_VAR_OBJ &evt, GLFWwindow *window, int mods = -1) {
 }
 
 
-void fillKey(V8_VAR_OBJ &evt, int glfwKey, int scancode, int action, int mods) {
+void fillKey(V8_VAR_OBJ *_evt, int glfwKey, int scancode, int action, int mods) {
+	
+	V8_VAR_OBJ &evt = *_evt;
 	
 	const char *keyName = glfwGetKeyName(glfwKey, scancode);
 	
-	if (action == GLFW_REPEAT) {
-		SET_PROP(evt, "repeat", JS_BOOL(true));
-	}
-	
+	SET_PROP(evt, "repeat", JS_BOOL(action == GLFW_REPEAT));
 	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
 	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
 	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
@@ -160,7 +161,7 @@ void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
 void windowDropCB(GLFWwindow *window, int count, const char **paths) { NAN_HS;
 	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(evt, window);
+	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR("drop"));
 	
 	V8_VAR_OBJ dataTransfer = Nan::New<Object>();
@@ -229,15 +230,15 @@ void windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
 		typeDirFound = typeFocusout;
 	}
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR(typeFound));
-	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
-	_emit(window, 2, argv);
+	V8_VAR_OBJ evt1 = Nan::New<Object>();
+	SET_PROP(evt1, "type", JS_STR(typeFound));
+	V8_VAR_VAL argv1[2] = { JS_STR(typeFound), evt1 };
+	_emit(window, 2, argv1);
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR(typeDirFound));
-	V8_VAR_VAL argv[2] = { JS_STR(typeDirFound), evt };
-	_emit(window, 2, argv);
+	V8_VAR_OBJ evt2 = Nan::New<Object>();
+	SET_PROP(evt2, "type", JS_STR(typeDirFound));
+	V8_VAR_VAL argv2[2] = { JS_STR(typeDirFound), evt2 };
+	_emit(window, 2, argv2);
 	
 }
 
@@ -269,7 +270,7 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 	}
 	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillKey(evt, glfwKey, scancode, action, mods);
+	fillKey(&evt, glfwKey, scancode, action, mods);
 	SET_PROP(evt, "charCode", JS_INT(0));
 	SET_PROP(evt, "type", JS_STR(typeFound));
 	
@@ -289,7 +290,7 @@ void charCB(GLFWwindow* window, unsigned codepoint) { NAN_HS;
 	
 	V8_VAR_OBJ evt = Nan::New<Object>();
 	fillKey(
-		evt,
+		&evt,
 		state->pendingKey,
 		state->pendingScan,
 		state->pendingAction,
@@ -319,11 +320,18 @@ void cursorPosCB(GLFWwindow* window, double x, double y) { NAN_HS;
 	}
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
-	state->mouseX = static_cast<int>(x);
-	state->mouseY = static_cast<int>(y);
+	
+	int newX = static_cast<int>(x);
+	int newY = static_cast<int>(y);
 	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(evt, window);
+	SET_PROP(evt, "movementX", JS_INT(newX - state->mouseX));
+	SET_PROP(evt, "movementY", JS_INT(newY - state->mouseY));
+	
+	state->mouseX = newX;
+	state->mouseY = newY;
+	
+	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR("mousemove"));
 	
 	V8_VAR_VAL argv[2] = { JS_STR("mousemove"), evt };
@@ -342,7 +350,7 @@ void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
 	}
 	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(evt, window);
+	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR(typeFound));
 	
 	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
@@ -362,7 +370,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 	int which = btnId + 1;
 	
 	V8_VAR_OBJ evt1 = Nan::New<Object>();
-	fillMouse(evt1, window);
+	fillMouse(&evt1, window);
 	SET_PROP(evt1, "type", JS_STR(action ? "mousedown" : "mouseup"));
 	SET_PROP(evt1, "button", JS_INT(btnId));
 	
@@ -374,7 +382,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 	if ( ! action ) {
 		
 		V8_VAR_OBJ evt2 = Nan::New<Object>();
-		fillMouse(evt2, window);
+		fillMouse(&evt2, window);
 		SET_PROP(evt2, "type", JS_STR("click"));
 		SET_PROP(evt2, "button", JS_INT(btnId));
 		SET_PROP(evt2, "which", JS_INT(which));
@@ -389,18 +397,21 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 
 void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
 	
-	double dx = xoffset * 100;
-	double dy = yoffset * 100;
-	
 	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(evt, window);
+	fillMouse(&evt, window);
 	SET_PROP(evt, "type", JS_STR("wheel"));
-	SET_PROP(evt, "wheelDeltaX", JS_NUM(dx));
-	SET_PROP(evt, "wheelDeltaY", JS_NUM(dy));
-	SET_PROP(evt, "wheelDelta", JS_NUM(dy));
+	SET_PROP(evt, "deltaX", JS_INT(static_cast<int>(xoffset * 100)));
+	SET_PROP(evt, "deltaY", JS_INT(static_cast<int>(yoffset * 100)));
+	SET_PROP(evt, "deltaZ", JS_INT(0));
+	SET_PROP(evt, "wheelDeltaX", JS_INT(static_cast<int>(xoffset * 120)));
+	SET_PROP(evt, "wheelDeltaY", JS_INT(static_cast<int>(yoffset * 120)));
+	SET_PROP(evt, "wheelDelta", JS_INT(static_cast<int>(yoffset * 120)));
 	
 	V8_VAR_VAL argv[2] = { JS_STR("wheel"), evt };
 	_emit(window, 2, argv);
+	
+	V8_VAR_VAL argv2[2] = { JS_STR("mousewheel"), evt };
+	_emit(window, 2, argv2);
 	
 }
 
