@@ -8,14 +8,12 @@
 #include "glfw.hpp"
 
 
-using namespace v8;
-using namespace node;
 using namespace std;
 
 
 #define THIS_WINDOW                                                           \
-REQ_OFFS_ARG(0, __win_handle);                                                \
-GLFWwindow *window = reinterpret_cast<GLFWwindow*>(__win_handle);
+	REQ_OFFS_ARG(0, __win_handle);                                            \
+	GLFWwindow *window = reinterpret_cast<GLFWwindow*>(__win_handle);
 
 
 namespace glfw {
@@ -28,45 +26,51 @@ bool hintVisible = true;
 
 
 void errorCb(int error, const char* description) {
-	V8_VAR_VAL argv[] = { JS_STR("GLFW Error"), JS_INT(error), JS_STR(description) };
-	consoleLog(3, argv);
+	// FIXME
+	// Napi::Value argv[] = {
+	// 	JS_STR("GLFW Error"),
+	// 	JS_NUM(error),
+	// 	JS_STR(description)
+	// };
+	// consoleLog(3, argv);
 }
 
 
-NAN_METHOD(init) {
+JS_METHOD(init) { NAPI_ENV;
 	
 	setlocale(LC_ALL, "");
 	
 	glfwSetErrorCallback(errorCb);
 	
-	RET_BOOL(glfwInit() == GLFW_TRUE );
+	RET_BOOL(glfwInit() == GLFW_TRUE);
 	
 }
 
 
-NAN_METHOD(terminate) {
+JS_METHOD(terminate) { NAPI_ENV;
 	
 	glfwTerminate();
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(getVersion) {
+JS_METHOD(getVersion) { NAPI_ENV;
 	
 	int major, minor, rev;
 	glfwGetVersion(&major, &minor, &rev);
 	
-	V8_VAR_OBJ obj = Nan::New<Object>();
-	SET_PROP(obj, "major", JS_INT(major));
-	SET_PROP(obj, "minor", JS_INT(minor));
-	SET_PROP(obj, "rev", JS_INT(rev));
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("major", JS_NUM(major));
+	obj.Set("minor", JS_NUM(minor));
+	obj.Set("rev", JS_NUM(rev));
 	
 	RET_VALUE(obj);
 	
 }
 
 
-NAN_METHOD(getVersionString) {
+JS_METHOD(getVersionString) { NAPI_ENV;
 	
 	const char *ver = glfwGetVersionString();
 	RET_STR(ver);
@@ -74,25 +78,26 @@ NAN_METHOD(getVersionString) {
 }
 
 
-NAN_METHOD(getTime) {
+JS_METHOD(getTime) { NAPI_ENV;
 	
 	RET_NUM(glfwGetTime());
 	
 }
 
 
-NAN_METHOD(setTime) {
+JS_METHOD(setTime) { NAPI_ENV;
 	
 	REQ_DOUBLE_ARG(0, time);
 	
 	glfwSetTime(time);
+	RET_UNDEFINED;
 	
 }
 
 
 /* TODO: Monitor configuration change callback */
 
-NAN_METHOD(getMonitors) {
+JS_METHOD(getMonitors) { NAPI_ENV;
 	
 	int monitor_count, mode_count, xpos, ypos, width, height;
 	
@@ -100,47 +105,45 @@ NAN_METHOD(getMonitors) {
 	GLFWmonitor *primary = glfwGetPrimaryMonitor();
 	const GLFWvidmode *mode, *modes;
 	
-	V8_VAR_ARR js_monitors = Nan::New<Array>(monitor_count);
-	V8_VAR_OBJ js_monitor, js_mode;
-	V8_VAR_ARR js_modes;
+	Napi::Array js_monitors = Napi::Array::New(env);
 	
 	for (int i = 0; i < monitor_count; i++) {
 		
-		js_monitor = Nan::New<Object>();
-		SET_PROP(js_monitor, "is_primary", JS_BOOL(monitors[i] == primary));
-		SET_PROP(js_monitor, "index", JS_INT(i));
-		SET_PROP(js_monitor, "name", JS_STR(glfwGetMonitorName(monitors[i])));
+		Napi::Object js_monitor = Napi::Object::New(env);
+		js_monitor.Set("is_primary", static_cast<bool>(monitors[i] == primary));
+		js_monitor.Set("index", JS_NUM(i));
+		js_monitor.Set("name", JS_STR(glfwGetMonitorName(monitors[i])));
 		
 		glfwGetMonitorPos(monitors[i], &xpos, &ypos);
-		SET_PROP(js_monitor, "pos_x", JS_INT(xpos));
-		SET_PROP(js_monitor, "pos_y", JS_INT(ypos));
+		js_monitor.Set("pos_x", JS_NUM(xpos));
+		js_monitor.Set("pos_y", JS_NUM(ypos));
 		
 		glfwGetMonitorPhysicalSize(monitors[i], &width, &height);
-		SET_PROP(js_monitor, "width_mm", JS_INT(width));
-		SET_PROP(js_monitor, "height_mm", JS_INT(height));
+		js_monitor.Set("width_mm", JS_NUM(width));
+		js_monitor.Set("height_mm", JS_NUM(height));
 		
 		mode = glfwGetVideoMode(monitors[i]);
-		SET_PROP(js_monitor, "width", JS_INT(mode->width));
-		SET_PROP(js_monitor, "height", JS_INT(mode->height));
-		SET_PROP(js_monitor, "rate", JS_INT(mode->refreshRate));
+		js_monitor.Set("width", JS_NUM(mode->width));
+		js_monitor.Set("height", JS_NUM(mode->height));
+		js_monitor.Set("rate", JS_NUM(mode->refreshRate));
 		
 		modes = glfwGetVideoModes(monitors[i], &mode_count);
-		js_modes = Nan::New<Array>(mode_count);
+		Napi::Array js_modes = Napi::Array::New(env);
 		
 		for (int j = 0; j < mode_count; j++) {
 			
-			js_mode = Nan::New<Object>();
-			SET_PROP(js_mode, "width", JS_INT(modes[j].width));
-			SET_PROP(js_mode, "height", JS_INT(modes[j].height));
-			SET_PROP(js_mode, "rate", JS_INT(modes[j].refreshRate));
+			Napi::Object js_mode = Napi::Object::New(env);
+			js_mode.Set("width", JS_NUM(modes[j].width));
+			js_mode.Set("height", JS_NUM(modes[j].height));
+			js_mode.Set("rate", JS_NUM(modes[j].refreshRate));
 			
 			// NOTE: Are color bits necessary?
-			js_modes->Set(JS_INT(j), js_mode);
+			js_modes.Set(JS_NUM(j), js_mode);
 			
 		}
 		
-		SET_PROP(js_monitor, "modes", js_modes);
-		js_monitors->Set(JS_INT(i), js_monitor);
+		js_monitor.Set("modes", js_modes);
+		js_monitors.Set(JS_NUM(i), js_monitor);
 		
 	}
 	
@@ -149,7 +152,7 @@ NAN_METHOD(getMonitors) {
 }
 
 
-NAN_METHOD(testJoystick) {
+JS_METHOD(testJoystick) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, width);
 	REQ_UINT32_ARG(1, height);
@@ -183,10 +186,12 @@ NAN_METHOD(testJoystick) {
 	glVertex3f(0.f, 0.6f, 0.f);
 	glEnd();
 	
+	RET_UNDEFINED;
+	
 }
 
 
-NAN_METHOD(testScene) {
+JS_METHOD(testScene) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, width);
 	REQ_UINT32_ARG(1, height);
@@ -213,10 +218,12 @@ NAN_METHOD(testScene) {
 	glVertex3f(0.f + z, 0.6f, 0.f);
 	glEnd();
 	
+	RET_UNDEFINED;
+	
 }
 
 
-NAN_METHOD(windowHint) {
+JS_METHOD(windowHint) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, target);
 	REQ_UINT32_ARG(1, hint);
@@ -226,24 +233,26 @@ NAN_METHOD(windowHint) {
 	}
 	
 	glfwWindowHint(target, hint);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(defaultWindowHints) {
+JS_METHOD(defaultWindowHints) { NAPI_ENV;
 	
 	glfwDefaultWindowHints();
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(joystickPresent) {
+JS_METHOD(joystickPresent) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, joy);
 	
 	bool isPresent = glfwJoystickPresent(joy);
 	
-	RET_VALUE(JS_BOOL(isPresent));
+	RET_BOOL(static_cast<bool>(isPresent));
 	
 }
 
@@ -274,7 +283,7 @@ string buttonToString(unsigned char c) {
 }
 
 
-NAN_METHOD(getJoystickAxes) {
+JS_METHOD(getJoystickAxes) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, joy);
 	
@@ -287,12 +296,12 @@ NAN_METHOD(getJoystickAxes) {
 		response.append(","); //Separator
 	}
 	
-	RET_VALUE(JS_STR(response.c_str()));
+	RET_STR(response);
 	
 }
 
 
-NAN_METHOD(getJoystickButtons) {
+JS_METHOD(getJoystickButtons) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, joy);
 	
@@ -305,29 +314,29 @@ NAN_METHOD(getJoystickButtons) {
 		strResponse.append(",");
 	}
 	
-	RET_VALUE(JS_STR(strResponse.c_str()));
+	RET_STR(strResponse.c_str());
 	
 }
 
 
-NAN_METHOD(getJoystickName) {
+JS_METHOD(getJoystickName) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, joy);
 	
 	const char* response = glfwGetJoystickName(joy);
 	
-	RET_VALUE(JS_STR(response));
+	RET_STR(response);
 	
 }
 
 
 // Name altered due to windows.h collision
-NAN_METHOD(createWindow) {
+JS_METHOD(createWindow) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, width);
 	REQ_UINT32_ARG(1, height);
 	REQ_OBJ_ARG(2, emitter);
-	LET_UTF8_ARG(3, str);
+	LET_STR_ARG(3, str);
 	LET_INT32_ARG(4, monitor_idx);
 	
 	GLFWmonitor **monitors = nullptr;
@@ -337,7 +346,8 @@ NAN_METHOD(createWindow) {
 	if (info.Length() >= 5 && monitor_idx >= 0) {
 		monitors = glfwGetMonitors(&monitor_count);
 		if (monitor_idx >= monitor_count) {
-			return Nan::ThrowError("Invalid monitor");
+			JS_THROW("Invalid monitor");
+			RET_NULL;
 		}
 		monitor = monitors[monitor_idx];
 	}
@@ -348,11 +358,18 @@ NAN_METHOD(createWindow) {
 		glfwWindowHint(GLFW_VISIBLE, hintVisible);
 	}
 	
-	GLFWwindow *window = glfwCreateWindow(width, height, *str, monitor, _share);
+	GLFWwindow *window = glfwCreateWindow(
+		width,
+		height,
+		str.c_str(),
+		monitor,
+		_share
+	);
 	
 	if ( ! window ) {
 		// can't create window, throw error
-		return Nan::ThrowError("Can't create GLFW window");
+		JS_THROW("Can't create GLFW window");
+		RET_NULL;
 	}
 	
 	glfwMakeContextCurrent(window);
@@ -384,290 +401,307 @@ NAN_METHOD(createWindow) {
 	glfwSetCursorEnterCallback(window, cursorEnterCB);
 	glfwSetScrollCallback(window, scrollCB);
 	
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(window)));
+	RET_NUM(reinterpret_cast<uint64_t>(window));
 	
 }
 
 
-NAN_METHOD(platformWindow) { THIS_WINDOW;
+JS_METHOD(platformWindow) { NAPI_ENV; THIS_WINDOW;
 	
 #ifdef _WIN32
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetWin32Window(window))));
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetWin32Window(window)));
 #elif __linux__
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetX11Window(window))));
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetX11Window(window)));
 #elif __APPLE__
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetCocoaWindow(window))));
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetCocoaWindow(window)));
 #endif
 	
 }
 
 
-NAN_METHOD(platformContext) { THIS_WINDOW;
+JS_METHOD(platformContext) { NAPI_ENV; THIS_WINDOW;
 	
 #ifdef _WIN32
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetWGLContext(window))));
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetWGLContext(window)));
 #elif __linux__
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetGLXContext(window))));
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetGLXContext(window)));
 #elif __APPLE__
-	RET_VALUE(JS_OFFS(reinterpret_cast<uint64_t>(glfwGetNSGLContext(window))));
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetNSGLContext(window)));
 #endif
 	
 }
 
 
-NAN_METHOD(destroyWindow) { THIS_WINDOW;
+JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW;
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
 	delete state;
 	
 	glfwDestroyWindow(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(setWindowTitle) { THIS_WINDOW;
+JS_METHOD(setWindowTitle) { NAPI_ENV; THIS_WINDOW;
 	
-	REQ_UTF8_ARG(1, str);
+	REQ_STR_ARG(1, str);
 	
-	glfwSetWindowTitle(window, *str);
+	glfwSetWindowTitle(window, str.c_str());
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(setWindowIcon) { THIS_WINDOW;
+JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_OBJ_ARG(1, icon);
 	
 	GLFWimage image;
-	image.width = icon->Get(JS_STR("width")).As<v8::Int32>()->Value();
-	image.height = icon->Get(JS_STR("height")).As<v8::Int32>()->Value();
-	image.pixels = reinterpret_cast<unsigned char*>(getData(icon));
+	image.width = icon.Get("width").ToNumber().Int32Value();
+	image.height = icon.Get("height").ToNumber().Int32Value();
+	image.pixels = reinterpret_cast<unsigned char*>(getData(env, icon));
 	
 	glfwSetWindowIcon(window, 1, &image);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(getWindowSize) { THIS_WINDOW;
+JS_METHOD(getWindowSize) { NAPI_ENV; THIS_WINDOW;
 	
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 	
-	V8_VAR_OBJ obj = Nan::New<Object>();
-	SET_PROP(obj, "width", JS_INT(w));
-	SET_PROP(obj, "height", JS_INT(h));
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("width", JS_NUM(w));
+	obj.Set("height", JS_NUM(h));
 	
 	RET_VALUE(obj);
 	
 }
 
 
-NAN_METHOD(setWindowSize) { THIS_WINDOW;
+JS_METHOD(setWindowSize) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_UINT32_ARG(1, w);
 	REQ_UINT32_ARG(2, h);
 	
 	glfwSetWindowSize(window, w, h);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(setWindowPos) { THIS_WINDOW;
+JS_METHOD(setWindowPos) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_INT32_ARG(1, x);
 	REQ_INT32_ARG(2, y);
 	
 	glfwSetWindowPos(window, x, y);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(getWindowPos) { THIS_WINDOW;
+JS_METHOD(getWindowPos) { NAPI_ENV; THIS_WINDOW;
 	
 	int xpos, ypos;
 	glfwGetWindowPos(window, &xpos, &ypos);
 	
-	V8_VAR_OBJ obj = Nan::New<Object>();
-	SET_PROP(obj, "x", JS_INT(xpos));
-	SET_PROP(obj, "y", JS_INT(ypos));
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("x", JS_NUM(xpos));
+	obj.Set("y", JS_NUM(ypos));
 	
 	RET_VALUE(obj);
 	
 }
 
 
-NAN_METHOD(getFramebufferSize) { THIS_WINDOW;
+JS_METHOD(getFramebufferSize) { NAPI_ENV; THIS_WINDOW;
 	
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	
-	V8_VAR_OBJ obj = Nan::New<Object>();
-	SET_PROP(obj, "width", JS_INT(width));
-	SET_PROP(obj, "height", JS_INT(height));
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("width", JS_NUM(width));
+	obj.Set("height", JS_NUM(height));
 	
 	RET_VALUE(obj);
 	
 }
 
 
-NAN_METHOD(iconifyWindow) { THIS_WINDOW;
+JS_METHOD(iconifyWindow) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwIconifyWindow(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(restoreWindow) { THIS_WINDOW;
+JS_METHOD(restoreWindow) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwRestoreWindow(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(hideWindow) { THIS_WINDOW;
+JS_METHOD(hideWindow) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwHideWindow(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(showWindow) { THIS_WINDOW;
+JS_METHOD(showWindow) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwShowWindow(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(windowShouldClose) { THIS_WINDOW;
+JS_METHOD(windowShouldClose) { NAPI_ENV; THIS_WINDOW;
 	
-	RET_VALUE(JS_INT(glfwWindowShouldClose(window)));
+	RET_NUM(glfwWindowShouldClose(window));
 	
 }
 
 
-NAN_METHOD(setWindowShouldClose) { THIS_WINDOW;
+JS_METHOD(setWindowShouldClose) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_UINT32_ARG(1, value);
 	
 	glfwSetWindowShouldClose(window, value);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(getWindowAttrib) { THIS_WINDOW;
+JS_METHOD(getWindowAttrib) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_UINT32_ARG(1, attrib);
 	
-	RET_VALUE(JS_INT(glfwGetWindowAttrib(window, attrib)));
+	RET_NUM(glfwGetWindowAttrib(window, attrib));
 	
 }
 
 
-NAN_METHOD(setInputMode) { THIS_WINDOW;
+JS_METHOD(setInputMode) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_INT32_ARG(1, mode);
 	REQ_INT32_ARG(2, value);
 	
 	glfwSetInputMode(window, mode, value);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(pollEvents) {
+JS_METHOD(pollEvents) { NAPI_ENV;
 	
 	glfwPollEvents();
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(waitEvents) {
+JS_METHOD(waitEvents) { NAPI_ENV;
 	
 	glfwWaitEvents();
+	RET_UNDEFINED;
 	
 }
 
 
 /* Input handling */
-NAN_METHOD(getKey) { THIS_WINDOW;
+JS_METHOD(getKey) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_UINT32_ARG(1, key);
 	
-	RET_VALUE(JS_INT(glfwGetKey(window, key)));
+	RET_NUM(glfwGetKey(window, key));
 	
 }
 
 
-NAN_METHOD(getMouseButton) { THIS_WINDOW;
+JS_METHOD(getMouseButton) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_UINT32_ARG(1, button);
 	
-	RET_VALUE(JS_INT(glfwGetMouseButton(window, button)));
+	RET_NUM(glfwGetMouseButton(window, button));
 	
 }
 
 
-NAN_METHOD(getCursorPos) { THIS_WINDOW;
+JS_METHOD(getCursorPos) { NAPI_ENV; THIS_WINDOW;
 	
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	
-	V8_VAR_OBJ obj = Nan::New<Object>();
-	SET_PROP(obj, "x", JS_NUM(x));
-	SET_PROP(obj, "y", JS_NUM(y));
+	Napi::Object obj = Napi::Object::New(env);
+	obj.Set("x", JS_NUM(x));
+	obj.Set("y", JS_NUM(y));
 	
 	RET_VALUE(obj);
 	
 }
 
 
-NAN_METHOD(setCursorPos) { THIS_WINDOW;
+JS_METHOD(setCursorPos) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_INT32_ARG(1, x);
 	REQ_INT32_ARG(2, y);
 	
 	glfwSetCursorPos(window, x, y);
+	RET_UNDEFINED;
 	
 }
 
 
 /* @Module Context handling */
-NAN_METHOD(makeContextCurrent) { THIS_WINDOW;
+JS_METHOD(makeContextCurrent) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwMakeContextCurrent(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(getCurrentContext) {
+JS_METHOD(getCurrentContext) { NAPI_ENV;
 	
 	GLFWwindow *window = glfwGetCurrentContext();
 	
-	RET_OFFS(reinterpret_cast<uint64_t>(window));
+	RET_NUM(reinterpret_cast<uint64_t>(window));
 	
 }
 
 
-NAN_METHOD(swapBuffers) { THIS_WINDOW;
+JS_METHOD(swapBuffers) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwSwapBuffers(window);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(swapInterval) {
+JS_METHOD(swapInterval) { NAPI_ENV;
 	
 	REQ_INT32_ARG(0, interval);
 	
 	glfwSwapInterval(interval);
+	RET_UNDEFINED;
 	
 }
 
 
-NAN_METHOD(extensionSupported) {
+JS_METHOD(extensionSupported) { NAPI_ENV;
 	
-	REQ_UTF8_ARG(0, str);
+	REQ_STR_ARG(0, str);
 	
-	RET_BOOL(glfwExtensionSupported(*str) == 1);
+	RET_BOOL(glfwExtensionSupported(str.c_str()) == 1);
 	
 }
 

@@ -6,10 +6,14 @@
 #include "events.hpp"
 
 
-using namespace v8;
-using namespace node;
 using namespace std;
 
+
+#define THIS_STATE                                                            \
+	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+
+#define STATE_ENV                                                             \
+	Napi::Env env = state->emitter.Env();
 
 namespace glfw {
 
@@ -23,27 +27,29 @@ const char typeFocus[] = "focus";
 const char typeBlur[] = "blur";
 
 
-void NAN_INLINE(_emit(GLFWwindow *window, int argc, V8_VAR_VAL argv[])) {
+inline void _emit(WinState *state, int argc, Napi::Value argv[]) {
 	
-	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+	Napi::Value emitValue = state->emitter.Get("emit");
 	
-	if (Nan::New(state->events)->Has(JS_STR("emit"))) {
-		
-		Nan::Callback callback(Nan::New(state->events)->Get(JS_STR("emit")).As<Function>());
-		
-		if ( ! callback.IsEmpty() ) {
-			Nan::AsyncResource async("glfw::_emit()");
-			callback.Call(argc, argv, &async);
+	if (emitValue) {
+		Napi::Function emitFunc = emitValue.As<Napi::Function>();
+		if (emitFunc) {
+			std::vector<napi_value> args;
+			for (int i = 0; i < argc; i++) {
+				args.push_back(argv[i]);
+			}
+			emitFunc.MakeCallback(
+				state->emitter.Env().Null(),
+				args,
+				state->context
+			);
 		}
-		
 	}
 	
 }
 
 
-void fillMouse(V8_VAR_OBJ *_evt, GLFWwindow *window, int mods = -1) {
-	
-	V8_VAR_OBJ &evt = *_evt;
+void fillMouse(Napi::Object evt, GLFWwindow *window, int mods = -1) {
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
 	
@@ -57,34 +63,34 @@ void fillMouse(V8_VAR_OBJ *_evt, GLFWwindow *window, int mods = -1) {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE)) {
 		buttons |= 4;
 	}
-	SET_PROP(evt, "buttons", JS_INT(buttons));
+	evt.Set("buttons", static_cast<double>(buttons));
 	
-	SET_PROP(evt, "clientX", JS_INT(state->mouseX));
-	SET_PROP(evt, "clientY", JS_INT(state->mouseY));
-	SET_PROP(evt, "pageX", JS_INT(state->mouseX));
-	SET_PROP(evt, "pageY", JS_INT(state->mouseY));
-	SET_PROP(evt, "x", JS_INT(state->mouseX));
-	SET_PROP(evt, "y", JS_INT(state->mouseY));
+	evt.Set("clientX", static_cast<double>(state->mouseX));
+	evt.Set("clientY", static_cast<double>(state->mouseY));
+	evt.Set("pageX", static_cast<double>(state->mouseX));
+	evt.Set("pageY", static_cast<double>(state->mouseY));
+	evt.Set("x", static_cast<double>(state->mouseX));
+	evt.Set("y", static_cast<double>(state->mouseY));
 	
 	if (mods > -1) {
-		SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
-		SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
-		SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
-		SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
+		evt.Set("shiftKey", static_cast<bool>(mods & GLFW_MOD_SHIFT));
+		evt.Set("ctrlKey", static_cast<bool>(mods & GLFW_MOD_CONTROL));
+		evt.Set("altKey", static_cast<bool>(mods & GLFW_MOD_ALT));
+		evt.Set("metaKey", static_cast<bool>(mods & GLFW_MOD_SUPER));
 	} else {
-		SET_PROP(evt, "ctrlKey", JS_BOOL(
+		evt.Set("ctrlKey", static_cast<bool>(
 			glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS
 		));
-		SET_PROP(evt, "shiftKey", JS_BOOL(
+		evt.Set("shiftKey", static_cast<bool>(
 			glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS
 		));
-		SET_PROP(evt, "altKey", JS_BOOL(
+		evt.Set("altKey", static_cast<bool>(
 			glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS
 		));
-		SET_PROP(evt, "metaKey", JS_BOOL(
+		evt.Set("metaKey", static_cast<bool>(
 			glfwGetKey(window, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ||
 			glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS
 		));
@@ -93,132 +99,138 @@ void fillMouse(V8_VAR_OBJ *_evt, GLFWwindow *window, int mods = -1) {
 }
 
 
-void fillKey(V8_VAR_OBJ *_evt, int glfwKey, int scancode, int action, int mods) {
-	
-	V8_VAR_OBJ &evt = *_evt;
+void fillKey(Napi::Object evt, int glfwKey, int scancode, int action, int mods) {
 	
 	const char *keyName = glfwGetKeyName(glfwKey, scancode);
 	
-	SET_PROP(evt, "repeat", JS_BOOL(action == GLFW_REPEAT));
-	SET_PROP(evt, "altKey", JS_BOOL(mods & GLFW_MOD_ALT));
-	SET_PROP(evt, "ctrlKey", JS_BOOL(mods & GLFW_MOD_CONTROL));
-	SET_PROP(evt, "metaKey", JS_BOOL(mods & GLFW_MOD_SUPER));
-	SET_PROP(evt, "shiftKey", JS_BOOL(mods & GLFW_MOD_SHIFT));
+	evt.Set("repeat", static_cast<bool>(action == GLFW_REPEAT));
+	evt.Set("altKey", static_cast<bool>(mods & GLFW_MOD_ALT));
+	evt.Set("ctrlKey", static_cast<bool>(mods & GLFW_MOD_CONTROL));
+	evt.Set("metaKey", static_cast<bool>(mods & GLFW_MOD_SUPER));
+	evt.Set("shiftKey", static_cast<bool>(mods & GLFW_MOD_SHIFT));
 	
 	
 	if (keyName) {
-		SET_PROP(evt, "code", JS_STR(keyName));
-		SET_PROP(evt, "key", JS_STR(keyName));
+		evt.Set("code", keyName);
+		evt.Set("key", keyName);
 	} else {
-		SET_PROP(evt, "code", Nan::Null());
-		SET_PROP(evt, "key", Nan::Null());
+		evt.Set("code", nullptr);
+		evt.Set("key", nullptr);
 	}
 	
-	SET_PROP(evt, "which", JS_INT(glfwKey));
+	evt.Set("which", static_cast<double>(glfwKey));
 	
 }
 
 
-void windowPosCB(GLFWwindow *window, int xpos, int ypos) { NAN_HS;
+void windowPosCB(GLFWwindow *window, int xpos, int ypos) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("move"));
-	SET_PROP(evt, "x", JS_INT(xpos));
-	SET_PROP(evt, "y", JS_INT(ypos));
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("type", "move");
+	evt.Set("x", static_cast<double>(xpos));
+	evt.Set("y", static_cast<double>(ypos));
 	
-	V8_VAR_VAL argv[2] = { JS_STR("move"), evt };
-	_emit(window, 2, argv);
-	
-}
-
-
-void windowSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
-	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("resize"));
-	SET_PROP(evt, "width", JS_INT(w));
-	SET_PROP(evt, "height", JS_INT(h));
-	
-	V8_VAR_VAL argv[2] = { JS_STR("resize"), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR("move"), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) { NAN_HS;
+void windowSizeCB(GLFWwindow *window, int w, int h) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("fbresize"));
-	SET_PROP(evt, "width", JS_INT(w));
-	SET_PROP(evt, "height", JS_INT(h));
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("type", "resize");
+	evt.Set("width", static_cast<double>(w));
+	evt.Set("height", static_cast<double>(h));
 	
-	V8_VAR_VAL argv[2] = { JS_STR("fbresize"), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR("resize"), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void windowDropCB(GLFWwindow *window, int count, const char **paths) { NAN_HS;
+void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(&evt, window);
-	SET_PROP(evt, "type", JS_STR("drop"));
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("type", "fbresize");
+	evt.Set("width", static_cast<double>(w));
+	evt.Set("height", static_cast<double>(h));
 	
-	V8_VAR_OBJ dataTransfer = Nan::New<Object>();
-	SET_PROP(evt, "dataTransfer", dataTransfer);
+	Napi::Value argv[2] = { JS_STR("fbresize"), evt };
+	_emit(state, 2, argv);
 	
-	V8_VAR_ARR list = Nan::New<Array>(count);
+}
+
+
+void windowDropCB(GLFWwindow *window, int count, const char **paths) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
+	
+	Napi::Object evt = Napi::Object::New(env);
+	fillMouse(evt, window);
+	evt.Set("type", "drop");
+	
+	Napi::Object dataTransfer = Napi::Object::New(env);
+	evt.Set("dataTransfer", dataTransfer);
+	
+	Napi::Array list = Napi::Array::Array();
 	for (int i = 0; i < count; i++) {
-		list->Set(i, JS_STR(paths[i]));
+		list.Set(i, paths[i]);
 	}
 	
-	SET_PROP(evt, "dropEffect", JS_STR("none"));
-	SET_PROP(evt, "effectAllowed", JS_STR("all"));
-	SET_PROP(evt, "files", list);
-	SET_PROP(evt, "items", list);
-	SET_PROP(evt, "types", Nan::New<Array>(0));
+	evt.Set("dropEffect", "none");
+	evt.Set("effectAllowed", "all");
+	evt.Set("files", list);
+	evt.Set("items", list);
+	evt.Set("types", Napi::Array::Array());
 	
-	V8_VAR_VAL argv[2] = { JS_STR("drop"), evt };
-	_emit(window, 2, argv);
-	
-}
-
-
-void windowCloseCB(GLFWwindow *window) { NAN_HS;
-	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("quit"));
-	
-	V8_VAR_VAL argv[2] = { JS_STR("quit"), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR("drop"), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void windowRefreshCB(GLFWwindow *window) { NAN_HS;
+void windowCloseCB(GLFWwindow *window) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("refresh"));
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("type", "quit");
 	
-	V8_VAR_VAL argv[2] = { JS_STR("refresh"), evt };
-	_emit(window, 2, argv);
-	
-}
-
-
-void windowIconifyCB(GLFWwindow *window, int iconified) { NAN_HS;
-	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "type", JS_STR("iconify"));
-	SET_PROP(evt, "iconified", JS_BOOL(iconified));
-	
-	V8_VAR_VAL argv[2] = { JS_STR("iconify"), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR("quit"), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
+void windowRefreshCB(GLFWwindow *window) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
+	
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("type", "refresh");
+	
+	Napi::Value argv[2] = { JS_STR("refresh"), evt };
+	_emit(state, 2, argv);
+	
+}
+
+
+void windowIconifyCB(GLFWwindow *window, int iconified) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
+	
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("type", "iconify");
+	evt.Set("iconified", static_cast<bool>(iconified));
+	
+	Napi::Value argv[2] = { JS_STR("iconify"), evt };
+	_emit(state, 2, argv);
+	
+}
+
+
+void windowFocusCB(GLFWwindow *window, int focused) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	const char *typeFound;
 	const char *typeDirFound;
@@ -230,20 +242,21 @@ void windowFocusCB(GLFWwindow *window, int focused) { NAN_HS;
 		typeDirFound = typeFocusout;
 	}
 	
-	V8_VAR_OBJ evt1 = Nan::New<Object>();
-	SET_PROP(evt1, "type", JS_STR(typeFound));
-	V8_VAR_VAL argv1[2] = { JS_STR(typeFound), evt1 };
-	_emit(window, 2, argv1);
+	Napi::Object evt1 = Napi::Object::New(env);
+	evt1.Set("type", "typeFound");
+	Napi::Value argv1[2] = { JS_STR(typeFound), evt1 };
+	_emit(state, 2, argv1);
 	
-	V8_VAR_OBJ evt2 = Nan::New<Object>();
-	SET_PROP(evt2, "type", JS_STR(typeDirFound));
-	V8_VAR_VAL argv2[2] = { JS_STR(typeDirFound), evt2 };
-	_emit(window, 2, argv2);
+	Napi::Object evt2 = Napi::Object::New(env);
+	evt2.Set("type", "typeDirFound");
+	Napi::Value argv2[2] = { JS_STR(typeDirFound), evt2 };
+	_emit(state, 2, argv2);
 	
 }
 
 
-void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) { NAN_HS;
+void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	const char *keyName = glfwGetKeyName(glfwKey, scancode);
 	
@@ -269,48 +282,48 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 		typeFound = typeKeyup;
 	}
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillKey(&evt, glfwKey, scancode, action, mods);
-	SET_PROP(evt, "charCode", JS_INT(0));
-	SET_PROP(evt, "type", JS_STR(typeFound));
+	Napi::Object evt = Napi::Object::New(env);
+	fillKey(evt, glfwKey, scancode, action, mods);
+	evt.Set("charCode", static_cast<double>(0));
+	evt.Set("type", "typeFound");
 	
-	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR(typeFound), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void charCB(GLFWwindow* window, unsigned codepoint) { NAN_HS;
-	
-	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+void charCB(GLFWwindow* window, unsigned codepoint) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	if ( ! state->pendingKey ) {
 		return;
 	}
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
+	Napi::Object evt = Napi::Object::New(env);
 	fillKey(
-		&evt,
+		evt,
 		state->pendingKey,
 		state->pendingScan,
 		state->pendingAction,
 		state->pendingMods
 	);
-	SET_PROP(evt, "charCode", JS_INT(codepoint));
-	SET_PROP(evt, "type", JS_STR(typeKeydown));
+	evt.Set("charCode", static_cast<double>(codepoint));
+	evt.Set("type", "typeKeydown");
 	
 	state->pendingKey = 0;
 	state->pendingScan = 0;
 	state->pendingAction = 0;
 	state->pendingMods = 0;
 	
-	V8_VAR_VAL argv[2] = { JS_STR(typeKeydown), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR(typeKeydown), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void cursorPosCB(GLFWwindow* window, double x, double y) { NAN_HS;
+void cursorPosCB(GLFWwindow* window, double x, double y) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
@@ -319,28 +332,27 @@ void cursorPosCB(GLFWwindow* window, double x, double y) { NAN_HS;
 		return;
 	}
 	
-	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
-	
 	int newX = static_cast<int>(x);
 	int newY = static_cast<int>(y);
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	SET_PROP(evt, "movementX", JS_INT(newX - state->mouseX));
-	SET_PROP(evt, "movementY", JS_INT(newY - state->mouseY));
+	Napi::Object evt = Napi::Object::New(env);
+	evt.Set("movementX", static_cast<double>(newX - state->mouseX));
+	evt.Set("movementY", static_cast<double>(newY - state->mouseY));
 	
 	state->mouseX = newX;
 	state->mouseY = newY;
 	
-	fillMouse(&evt, window);
-	SET_PROP(evt, "type", JS_STR("mousemove"));
+	fillMouse(evt, window);
+	evt.Set("type", "mousemove");
 	
-	V8_VAR_VAL argv[2] = { JS_STR("mousemove"), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR("mousemove"), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
+void cursorEnterCB(GLFWwindow* window, int entered) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	const char *typeFound;
 	if (entered) {
@@ -349,17 +361,18 @@ void cursorEnterCB(GLFWwindow* window, int entered) { NAN_HS;
 		typeFound = typeMouseleave;
 	}
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(&evt, window);
-	SET_PROP(evt, "type", JS_STR(typeFound));
+	Napi::Object evt = Napi::Object::New(env);
+	fillMouse(evt, window);
+	evt.Set("type", "typeFound");
 	
-	V8_VAR_VAL argv[2] = { JS_STR(typeFound), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR(typeFound), evt };
+	_emit(state, 2, argv);
 	
 }
 
 
-void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_HS;
+void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	int btnId = button;
 	if (button == GLFW_MOUSE_BUTTON_2) {
@@ -369,49 +382,50 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) { NAN_H
 	}
 	int which = btnId + 1;
 	
-	V8_VAR_OBJ evt1 = Nan::New<Object>();
-	fillMouse(&evt1, window);
-	SET_PROP(evt1, "type", JS_STR(action ? "mousedown" : "mouseup"));
-	SET_PROP(evt1, "button", JS_INT(btnId));
+	Napi::Object evt1 = Napi::Object::New(env);
+	fillMouse(evt1, window);
+	evt1.Set("type", action ? "mousedown" : "mouseup");
+	evt1.Set("button", static_cast<double>(btnId));
 	
-	SET_PROP(evt1, "which", JS_INT(which));
+	evt1.Set("which", static_cast<double>(which));
 	
-	V8_VAR_VAL argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt1 };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR(action ? "mousedown" : "mouseup"), evt1 };
+	_emit(state, 2, argv);
 	
 	if ( ! action ) {
 		
-		V8_VAR_OBJ evt2 = Nan::New<Object>();
-		fillMouse(&evt2, window);
-		SET_PROP(evt2, "type", JS_STR("click"));
-		SET_PROP(evt2, "button", JS_INT(btnId));
-		SET_PROP(evt2, "which", JS_INT(which));
+		Napi::Object evt2 = Napi::Object::New(env);
+		fillMouse(evt2, window);
+		evt2.Set("type", "click");
+		evt2.Set("button", static_cast<double>(btnId));
+		evt2.Set("which", static_cast<double>(which));
 		
-		V8_VAR_VAL argv[2] = { JS_STR("click"), evt2 };
-		_emit(window, 2, argv);
+		Napi::Value argv[2] = { JS_STR("click"), evt2 };
+		_emit(state, 2, argv);
 		
 	}
 	
 }
 
 
-void scrollCB(GLFWwindow *window, double xoffset, double yoffset) { NAN_HS;
+void scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
+	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	V8_VAR_OBJ evt = Nan::New<Object>();
-	fillMouse(&evt, window);
-	SET_PROP(evt, "type", JS_STR("wheel"));
-	SET_PROP(evt, "deltaX", JS_INT(static_cast<int>(xoffset * 100)));
-	SET_PROP(evt, "deltaY", JS_INT(static_cast<int>(yoffset * 100)));
-	SET_PROP(evt, "deltaZ", JS_INT(0));
-	SET_PROP(evt, "wheelDeltaX", JS_INT(static_cast<int>(xoffset * 120)));
-	SET_PROP(evt, "wheelDeltaY", JS_INT(static_cast<int>(yoffset * 120)));
-	SET_PROP(evt, "wheelDelta", JS_INT(static_cast<int>(yoffset * 120)));
+	Napi::Object evt = Napi::Object::New(env);
+	fillMouse(evt, window);
+	evt.Set("type", "wheel");
+	evt.Set("deltaX", static_cast<double>(static_cast<int>(xoffset * 100)));
+	evt.Set("deltaY", static_cast<double>(static_cast<int>(yoffset * 100)));
+	evt.Set("deltaZ", static_cast<double>(0));
+	evt.Set("wheelDeltaX", static_cast<double>(static_cast<int>(xoffset * 120)));
+	evt.Set("wheelDeltaY", static_cast<double>(static_cast<int>(yoffset * 120)));
+	evt.Set("wheelDelta", static_cast<double>(static_cast<int>(yoffset * 120)));
 	
-	V8_VAR_VAL argv[2] = { JS_STR("wheel"), evt };
-	_emit(window, 2, argv);
+	Napi::Value argv[2] = { JS_STR("wheel"), evt };
+	_emit(state, 2, argv);
 	
-	V8_VAR_VAL argv2[2] = { JS_STR("mousewheel"), evt };
-	_emit(window, 2, argv2);
+	Napi::Value argv2[2] = { JS_STR("mousewheel"), evt };
+	_emit(state, 2, argv2);
 	
 }
 

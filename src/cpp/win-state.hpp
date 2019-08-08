@@ -15,19 +15,23 @@ struct WinState {
 	int pendingScan;
 	int pendingAction;
 	int pendingMods;
-	V8_STORE_OBJ events;
+	Napi::ObjectReference emitter;
+	Napi::AsyncContext context;
 	
-	explicit WinState(V8_VAR_OBJ obj) {
-		mouseX = 0;
-		mouseY = 0;
-		pendingKey = 0;
-		pendingScan = 0;
-		pendingAction = 0;
-		events.Reset(obj);
+	explicit WinState(Napi::Object _emitter):
+		mouseX(0),
+		mouseY(0),
+		pendingKey(0),
+		pendingScan(0),
+		pendingAction(0),
+		emitter(Napi::Persistent(_emitter)),
+		context(_emitter.Env(), "GLFWEvent")
+	{
+		emitter.SuppressDestruct();
 	}
 	
 	~WinState() {
-		events.Reset();
+		emitter.Reset();
 	}
 	
 };
