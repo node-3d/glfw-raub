@@ -3,9 +3,9 @@
 // Add deps dll dirs
 require('deps-opengl-raub');
 
-const { binPath } = require('addon-tools-raub');
+const { bin } = require('addon-tools-raub');
 
-const core = require(`./${binPath}/glfw`);
+const core = require(`./${bin}/glfw`);
 
 
 // Initialize GLFW

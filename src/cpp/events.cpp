@@ -39,7 +39,7 @@ inline void _emit(WinState *state, int argc, Napi::Value argv[]) {
 				args.push_back(argv[i]);
 			}
 			emitFunc.MakeCallback(
-				state->emitter.Env().Null(),
+				state->emitter.Value(),
 				args,
 				state->context
 			);

@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 
-const glfw = require('glfw-raub');
+const glfw = require('..');
 
 
 const classes = {
