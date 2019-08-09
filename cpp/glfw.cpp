@@ -342,6 +342,13 @@ NAN_METHOD(createWindow) {
 		monitor = monitors[monitor_idx];
 	}
 	
+	#ifdef __APPLE__
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	#endif
+
 	if ( ! _share ) {
 		glfwWindowHint(GLFW_VISIBLE, false);
 		_share = glfwCreateWindow(128, 128, "_GLFW_ROOT_SHARED", nullptr, nullptr);

@@ -35,6 +35,9 @@
 							'-Wl,-rpath,<(opengl_bin)',
 							'<(opengl_bin)/glfw.dylib',
 						],
+						'defines': [
+							'__APPLE__'
+						]
 					}
 				],
 				[
