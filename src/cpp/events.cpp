@@ -175,7 +175,7 @@ void windowDropCB(GLFWwindow *window, int count, const char **paths) {
 	Napi::Object dataTransfer = Napi::Object::New(env);
 	evt.Set("dataTransfer", dataTransfer);
 	
-	Napi::Array list = Napi::Array::Array();
+	Napi::Array list = Napi::Array();
 	for (int i = 0; i < count; i++) {
 		list.Set(i, paths[i]);
 	}
@@ -184,7 +184,7 @@ void windowDropCB(GLFWwindow *window, int count, const char **paths) {
 	evt.Set("effectAllowed", "all");
 	evt.Set("files", list);
 	evt.Set("items", list);
-	evt.Set("types", Napi::Array::Array());
+	evt.Set("types", Napi::Array());
 	
 	Napi::Value argv[2] = { JS_STR("drop"), evt };
 	_emit(state, 2, argv);
