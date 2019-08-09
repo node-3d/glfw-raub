@@ -13,10 +13,13 @@
 				'cpp/glfw.cpp',
 			],
 			'include_dirs': [
-				'<!@(node -p "require(\'addon-tools-raub\').include")',
 				'<(gl_include)',
+				'<!@(node -p "require(\'addon-tools-raub\').include")',
 			],
-			'library_dirs': [ '<(gl_bin)' ],
+			'cflags!': ['-fno-exceptions'],
+			'cflags_cc!': ['-fno-exceptions'],
+			'library_dirs': ['<(gl_bin)'],
+			'defines': ['NAPI_DISABLE_CPP_EXCEPTIONS'],
 			'conditions': [
 				[
 					'OS=="linux"',
