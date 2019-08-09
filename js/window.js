@@ -27,6 +27,9 @@ class Window extends EventEmitter {
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
 		this._autoIconify = opts.autoIconify === false ? false : true;
 		
+		this.cancelAnimationFrame = this._cancelAnimationFrame.bind(this);
+		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
+
 		const mode = opts.fullscreen ? 'fullscreen' : (opts.mode ? opts.mode : 'windowed');
 		
 		this._decorated = true;
@@ -225,7 +228,11 @@ class Window extends EventEmitter {
 	
 	get width() { return this._width; }
 	get height() { return this._height; }
-	
+	get offsetWidth() { return this._width; }
+	set offsetWidth(v) { this.width = v; }
+	get offsetHeight() { return this._height; }
+	set offsetHeight(v) { this.height = v; }
+
 	set width(v) {
 		if (this._width === v) {
 			return;
@@ -264,6 +271,13 @@ class Window extends EventEmitter {
 		this._height = height;
 		glfw.setWindowSize(this._window, width, height);
 	}
+
+	getBoundingClientRect() {
+		return {
+			x: 0, y: 0, width: this._width, height: this._height,
+			left: 0, top: 0, right: this._width, bottom: this._height,
+		};
+	}
 	
 	
 	get title() { return this._title; }
@@ -282,6 +296,9 @@ class Window extends EventEmitter {
 		this._icon = v;
 		glfw.setWindowIcon(this._window, this._icon);
 	}
+
+	get devicePixelRatio() { return Window._devicePixelRatio; }
+	set devicePixelRatio(r) { Window._devicePixelRatio = r; }
 	
 	
 	get msaa() { return this._msaa; }
@@ -360,19 +377,37 @@ class Window extends EventEmitter {
 	
 	
 	emit(type, event) {
-		
-		if (type === 'keydown' || type === 'keyup') {
-			event.which = Window.extraCodes[event.which] || event.which;
-			event.keyCode = event.which;
-			event.key = event.charCode ?
-				String.fromCharCode(event.charCode) :
-				(event.code || ' ');
-			event.code = (
-				Window.keyNames[event.which] ||
-				(event.code && `Key${event.code}`) ||
-				'UNKNOWN'
-			);
+
+		this.event = event;
+
+		if (event && (typeof event === 'object') && !event.target) {
+			event.target = this;
 		}
+
+		switch (type.toLowerCase()) {
+			case 'wheel':
+			case 'mouseup':
+			case 'mousedown':
+			case 'mousemove':
+			case 'mousewheel':
+				event.offsetX = event.screenX = event.clientX;
+				event.offsetY = event.screenY = event.clientY;
+				break;
+			case 'keyup':
+			case 'keydown':
+				event.which = Window.extraCodes[event.which] || event.which;
+				event.keyCode = event.which;
+				event.key = event.charCode ?
+					String.fromCharCode(event.charCode) :
+					(event.code || ' ');
+				event.code = (
+					Window.keyNames[event.which] ||
+					(event.code && `Key${event.code}`) ||
+					'UNKNOWN'
+				);
+				break;
+		}
+	
 		
 		event.preventDefault = () => {};
 		event.stopPropagation = () => {};
@@ -381,6 +416,7 @@ class Window extends EventEmitter {
 		
 		super.emit(type, event);
 		
+		this.event = null;
 	}
 	
 	
@@ -476,8 +512,19 @@ class Window extends EventEmitter {
 		
 	}
 	
+	_requestAnimationFrame(cb) {
+		this.swapBuffers();
+		glfw.pollEvents();
+		return setImmediate(() => cb(Date.now()));
+	}
+
+	_cancelAnimationFrame(id) { clearImmediate(id); }
 }
 
+Window.prototype.scrollTop = 0;
+Window.prototype.clientTop = 0;
+Window.prototype.scrollLeft = 0;
+Window.prototype.clientLeft = 0;
 
 Window.keyNames = {
 	100 : 'Numpad4',

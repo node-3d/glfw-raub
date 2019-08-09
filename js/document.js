@@ -68,11 +68,7 @@ class Document extends Window {
 		
 		const sizeWin = this.size;
 		const sizeFB  = this.framebufferSize;
-		
 		this._ratio = sizeFB.width / sizeWin.width;
-		
-		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
-		
 	}
 	
 	
@@ -143,52 +139,28 @@ class Document extends Window {
 	createElement(name) {
 		
 		name = name.toLowerCase();
-		
-		if (name.indexOf('canvas') >= 0) {
-			
-			if ( ! this._isCanvasRequested ) {
-				this._isCanvasRequested = true;
-				return this;
-			}
-			
-			const that = this;
-			
-			return {
-				_ctx   : null,
-				width  : this.width,
-				height : this.height,
-				
-				getContext(kind) {
-					this._ctx = that.getContext(kind);
-					return this._ctx;
-				},
-				
-				get data() {
-					return this._ctx && this._ctx.data;
-				},
-				
-				onkeydown    : () => {},
-				onkeyup      : () => {},
-				onmousedown  : () => {},
-				onmouseup    : () => {},
-				onwheel      : () => {},
-				onmousewheel : () => {},
-				onresize     : () => {},
-				
-				dispatchEvent       : () => {},
-				addEventListener    : () => {},
-				removeEventListener : () => {},
-				
-			};
-			
-		} else if (name.indexOf('img') >= 0) {
-			
+
+		if (name.indexOf('img') >= 0) {
 			return new Document.Image();
-			
 		}
 		
-		return null;
-		
+		// Otherwise always return a canvas for compatibility with DOM
+		// libraries like hammerjs that do document.createElement('div')
+
+		return Object.create(this, {
+			_ctx: { value: null },
+			_doc: { value: this._doc || this },
+			data: {
+				get() {
+					return this._ctx && this._ctx.data;
+				},
+			},
+			getContext: {
+				value(kind) {
+					return this._ctx = this._doc.getContext(kind);
+				},
+			},
+		});
 	}
 	
 	
@@ -197,13 +169,6 @@ class Document extends Window {
 	addEventListener(name, callback) { this.on(name, callback); }
 	
 	removeEventListener(name, callback) { this.removeListener(name, callback); }
-	
-	
-	_requestAnimationFrame(cb) {
-		this.swapBuffers();
-		glfw.pollEvents();
-		setImmediate(() => cb(Date.now()));
-	}
 	
 }
 
