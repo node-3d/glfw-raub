@@ -19,16 +19,15 @@ struct WinState {
 	Napi::ObjectReference emitter;
 	Napi::AsyncContext context;
 	
-	explicit WinState(GLFWwindow *_window, Napi::Object _emitter):
-		mouseX(0),
-		mouseY(0),
-		pendingKey(0),
-		pendingScan(0),
-		pendingAction(0),
-		window(_window),
-		emitter(Napi::Persistent(_emitter)),
-		context(_emitter.Env(), "GLFWEvent")
-	{
+	WinState(GLFWwindow *_window, Napi::Object _emitter):
+	mouseX(0),
+	mouseY(0),
+	pendingKey(0),
+	pendingScan(0),
+	pendingAction(0),
+	window(_window),
+	emitter(Napi::Persistent(_emitter)),
+	context(_emitter.Env(), "GLFWEvent" ) {
 		emitter.SuppressDestruct();
 	}
 	
