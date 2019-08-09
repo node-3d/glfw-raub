@@ -15,15 +15,17 @@ struct WinState {
 	int pendingScan;
 	int pendingAction;
 	int pendingMods;
+	GLFWwindow *window;
 	Napi::ObjectReference emitter;
 	Napi::AsyncContext context;
 	
-	explicit WinState(Napi::Object _emitter):
+	explicit WinState(GLFWwindow *_window, Napi::Object _emitter):
 		mouseX(0),
 		mouseY(0),
 		pendingKey(0),
 		pendingScan(0),
 		pendingAction(0),
+		window(_window),
 		emitter(Napi::Persistent(_emitter)),
 		context(_emitter.Env(), "GLFWEvent")
 	{

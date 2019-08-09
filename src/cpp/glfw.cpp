@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <sstream>
+#include <iostream>
 #include <locale.h>
 
 #include "platform.hpp"
@@ -24,8 +25,11 @@ GLFWwindow *_share = nullptr;
 // Cached visibility hint value
 bool hintVisible = true;
 
+std::vector<WinState *> states;
+
 
 void errorCb(int error, const char* description) {
+	std::cout << "GLFW Error" << error << description;
 	// FIXME
 	// Napi::Value argv[] = {
 	// 	JS_STR("GLFW Error"),
@@ -44,6 +48,33 @@ JS_METHOD(init) { NAPI_ENV;
 	
 	RET_BOOL(glfwInit() == GLFW_TRUE);
 	
+}
+
+
+// Cleanup resources
+void deinit() {
+	for (int i = states.size() - 1; i >= 0; i--) {
+		WinState *state = states[i];
+		GLFWwindow *window = state->window;
+		// Window callbacks
+		glfwSetWindowPosCallback(window, nullptr);
+		glfwSetWindowSizeCallback(window, nullptr);
+		glfwSetWindowCloseCallback(window, nullptr);
+		glfwSetWindowRefreshCallback(window, nullptr);
+		glfwSetWindowFocusCallback(window, nullptr);
+		glfwSetWindowIconifyCallback(window, nullptr);
+		glfwSetFramebufferSizeCallback(window, nullptr);
+		glfwSetDropCallback(window, nullptr);
+		
+		// Input callbacks
+		glfwSetKeyCallback(window, nullptr);
+		glfwSetCharCallback(window, nullptr);
+		glfwSetMouseButtonCallback(window, nullptr);
+		glfwSetCursorPosCallback(window, nullptr);
+		glfwSetCursorEnterCallback(window, nullptr);
+		glfwSetScrollCallback(window, nullptr);
+	}
+	glfwTerminate();
 }
 
 
@@ -379,7 +410,8 @@ JS_METHOD(createWindow) { NAPI_ENV;
 	
 	
 	// Store WinState as user pointer
-	WinState *state = new WinState(emitter);
+	WinState *state = new WinState(window, emitter);
+	states.push_back(state);
 	glfwSetWindowUserPointer(window, state);
 	
 	
@@ -703,12 +735,6 @@ JS_METHOD(extensionSupported) { NAPI_ENV;
 	
 	RET_BOOL(glfwExtensionSupported(str.c_str()) == 1);
 	
-}
-
-
-// Cleanup resources
-void deinit() {
-	glfwTerminate();
 }
 
 

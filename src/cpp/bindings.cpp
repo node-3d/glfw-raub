@@ -5,7 +5,6 @@
 #define JS_GLFW_CONSTANT(name)                                                \
 	exports.Set(#name, static_cast<double>(GLFW_ ## name));
 
-// #define JS_GLFW_SET_METHOD(name) Nan::SetMethod(target, #name , glfw::name);
 #define JS_GLFW_SET_METHOD(name)                                              \
 	exports.DefineProperty(                                                   \
 		Napi::PropertyDescriptor::Function(env, exports, #name, glfw::name)   \
@@ -14,12 +13,9 @@
 
 Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
-	atexit(glfw::deinit);
+	std::atexit(glfw::deinit);
 	
 	/* GLFW initialization, termination and version querying */
-	// exports.DefineProperty(
-	// 	Napi::PropertyDescriptor::Function(env, exports, "init", glfw::init)
-	// );
 	JS_GLFW_SET_METHOD(init);
 	JS_GLFW_SET_METHOD(terminate);
 	JS_GLFW_SET_METHOD(getVersion);
