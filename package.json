@@ -17,6 +17,15 @@
 		"native",
 		"gyp"
 	],
+	"files": [
+		"js",
+		"core.js",
+		"index.js",
+		"install.js",
+		"LICENSE",
+		"package.json",
+		"README.md"
+	],
 	"engines": {
 		"node": ">=10.16.1",
 		"npm": ">=6.9.0"
