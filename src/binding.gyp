@@ -32,6 +32,7 @@
 							'<(gl_bin)/libGL.so',
 							'<(gl_bin)/libXrandr.so',
 						],
+						'defines': ['__linux__'],
 					}
 				],
 				[
@@ -43,6 +44,7 @@
 							'-Wl,-rpath,@loader_path/../../deps-opengl-raub/<(bin)',
 							'<(gl_bin)/glfw.dylib',
 						],
+						'defines': ['__APPLE__'],
 					}
 				],
 				[
@@ -51,7 +53,8 @@
 						'libraries': [ 'glfw3dll.lib', 'opengl32.lib' ],
 						'defines' : [
 							'WIN32_LEAN_AND_MEAN',
-							'VC_EXTRALEAN'
+							'VC_EXTRALEAN',
+							'_WIN32',
 						],
 						'msvs_settings' : {
 							'VCCLCompilerTool' : {
