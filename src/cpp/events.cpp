@@ -29,6 +29,10 @@ const char typeBlur[] = "blur";
 
 inline void _emit(WinState *state, int argc, Napi::Value argv[]) {
 	
+	if ( ! state->window ) {
+		return;
+	}
+	
 	Napi::Value emitValue = state->emitter.Get("emit");
 	
 	if (emitValue) {
@@ -114,8 +118,8 @@ void fillKey(Napi::Object evt, int glfwKey, int scancode, int action, int mods) 
 		evt.Set("code", keyName);
 		evt.Set("key", keyName);
 	} else {
-		evt.Set("code", nullptr);
-		evt.Set("key", nullptr);
+		evt.Set("code", evt.Env().Null());
+		evt.Set("key", evt.Env().Null());
 	}
 	
 	evt.Set("which", static_cast<double>(glfwKey));
@@ -200,6 +204,8 @@ void windowCloseCB(GLFWwindow *window) {
 	
 	Napi::Value argv[2] = { JS_STR("quit"), evt };
 	_emit(state, 2, argv);
+	
+	state->window = nullptr;
 	
 }
 

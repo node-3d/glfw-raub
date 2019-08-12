@@ -27,16 +27,11 @@ bool hintVisible = true;
 
 std::vector<WinState *> states;
 
+bool isInited = false;
+
 
 void errorCb(int error, const char* description) {
-	std::cout << "GLFW Error" << error << description;
-	// FIXME
-	// Napi::Value argv[] = {
-	// 	JS_STR("GLFW Error"),
-	// 	JS_NUM(error),
-	// 	JS_STR(description)
-	// };
-	// consoleLog(3, argv);
+	std::cout << "GLFW Error " << error << ": " << description << std::endl;
 }
 
 
@@ -46,16 +41,25 @@ JS_METHOD(init) { NAPI_ENV;
 	
 	glfwSetErrorCallback(errorCb);
 	
-	RET_BOOL(glfwInit() == GLFW_TRUE);
+	isInited = glfwInit() == GLFW_TRUE;
+	RET_BOOL(isInited);
 	
 }
 
 
 // Cleanup resources
 void deinit() {
+	
+	if ( ! isInited ) {
+		return;
+	}
+	
 	for (int i = states.size() - 1; i >= 0; i--) {
 		WinState *state = states[i];
 		GLFWwindow *window = state->window;
+		if ( ! window ) {
+			continue;
+		}
 		// Window callbacks
 		glfwSetWindowPosCallback(window, nullptr);
 		glfwSetWindowSizeCallback(window, nullptr);
@@ -65,7 +69,6 @@ void deinit() {
 		glfwSetWindowIconifyCallback(window, nullptr);
 		glfwSetFramebufferSizeCallback(window, nullptr);
 		glfwSetDropCallback(window, nullptr);
-		
 		// Input callbacks
 		glfwSetKeyCallback(window, nullptr);
 		glfwSetCharCallback(window, nullptr);
@@ -73,14 +76,23 @@ void deinit() {
 		glfwSetCursorPosCallback(window, nullptr);
 		glfwSetCursorEnterCallback(window, nullptr);
 		glfwSetScrollCallback(window, nullptr);
+		// Destroy
+		glfwDestroyWindow(window);
+		state->window = nullptr;
 	}
+	
+	states.clear();
+	isInited = false;
+	_share = nullptr;
+	
 	glfwTerminate();
+	
 }
 
 
 JS_METHOD(terminate) { NAPI_ENV;
 	
-	glfwTerminate();
+	deinit();
 	RET_UNDEFINED;
 	
 }
