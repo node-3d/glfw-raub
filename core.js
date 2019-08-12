@@ -16,5 +16,4 @@ if ( ! core.init() ) {
 // OpenGL window default hints
 core.defaultWindowHints();
 
-
 module.exports = core;
