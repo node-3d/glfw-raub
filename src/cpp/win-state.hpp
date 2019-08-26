@@ -28,7 +28,6 @@ struct WinState {
 	window(_window),
 	emitter(Napi::Persistent(_emitter)),
 	context(_emitter.Env(), "GLFWEvent" ) {
-		emitter.SuppressDestruct();
 	}
 	
 	~WinState() {

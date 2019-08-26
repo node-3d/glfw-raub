@@ -15,6 +15,33 @@
 
 namespace glfw {
 
+
+std::string intToString(int number) {
+	
+	std::ostringstream buff;
+	buff << number;
+	return buff.str();
+	
+}
+
+
+std::string floatToString(float number) {
+	
+	std::ostringstream buff;
+	buff << number;
+	return buff.str();
+	
+}
+
+
+std::string buttonToString(unsigned char c) {
+	
+	int number = static_cast<int>(c);
+	return intToString(number);
+	
+}
+
+
 // The default context for all to share
 GLFWwindow *_share = nullptr;
 
@@ -102,7 +129,6 @@ Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary
 	Napi::Object jsMonitor = Napi::Object::New(env);
 	
 	jsMonitor.Set("is_primary", isPrimary);
-	jsMonitor.Set("index", JS_NUM(i));
 	jsMonitor.Set("name", JS_STR(glfwGetMonitorName(monitor)));
 	
 	int xpos, ypos;
@@ -115,7 +141,7 @@ Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary
 	jsMonitor.Set("width_mm", JS_NUM(width));
 	jsMonitor.Set("height_mm", JS_NUM(height));
 	
-	int xscale, yscale;
+	float xscale, yscale;
 	glfwGetMonitorContentScale(monitor, &xscale, &yscale);
 	
 	const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -177,7 +203,7 @@ JS_METHOD(getVersionString) { NAPI_ENV;
 }
 
 
-JS_METHOD(glfwGetError) { NAPI_ENV;
+JS_METHOD(getError) { NAPI_ENV;
 	
 	const char *err;
 	int code = glfwGetError(&err);
@@ -239,7 +265,7 @@ JS_METHOD(getPrimaryMonitor) { NAPI_ENV;
 		RET_NULL;
 	}
 	
-	RET_VALUE(describeMonitor(env, monitor, true));
+	RET_VALUE(describeMonitor(env, primary, true));
 	
 }
 
@@ -356,32 +382,6 @@ JS_METHOD(joystickPresent) { NAPI_ENV;
 	bool isPresent = glfwJoystickPresent(joy);
 	
 	RET_BOOL(static_cast<bool>(isPresent));
-	
-}
-
-
-string intToString(int number) {
-	
-	ostringstream buff;
-	buff << number;
-	return buff.str();
-	
-}
-
-
-string floatToString(float number) {
-	
-	ostringstream buff;
-	buff << number;
-	return buff.str();
-	
-}
-
-
-string buttonToString(unsigned char c) {
-	
-	int number = static_cast<int>(c);
-	return intToString(number);
 	
 }
 
@@ -728,7 +728,7 @@ JS_METHOD(getWindowMonitor) { NAPI_ENV; THIS_WINDOW;
 		RET_NULL;
 	}
 	
-	GLFWmonitor *primary = glfwGetPrimaryMonitor(window);
+	GLFWmonitor *primary = glfwGetPrimaryMonitor();
 	
 	RET_VALUE(describeMonitor(env, monitor, primary ? true : monitor == primary));
 	
@@ -1007,7 +1007,7 @@ JS_METHOD(getJoystickHats) { NAPI_ENV;
 	REQ_INT32_ARG(0, jid);
 	
 	int count;
-	const char *hats = glfwGetJoystickHats(jid, &count);
+	const unsigned char *hats = glfwGetJoystickHats(jid, &count);
 	
 	Napi::Array jsHats = Napi::Array::New(env);
 	
@@ -1015,8 +1015,8 @@ JS_METHOD(getJoystickHats) { NAPI_ENV;
 		RET_VALUE(jsHats);
 	}
 	
-	for (int j = 0; j < count; j++) {
-		jsHats.Set(j, JS_NUM(hats[i]));
+	for (int i = 0; i < count; i++) {
+		jsHats.Set(i, JS_NUM(hats[i]));
 	}
 	
 	RET_VALUE(jsHats);
@@ -1052,7 +1052,7 @@ JS_METHOD(updateGamepadMappings) { NAPI_ENV;
 	
 	REQ_STR_ARG(0, mappings);
 	// https://www.glfw.org/docs/latest/input_guide.html#gamepad_mapping
-	RET_BOOL(glfwUpdateGamepadMappings(mappings) == GLFW_TRUE);
+	RET_BOOL(glfwUpdateGamepadMappings(mappings.c_str()) == GLFW_TRUE);
 	
 }
 
