@@ -7,6 +7,8 @@ This is a part of [Node3D](https://github.com/node-3d) project.
 [![Build Status](https://api.travis-ci.com/node-3d/glfw-raub.svg?branch=master)](https://travis-ci.com/node-3d/glfw-raub)
 [![CodeFactor](https://www.codefactor.io/repository/github/node-3d/glfw-raub/badge)](https://www.codefactor.io/repository/github/node-3d/glfw-raub)
 
+> npm i glfw-raub
+
 
 ## Synopsis
 
@@ -18,6 +20,7 @@ step during the `npm i` command.
 
 ![Example](examples/screenshot.jpg)
 
+* **GLFW** version **3.3** backend.
 * Exposes low-level **GLFW** interface.
 * Multiple windows for a single **Node.js** process - easy.
 * Goes fullscreen and back fluently.
@@ -86,7 +89,7 @@ There are few simple rules for the above transformation to become intuitive:
 * Whatever could have a `get/set` interface is made so.
 
 
-Constructor:
+**Constructor:**
 
 * `Window({ title, width, height, display, vsync, mode, autoIconify, msaa })`
 	* `string title $PWD` - window title, takes current directory as default.
@@ -100,7 +103,7 @@ Constructor:
 	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
 
 
-Properties:
+**Properties:**
 
 * `get number handle` - window pointer.
 * `get string version` - OpenGL vendor info.
@@ -128,7 +131,7 @@ using [this Image implementation](https://github.com/raub/node-image).
 
 ---
 
-Methods:
+**Methods:**
 
 * `getKey(number key)` - `glfw.getKey(window, key)`.
 * `getMouseButton(number button)` - `glfw.getMouseButton(window, button)`.
@@ -164,9 +167,7 @@ is designed to fit perfectly. Also sets `global.HTMLImageElement`.
 is designed to fit perfectly.
 
 
-
-
-Constructor:
+**Constructor:**
 
 * `Document({ ...<Window opts>, ignoreQuit, autoFullscreen })`
 	* `boolean ignoreQuit false` - if the window should ignore the default quit signals, e.g. ESC key.
@@ -176,7 +177,7 @@ Constructor:
 		* CTRL+SHIFT+F - back to windowed.
 
 
-Properties:
+**Properties:**
 
 * `get body` - returns `this`.
 * `get ratio/devicePixelRatio` - device pixel ratio, most likely to be 1.
@@ -188,7 +189,7 @@ Properties:
 * `get context` - returns `Document.webgl`, set through `Document.setWebgl`.
 
 
-Methods:
+**Methods:**
 
 * `getContext()` - returns `Document.webgl`, set through `Document.setWebgl`.
 * `getElementById(id)` - returns `this`.
