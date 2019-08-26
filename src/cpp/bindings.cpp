@@ -28,8 +28,6 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(setTime);
 	JS_GLFW_SET_METHOD(getMonitors);
 	JS_GLFW_SET_METHOD(getPrimaryMonitor);
-	JS_GLFW_SET_METHOD(testJoystick);
-	JS_GLFW_SET_METHOD(testScene);
 	JS_GLFW_SET_METHOD(windowHint);
 	JS_GLFW_SET_METHOD(windowHintString);
 	JS_GLFW_SET_METHOD(defaultWindowHints);
@@ -96,10 +94,10 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(getClipboardString);
 	JS_GLFW_SET_METHOD(getTimerValue);
 	JS_GLFW_SET_METHOD(getTimerFrequency);
-
+	
 	JS_GLFW_SET_METHOD(platformWindow);
 	JS_GLFW_SET_METHOD(platformContext);
-
+	
 	JS_GLFW_SET_METHOD(testScene);
 	JS_GLFW_SET_METHOD(testJoystick);
 	
@@ -421,9 +419,6 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
 	JS_GLFW_CONSTANT(DONT_CARE);
 	
-	// test scene
-	JS_GLFW_SET_METHOD(testScene);
-	JS_GLFW_SET_METHOD(testJoystick);
 	
 	return exports;
 	

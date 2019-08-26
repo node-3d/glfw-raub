@@ -22,8 +22,6 @@ JS_METHOD(getTime);
 JS_METHOD(setTime);
 JS_METHOD(getMonitors);
 JS_METHOD(getPrimaryMonitor);
-JS_METHOD(testJoystick);
-JS_METHOD(testScene);
 JS_METHOD(windowHint);
 JS_METHOD(windowHintString);
 JS_METHOD(defaultWindowHints);
