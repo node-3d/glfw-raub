@@ -1,9 +1,7 @@
 #ifndef _PLATFORM_HPP_
 #define _PLATFORM_HPP_
 
-
 #include <addon-tools.hpp>
-
 
 // OpenGL stuff
 
@@ -23,11 +21,9 @@
 #endif
 #include <GLFW/glfw3native.h>
 
-
 // Fix bad defines
 
 #undef True
 #undef False
-
 
 #endif /* _PLATFORM_HPP_ */

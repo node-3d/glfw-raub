@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <sstream>
 #include <iostream>
 #include <locale.h>
@@ -7,9 +6,6 @@
 #include "win-state.hpp"
 #include "events.hpp"
 #include "glfw.hpp"
-
-
-using namespace std;
 
 
 #define THIS_WINDOW                                                           \
@@ -144,6 +140,8 @@ Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary
 	}
 	
 	jsMonitor.Set("modes", jsModes);
+	
+	return jsMonitor;
 	
 }
 
@@ -394,7 +392,7 @@ JS_METHOD(getJoystickAxes) { NAPI_ENV;
 	
 	int count;
 	const float *axisValues = glfwGetJoystickAxes(joy, &count);
-	string response = "";
+	std::string response = "";
 	
 	for (int i = 0; i < count; i++) {
 		response.append(floatToString(axisValues[i]));
@@ -413,7 +411,7 @@ JS_METHOD(getJoystickButtons) { NAPI_ENV;
 	int count = 0;
 	const unsigned char* response = glfwGetJoystickButtons(joy, &count);
 	
-	string strResponse = "";
+	std::string strResponse = "";
 	for (int i = 0; i < count; i++) {
 		strResponse.append(buttonToString(response[i]));
 		strResponse.append(",");
@@ -809,6 +807,18 @@ JS_METHOD(getWindowAttrib) { NAPI_ENV; THIS_WINDOW;
 }
 
 
+JS_METHOD(setWindowAttrib) { NAPI_ENV; THIS_WINDOW;
+	
+	REQ_UINT32_ARG(1, attrib);
+	REQ_UINT32_ARG(2, value);
+	
+	glfwSetWindowAttrib(window, attrib, value);
+	
+	RET_UNDEFINED;
+	
+}
+
+
 JS_METHOD(setInputMode) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_INT32_ARG(1, mode);
@@ -816,6 +826,14 @@ JS_METHOD(setInputMode) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwSetInputMode(window, mode, value);
 	RET_UNDEFINED;
+	
+}
+
+JS_METHOD(getInputMode) { NAPI_ENV; THIS_WINDOW;
+	
+	REQ_INT32_ARG(1, mode);
+	
+	RET_NUM(glfwGetInputMode(window, mode));
 	
 }
 
@@ -831,6 +849,24 @@ JS_METHOD(pollEvents) { NAPI_ENV;
 JS_METHOD(waitEvents) { NAPI_ENV;
 	
 	glfwWaitEvents();
+	RET_UNDEFINED;
+	
+}
+
+
+JS_METHOD(waitEventsTimeout) { NAPI_ENV;
+	
+	REQ_DOUBLE_ARG(1, timeout);
+	
+	glfwWaitEventsTimeout(timeout);
+	RET_UNDEFINED;
+	
+}
+
+
+JS_METHOD(postEmptyEvent) { NAPI_ENV;
+	
+	glfwPostEmptyEvent();
 	RET_UNDEFINED;
 	
 }
@@ -920,175 +956,156 @@ JS_METHOD(extensionSupported) { NAPI_ENV;
 	
 	REQ_STR_ARG(0, str);
 	
-	RET_BOOL(glfwExtensionSupported(str.c_str()) == 1);
+	RET_BOOL(glfwExtensionSupported(str.c_str()) == GLFW_TRUE);
 	
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-JS_METHOD(setWindowAttrib) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(rawMouseMotionSupported) { NAPI_ENV;
 	
-	glfwSetWindowAttrib(GLFWwindow* window, int attrib, int value);
-	RET_UNDEFINED;
+	RET_BOOL(glfwRawMouseMotionSupported() == GLFW_TRUE);
 	
 }
 
 
-JS_METHOD(waitEventsTimeout) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getKeyName) { NAPI_ENV;
 	
-	glfwWaitEventsTimeout(double timeout);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, key);
+	REQ_INT32_ARG(1, scancode);
 	
-}
-
-
-JS_METHOD(postEmptyEvent) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwPostEmptyEvent(void);
-	RET_UNDEFINED;
+	RET_STR(glfwGetKeyName(key, scancode));
 	
 }
 
 
-JS_METHOD(getInputMode) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getKeyScancode) { NAPI_ENV;
 	
-	glfwGetInputMode(GLFWwindow* window, int mode);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, key);
 	
-}
-
-
-JS_METHOD(rawMouseMotionSupported) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwRawMouseMotionSupported(void);
-	RET_UNDEFINED;
+	RET_NUM(glfwGetKeyScancode(key));
 	
 }
 
 
-JS_METHOD(getKeyName) { NAPI_ENV; THIS_WINDOW;
+// TODO
+// JS_METHOD(createCursor) { NAPI_ENV; THIS_WINDOW;
+// 	glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
+// }
+// JS_METHOD(createStandardCursor) { NAPI_ENV; THIS_WINDOW;
+// 	glfwCreateStandardCursor(int shape);
+// }
+// JS_METHOD(destroyCursor) { NAPI_ENV; THIS_WINDOW;
+// 	glfwDestroyCursor(GLFWcursor* cursor);
+// }
+// JS_METHOD(setCursor) { NAPI_ENV; THIS_WINDOW;
+// 	glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
+// }
+
+
+JS_METHOD(getJoystickHats) { NAPI_ENV;
 	
-	glfwGetKeyName(int key, int scancode);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, jid);
+	
+	int count;
+	const char *hats = glfwGetJoystickHats(jid, &count);
+	
+	Napi::Array jsHats = Napi::Array::New(env);
+	
+	if ( ! hats ) {
+		RET_VALUE(jsHats);
+	}
+	
+	for (int j = 0; j < count; j++) {
+		jsHats.Set(j, JS_NUM(hats[i]));
+	}
+	
+	RET_VALUE(jsHats);
 	
 }
 
 
-JS_METHOD(getKeyScancode) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getJoystickGUID) { NAPI_ENV;
 	
-	glfwGetKeyScancode(int key);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, jid);
 	
-}
-
-
-JS_METHOD(createCursor) { NAPI_ENV; THIS_WINDOW;
+	const char *guid = glfwGetJoystickGUID(jid);
 	
-	glfwCreateCursor(const GLFWimage* image, int xhot, int yhot);
-	RET_UNDEFINED;
+	if ( ! guid ) {
+		RET_NULL;
+	}
 	
-}
-
-
-JS_METHOD(createStandardCursor) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwCreateStandardCursor(int shape);
-	RET_UNDEFINED;
+	RET_STR(guid);
 	
 }
 
 
-JS_METHOD(destroyCursor) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(joystickIsGamepad) { NAPI_ENV;
 	
-	glfwDestroyCursor(GLFWcursor* cursor);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, jid);
 	
-}
-
-
-JS_METHOD(setCursor) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
-	RET_UNDEFINED;
+	RET_BOOL(glfwJoystickIsGamepad(jid) == GLFW_TRUE);
 	
 }
 
 
-JS_METHOD(getJoystickHats) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(updateGamepadMappings) { NAPI_ENV;
 	
-	glfwGetJoystickHats(int jid, int* count);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(getJoystickGUID) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwGetJoystickGUID(int jid);
-	RET_UNDEFINED;
+	REQ_STR_ARG(0, mappings);
+	// https://www.glfw.org/docs/latest/input_guide.html#gamepad_mapping
+	RET_BOOL(glfwUpdateGamepadMappings(mappings) == GLFW_TRUE);
 	
 }
 
 
-JS_METHOD(joystickIsGamepad) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getGamepadName) { NAPI_ENV;
 	
-	glfwJoystickIsGamepad(int jid);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, jid);
 	
-}
-
-
-JS_METHOD(updateGamepadMappings) { NAPI_ENV; THIS_WINDOW;
+	const char *name = glfwGetGamepadName(jid);
 	
-	glfwUpdateGamepadMappings(const char* string);
-	RET_UNDEFINED;
+	if ( ! name ) {
+		RET_NULL;
+	}
 	
-}
-
-
-JS_METHOD(getGamepadName) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwGetGamepadName(int jid);
-	RET_UNDEFINED;
+	RET_STR(name);
 	
 }
 
 
-JS_METHOD(getGamepadState) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getGamepadState) { NAPI_ENV;
 	
-	glfwGetGamepadState(int jid, GLFWgamepadstate* state);
-	RET_UNDEFINED;
+	REQ_INT32_ARG(0, jid);
+	
+	GLFWgamepadstate state;
+	if (glfwGetGamepadState(jid, &state) != GLFW_TRUE) {
+		RET_NULL;
+	}
+	
+	Napi::Object jsState = Napi::Object::New(env);
+	Napi::Array jsButtons = Napi::Array::New(env);
+	Napi::Array jsAxes = Napi::Array::New(env);
+	
+	for (int j = 0; j < 15; j++) {
+		jsButtons.Set(j, JS_NUM(state.buttons[j]));
+	}
+	
+	for (int j = 0; j < 6; j++) {
+		jsAxes.Set(j, JS_NUM(state.axes[j]));
+	}
+	
+	jsState.Set("buttons", jsButtons);
+	jsState.Set("axes", jsAxes);
+	
+	RET_VALUE(jsState);
 	
 }
 
 
 JS_METHOD(setClipboardString) { NAPI_ENV; THIS_WINDOW;
 	
-	glfwSetClipboardString(GLFWwindow* window, const char* string);
+	REQ_STR_ARG(1, str);
+	
+	glfwSetClipboardString(window, str.c_str());
 	RET_UNDEFINED;
 	
 }
@@ -1096,72 +1113,27 @@ JS_METHOD(setClipboardString) { NAPI_ENV; THIS_WINDOW;
 
 JS_METHOD(getClipboardString) { NAPI_ENV; THIS_WINDOW;
 	
-	glfwGetClipboardString(GLFWwindow* window);
-	RET_UNDEFINED;
+	const char *str = glfwGetClipboardString(window);
+	
+	if ( ! str ) {
+		RET_STR("");
+	}
+	
+	RET_STR(str);
 	
 }
 
 
-JS_METHOD(getTimerValue) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getTimerValue) { NAPI_ENV;
 	
-	glfwGetTimerValue(void);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(getTimerFrequency) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwGetTimerFrequency(void);
-	RET_UNDEFINED;
+	RET_NUM(glfwGetTimerValue());
 	
 }
 
 
-JS_METHOD(getProcAddress) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(getTimerFrequency) { NAPI_ENV;
 	
-	glfwGetProcAddress(const char* procname);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(vulkanSupported) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwVulkanSupported(void);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(getRequiredInstanceExtensions) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwGetRequiredInstanceExtensions(uint32_t* count);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(getInstanceProcAddress) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwGetInstanceProcAddress(VkInstance instance, const char* procname);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(getPhysicalDevicePresentationSupport) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
-	RET_UNDEFINED;
-	
-}
-
-
-JS_METHOD(createWindowSurface) { NAPI_ENV; THIS_WINDOW;
-	
-	glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
-	RET_UNDEFINED;
+	RET_NUM(glfwGetTimerFrequency());
 	
 }
 

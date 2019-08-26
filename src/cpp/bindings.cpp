@@ -15,63 +15,102 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
 	std::atexit(glfw::deinit);
 	
-	/* GLFW initialization, termination and version querying */
+	
+	// ------------ Methods ------------
+	
 	JS_GLFW_SET_METHOD(init);
 	JS_GLFW_SET_METHOD(terminate);
+	JS_GLFW_SET_METHOD(initHint);
 	JS_GLFW_SET_METHOD(getVersion);
 	JS_GLFW_SET_METHOD(getVersionString);
-	JS_GLFW_SET_METHOD(glfwGetError);
-	
-	/* Time */
-	JS_GLFW_SET_METHOD(getTime);
-	JS_GLFW_SET_METHOD(setTime);
-	
-	/* Monitor handling */
+	JS_GLFW_SET_METHOD(getError);
 	JS_GLFW_SET_METHOD(getMonitors);
-	
-	/* Window handling */
-	JS_GLFW_SET_METHOD(createWindow);
-	JS_GLFW_SET_METHOD(windowHint);
+	JS_GLFW_SET_METHOD(getPrimaryMonitor);
+	JS_GLFW_SET_METHOD(getMonitorPos);
+	JS_GLFW_SET_METHOD(getMonitorWorkarea);
+	JS_GLFW_SET_METHOD(getMonitorPhysicalSize);
+	JS_GLFW_SET_METHOD(getMonitorContentScale);
+	JS_GLFW_SET_METHOD(getMonitorName);
+	JS_GLFW_SET_METHOD(getVideoModes);
+	JS_GLFW_SET_METHOD(getVideoMode);
+	JS_GLFW_SET_METHOD(setGamma);
+	JS_GLFW_SET_METHOD(getGammaRamp);
+	JS_GLFW_SET_METHOD(setGammaRamp);
 	JS_GLFW_SET_METHOD(defaultWindowHints);
-	JS_GLFW_SET_METHOD(platformWindow);
-	JS_GLFW_SET_METHOD(platformContext);
+	JS_GLFW_SET_METHOD(windowHint);
+	JS_GLFW_SET_METHOD(windowHintString);
+	JS_GLFW_SET_METHOD(createWindow);
 	JS_GLFW_SET_METHOD(destroyWindow);
-	JS_GLFW_SET_METHOD(setWindowShouldClose);
 	JS_GLFW_SET_METHOD(windowShouldClose);
+	JS_GLFW_SET_METHOD(setWindowShouldClose);
 	JS_GLFW_SET_METHOD(setWindowTitle);
 	JS_GLFW_SET_METHOD(setWindowIcon);
-	JS_GLFW_SET_METHOD(getWindowSize);
-	JS_GLFW_SET_METHOD(setWindowSize);
-	JS_GLFW_SET_METHOD(setWindowPos);
 	JS_GLFW_SET_METHOD(getWindowPos);
+	JS_GLFW_SET_METHOD(setWindowPos);
+	JS_GLFW_SET_METHOD(getWindowSize);
+	JS_GLFW_SET_METHOD(setWindowSizeLimits);
+	JS_GLFW_SET_METHOD(setWindowAspectRatio);
+	JS_GLFW_SET_METHOD(setWindowSize);
 	JS_GLFW_SET_METHOD(getFramebufferSize);
+	JS_GLFW_SET_METHOD(getWindowFrameSize);
+	JS_GLFW_SET_METHOD(getWindowContentScale);
+	JS_GLFW_SET_METHOD(getWindowOpacity);
+	JS_GLFW_SET_METHOD(setWindowOpacity);
 	JS_GLFW_SET_METHOD(iconifyWindow);
 	JS_GLFW_SET_METHOD(restoreWindow);
+	JS_GLFW_SET_METHOD(maximizeWindow);
 	JS_GLFW_SET_METHOD(showWindow);
 	JS_GLFW_SET_METHOD(hideWindow);
+	JS_GLFW_SET_METHOD(focusWindow);
+	JS_GLFW_SET_METHOD(requestWindowAttention);
+	JS_GLFW_SET_METHOD(getWindowMonitor);
+	JS_GLFW_SET_METHOD(setWindowMonitor);
 	JS_GLFW_SET_METHOD(getWindowAttrib);
-	JS_GLFW_SET_METHOD(setInputMode);
+	JS_GLFW_SET_METHOD(setWindowAttrib);
+	JS_GLFW_SET_METHOD(setWindowUserPointer);
+	JS_GLFW_SET_METHOD(getWindowUserPointer);
 	JS_GLFW_SET_METHOD(pollEvents);
 	JS_GLFW_SET_METHOD(waitEvents);
-	
-	/* Input handling */
+	JS_GLFW_SET_METHOD(waitEventsTimeout);
+	JS_GLFW_SET_METHOD(postEmptyEvent);
+	JS_GLFW_SET_METHOD(getInputMode);
+	JS_GLFW_SET_METHOD(setInputMode);
+	JS_GLFW_SET_METHOD(rawMouseMotionSupported);
+	JS_GLFW_SET_METHOD(getKeyName);
+	JS_GLFW_SET_METHOD(getKeyScancode);
 	JS_GLFW_SET_METHOD(getKey);
 	JS_GLFW_SET_METHOD(getMouseButton);
 	JS_GLFW_SET_METHOD(getCursorPos);
 	JS_GLFW_SET_METHOD(setCursorPos);
-	
-	/* Context handling */
+	// TODO
+	// JS_GLFW_SET_METHOD(createCursor);
+	// JS_GLFW_SET_METHOD(createStandardCursor);
+	// JS_GLFW_SET_METHOD(destroyCursor);
+	// JS_GLFW_SET_METHOD(setCursor);
+	JS_GLFW_SET_METHOD(joystickPresent);
+	JS_GLFW_SET_METHOD(getJoystickAxes);
+	JS_GLFW_SET_METHOD(getJoystickButtons);
+	JS_GLFW_SET_METHOD(getJoystickHats);
+	JS_GLFW_SET_METHOD(getJoystickName);
+	JS_GLFW_SET_METHOD(getJoystickGUID);
+	JS_GLFW_SET_METHOD(setJoystickUserPointer);
+	JS_GLFW_SET_METHOD(getJoystickUserPointer);
+	JS_GLFW_SET_METHOD(joystickIsGamepad);
+	JS_GLFW_SET_METHOD(updateGamepadMappings);
+	JS_GLFW_SET_METHOD(getGamepadName);
+	JS_GLFW_SET_METHOD(getGamepadState);
+	JS_GLFW_SET_METHOD(setClipboardString);
+	JS_GLFW_SET_METHOD(getClipboardString);
+	JS_GLFW_SET_METHOD(getTime);
+	JS_GLFW_SET_METHOD(setTime);
+	JS_GLFW_SET_METHOD(getTimerValue);
+	JS_GLFW_SET_METHOD(getTimerFrequency);
 	JS_GLFW_SET_METHOD(makeContextCurrent);
 	JS_GLFW_SET_METHOD(getCurrentContext);
 	JS_GLFW_SET_METHOD(swapBuffers);
 	JS_GLFW_SET_METHOD(swapInterval);
 	JS_GLFW_SET_METHOD(extensionSupported);
 	
-	/* Joystick */
-	JS_GLFW_SET_METHOD(joystickPresent);
-	JS_GLFW_SET_METHOD(getJoystickAxes);
-	JS_GLFW_SET_METHOD(getJoystickButtons);
-	JS_GLFW_SET_METHOD(getJoystickName);
 	
 	// ------------ Constants ------------
 	
