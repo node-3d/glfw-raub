@@ -58,29 +58,6 @@ void errorCb(int error, const char* description) {
 }
 
 
-JS_METHOD(init) { NAPI_ENV;
-	
-	setlocale(LC_ALL, "");
-	
-	glfwSetErrorCallback(errorCb);
-	
-	isInited = glfwInit() == GLFW_TRUE;
-	RET_BOOL(isInited);
-	
-}
-
-
-JS_METHOD(initHint) { NAPI_ENV;
-	
-	REQ_INT32_ARG(0, hint);
-	REQ_INT32_ARG(1, value);
-	
-	glfwInitHint(hint, value);
-	RET_UNDEFINED;
-	
-}
-
-
 // Cleanup resources
 void deinit() {
 	
@@ -120,6 +97,29 @@ void deinit() {
 	_share = nullptr;
 	
 	glfwTerminate();
+	
+}
+
+
+JS_METHOD(init) { NAPI_ENV;
+	
+	setlocale(LC_ALL, "");
+	
+	glfwSetErrorCallback(errorCb);
+	
+	isInited = glfwInit() == GLFW_TRUE;
+	RET_BOOL(isInited);
+	
+}
+
+
+JS_METHOD(initHint) { NAPI_ENV;
+	
+	REQ_INT32_ARG(0, hint);
+	REQ_INT32_ARG(1, value);
+	
+	glfwInitHint(hint, value);
+	RET_UNDEFINED;
 	
 }
 
@@ -356,7 +356,7 @@ JS_METHOD(windowHint) { NAPI_ENV;
 }
 
 
-JS_METHOD(windowHintString) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(windowHintString) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, hint);
 	REQ_STR_ARG(1, value);
