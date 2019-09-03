@@ -342,7 +342,7 @@ class Window extends EventEmitter {
 	
 	getWindowAttrib(attrib) { return glfw.getWindowAttrib(this._window, attrib); }
 	
-	setInputMode(mode) { glfw.setInputMode(this._window, mode); }
+	setInputMode(mode, value) { glfw.setInputMode(this._window, mode, value); }
 	
 	swapBuffers() { glfw.swapBuffers(this._window); }
 	
