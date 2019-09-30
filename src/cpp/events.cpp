@@ -212,7 +212,7 @@ void windowIconifyCB(GLFWwindow *window, int iconified) {
 	evt.Set("type", "iconify");
 	evt.Set("iconified", static_cast<bool>(iconified));
 	
-	_emit(state, "iconify",evt);
+	_emit(state, "iconify", evt);
 	
 }
 
