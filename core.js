@@ -1,5 +1,7 @@
 'use strict';
 
+require('segfault-raub');
+
 // Add deps dll dirs
 require('deps-opengl-raub');
 
