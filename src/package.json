@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"build:dev": "node-gyp rebuild --debug"
+		"build": "node-gyp rebuild && node -e \"require('addon-tools-raub/cpbin')('glfw')\""
 	},
 	"dependencies": {
 		"addon-tools-raub": "5.0.0",
