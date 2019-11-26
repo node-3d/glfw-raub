@@ -87,6 +87,14 @@ void deinit() {
 		glfwSetCursorPosCallback(window, nullptr);
 		glfwSetCursorEnterCallback(window, nullptr);
 		glfwSetScrollCallback(window, nullptr);
+	}
+	
+	for (int i = states.size() - 1; i >= 0; i--) {
+		WinState *state = states[i];
+		GLFWwindow *window = state->window;
+		if ( ! window ) {
+			continue;
+		}
 		// Destroy
 		glfwDestroyWindow(window);
 		state->window = nullptr;
