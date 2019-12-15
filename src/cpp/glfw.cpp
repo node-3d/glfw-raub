@@ -569,12 +569,39 @@ JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 	
 	REQ_OBJ_ARG(1, icon);
 	
+	if ( ! (icon.Has("width") && icon.Has("height")) ) {
+		RET_UNDEFINED;
+	}
+	
+	bool noflip = icon.Has("noflip") ? icon.Get("noflip").ToBoolean().Value() : false;
+	
 	GLFWimage image;
 	image.width = icon.Get("width").ToNumber().Int32Value();
 	image.height = icon.Get("height").ToNumber().Int32Value();
-	image.pixels = reinterpret_cast<unsigned char*>(getData(env, icon));
 	
-	glfwSetWindowIcon(window, 1, &image);
+	uint8_t *src = reinterpret_cast<unsigned char*>(getData(env, icon));
+	
+	if (noflip == false) {
+		uint8_t *dest = new uint8_t [image.width * image.height * 4];
+		int32_t lastY = image.height - 1;
+		for (int32_t y = 0; y < image.height; y++) {
+			for (int32_t x = 0; x < image.width; x++) {
+				int32_t iForward = (y * image.width + x) << 2;
+				int32_t iBackward = ((lastY - y) * image.width + x) << 2;
+				dest[iForward + 0] = src[iBackward + 0];
+				dest[iForward + 1] = src[iBackward + 1];
+				dest[iForward + 2] = src[iBackward + 2];
+				dest[iForward + 3] = src[iBackward + 3];
+			}
+		}
+		image.pixels = dest;
+		glfwSetWindowIcon(window, 1, &image);
+		delete [] dest;
+	} else {
+		image.pixels = src;
+		glfwSetWindowIcon(window, 1, &image);
+	}
+	
 	RET_UNDEFINED;
 	
 }

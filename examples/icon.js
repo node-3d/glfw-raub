@@ -6,15 +6,23 @@ const { Window } = glfw;
 
 const w1 = new Window({ title: 'GLFW Simple Test 1' });
 
+const ICON_SIZE = 32;
 
 const iconData = [];
-for (let i = 0; i < 18 * 18 * 4; i++) {
-	iconData.push(Math.floor(256 * Math.random()));
+for (let y = 0; y < ICON_SIZE; y++) {
+	for (let x = 0; x < ICON_SIZE; x++) {
+		const r = 255 * (x / (ICON_SIZE - 1));
+		const g = 255 * (y / (ICON_SIZE - 1));
+		const b = 255 * (1 - r * g);
+		iconData.push(r, g, b, 255);
+	}
 }
+
 const icon = {
-	width  : 18,
-	height : 18,
-	data: Buffer.from(iconData),
+	width  : ICON_SIZE,
+	height : ICON_SIZE,
+	data   : Buffer.from(iconData),
+	noflip : true,
 };
 
 w1.icon = icon;

@@ -47,6 +47,8 @@ Here `glfw` is a low level interface container, where all `glfw*` functions are 
 signature due to JS specifics. Here `emitter` is any object having **BOUND** `emit()` method.
 It will be used to transmit GLFW events.
 
+Classes `Window` and `Document` are created for convenience and documented in more detail below.
+
 ----------
 
 
@@ -121,8 +123,9 @@ This when this property is changed, a new window is created and the old is hidde
 * `get/set [width, height] wh` - window width and height.
 * `get/set {width, height} size` - window width and height.
 * `get/set string title` - window title.
-* `get/set {width, height, Buffer data} icon` - window icon in RGBA format. Consider
-using [this Image implementation](https://github.com/raub/node-image).
+* `get/set {width, height, Buffer data, ?noflip} icon` - window icon in RGBA format. Consider
+using [this Image implementation](https://github.com/node-3d/image-raub). The given image is
+vertically flipped if `noflip` is not set to `true`. Also see [this example](examples/icon.js).
 * `get/set boolean shouldClose` - if window is going to be closed.
 * `get/set number x` - window position X-coordinate on the screen.
 * `get/set number y` - window position Y-coordinate on the screen.
