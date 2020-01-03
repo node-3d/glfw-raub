@@ -60,7 +60,7 @@ Classes `Window` and `Document` are created for convenience and documented in mo
 * `'focus'` - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
 * `'focusin'` - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focusin)
 * `'focusout'` - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/focusout)
-* `'fbresize'` - render-surface resized `{ width, height }`
+* `'resize'` - render-surface resized in pixels `{ width, height }`
 * `'iconifiy'` - window was iconified
 * `'keydown'` - keyboard [key down](https://developer.mozilla.org/en-US/docs/Web/Events/keydown)
 * `'keyup'` - keyboard [key up](https://developer.mozilla.org/en-US/docs/Web/Events/keyup)
@@ -70,7 +70,7 @@ Classes `Window` and `Document` are created for convenience and documented in mo
 * `'mouseup'` - mouse [button up](https://developer.mozilla.org/en-US/docs/Web/Events/mouseup)
 * `'quit'` - window closed
 * `'refresh'` - window needs to be redrawn
-* `'resize'` - window frame resized `{ width, height }`
+* `'wresize'` - window frame resized (NOT really pixels) `{ width, height }`
 * `'wheel'` - mouse [wheel rotation](https://developer.mozilla.org/en-US/docs/Web/Events/wheel)
 * `'move'` - window moved `{ x, y }`
 

@@ -136,8 +136,7 @@ void windowSizeCB(GLFWwindow *window, int w, int h) {
 	evt.Set("width", JS_NUM(w));
 	evt.Set("height", JS_NUM(h));
 	
-	Napi::Value argv[2] = { JS_STR("resize"), evt };
-	_emit(state, "resize", evt);
+	_emit(state, "wresize", evt);
 	
 }
 
@@ -146,11 +145,11 @@ void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
 	Napi::Object evt = Napi::Object::New(env);
-	evt.Set("type", "fbresize");
+	evt.Set("type", "resize");
 	evt.Set("width", JS_NUM(w));
 	evt.Set("height", JS_NUM(h));
 	
-	_emit(state, "fbresize", evt);
+	_emit(state, "resize", evt);
 	
 }
 
