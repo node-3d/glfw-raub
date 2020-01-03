@@ -11,7 +11,10 @@ w1.on('keydown', () => w1.height += 10);
 w1.on('mousedown', () => w1.width += 10);
 
 console.log('Press a key to resize Height.\nClick mouse to resize Width.');
-
+w1.on(
+	'resize',
+	({ width, height}) => console.log('Resized to', width, 'x', height)
+);
 
 const draw = () => {
 	
