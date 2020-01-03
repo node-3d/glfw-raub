@@ -22,8 +22,8 @@ step during the `npm i` command.
 
 * **GLFW** version **3.3** backend.
 * Exposes low-level **GLFW** interface.
-* Multiple windows for a single **Node.js** process - easy.
-* Goes fullscreen and back fluently.
+* Multiple windows for a single **Node.js** process.
+* Able to switch to fullscreen and back.
 * Has `Document` class, capable of tricking other libs, as if we are in a browser.
 
 
@@ -33,7 +33,7 @@ This is a rather low level interface, where most of the stuff is directly reflec
 GLFW interfaces. Do not expect much. See [GLFW Docs](http://www.glfw.org/docs/latest/group__window.html)
 for useful info on what it does and doesn't.
 
-As per this lib, 3 entities are exported: GLFW itself, and Window and Document classes.
+As per this lib, 3 entities are exported: GLFW itself, and `Window` and `Document` classes.
 
 ```js
 const glfw = require('glfw-raub');
@@ -52,7 +52,127 @@ Classes `Window` and `Document` are created for convenience and documented in mo
 ----------
 
 
-### GLFW window events:
+### class Window
+
+`Window` is high level js-wrapper around the above functions, which helps in managing window
+instances. It also extends
+[EventEmitter](https://nodejs.org/docs/latest-v12.x/api/events.html#events_events).
+
+**Constructor:**
+
+* `Window({ title, width, height, display, vsync, mode, autoIconify, msaa })`
+	* `string title $PWD` - window title, takes current directory as default.
+	* `number width 800` - window initial width.
+	* `number height 600` - window initial height.
+	* `number display undefined` - display id to open window on a specific display.
+	* `boolean vsync false` - if vsync should be used.
+	* `boolean fullscreen false` - if the window is fullscreen, takes presedence over `mode`.
+	* `string mode 'windowed'` - one of `'windowed', 'borderless', 'fullscreen'`.
+	* `boolean autoIconify true` - if fullscreen windows should iconify automatically on focus loss.
+	* `number msaa 2` - multisample antialiasing level.
+	* `Image icon null` - winodw icon.
+	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
+
+
+**Properties:**
+
+* `get number ratio 1` - the ratio between physical and logical pixels, e.g `2` for Retina.
+* `get number devicePixelRatio 1` - alias for `ratio`.
+* `get number handle` - window pointer.
+* `get/set string mode 'windowed'` - one of `'windowed', 'borderless', 'fullscreen'`. Here
+`'borderless'` emulates fullscreen by a frameless, screen-sized window.
+When this property is changed, a new window is created and the old is hidden.
+* `get/set number width` - width in LOGICAL pixels, i.e. for Retina twice the window size.
+* `get/set number height` - height in LOGICAL pixels, i.e. for Retina twice the window size.
+* `get/set number offsetWidth` - alias for `width`.
+* `get/set number offsetHeight` - alias for `height`.
+* `get/set number w` - alias for `width`.
+* `get/set number h` - alias for `height`.
+* `get/set [width, height] wh` - an Array, containing LOGICAL width and height.
+* `get/set { width, height } pxSize` - an Object, containing LOGICAL width and height.
+* `get/set number innerWidth` - alias for `width`.
+* `get/set number innerHeight` - alias for `height`.
+* `get/set number clientWidth` - alias for `width`.
+* `get/set number clientHeight` - alias for `height`.
+* `get/set onkeydown` - alias for `.on('keydown', cb)`. Getter returns an Array of callbacks.
+* `get/set onkeyup` - alias for `.on('keyup', cb)`. Getter returns an Array of callbacks.
+* `get/set onmousedown` - alias for `.on('mousedown', cb)`. Getter returns an Array of callbacks.
+* `get/set onmouseup` - alias for `.on('mouseup', cb)`. Getter returns an Array of callbacks.
+* `get/set onwheel` - alias for `.on('wheel', cb)`. Getter returns an Array of callbacks.
+* `get/set onmousewheel` - alias for `.on('mousewheel', cb)`. Getter returns an Array of callbacks.
+* `get/set onresize` - alias for `.on('resize', cb)`. Getter returns an Array of callbacks.
+* `get/set { width, height } size` - an Object, containing PHYSICAL width and height of the window.
+* `get number scrollX` - always 0.
+* `get number scrollY` - always 0.
+* `get/set string title` - window title.
+* `get/set Image{width, height, Buffer data, ?noflip} icon null` - window icon in RGBA format. Consider
+using [this Image implementation](https://github.com/node-3d/image-raub). The given image is
+vertically flipped if `noflip` is not set to `true`. Also see [this example](examples/icon.js).
+* `get number msaa` - number of msaa samples.
+* `get string version` - OpenGL vendor info.
+* `get/set bool shouldClose` - if window is going to be closed.
+* `get number platformWindow` - window HWND pointer.
+* `get number platformContext` - OpenGL context handle.
+* `get/set { x, y } pos` - an Object, containing the window position coordinates.
+* `get/set number x` - window position X-coordinate on the screen.
+* `get/set number y` - window position Y-coordinate on the screen.
+* `get { width, height } framebufferSize` - the size of allocated framebuffer, same as `pxSize`.
+* `get number currentContext` - which OpenGL context is now current.
+* `get/set { x, y } cursorPos` - an Object, containing the cursor position coordinates.
+
+---
+
+**Methods:**
+
+* `Monitor getCurrentMonitor()` - get a monitor having the most overlap with this window.
+`Monitor` struct is described below.
+* `Rect getBoundingClientRect()` - gets a
+[browserlike](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect)
+rect of this window.
+* `number getKey(number key)` - get
+[key](https://www.glfw.org/docs/latest/group__keys.html) state (`GLFW_PRESS/GLFW_RELEASE`).
+* `number getMouseButton(number button)` - get mouse
+[button](https://www.glfw.org/docs/latest/group__buttons.html) state (`GLFW_PRESS/GLFW_RELEASE`).
+* `number getWindowAttrib(number attrib)` - get window
+[attribute](https://www.glfw.org/docs/latest/window_guide.html#window_attribs).
+* `setInputMode(number mode, number value)` - set input mode
+[option](https://www.glfw.org/docs/latest/group__input.html#gaa92336e173da9c8834558b54ee80563b).
+* `swapBuffers()` - swaps the front and back buffers of the window.
+* `makeCurrent()` - make this window's GL context current.
+* `destroy()` - destroy the GLFW window.
+* `iconify()` - minimize the window.
+* `restore()` - restore the window if it was previously iconified or maximized.
+* `hide()` - hide the window.
+* `show()` - show the window, if it is hidden.
+* `on(string type, func cb)` - subscribe an event listener. See
+[EventEmitter](https://nodejs.org/docs/latest-v12.x/api/events.html#events_events)
+* `emit(string type, Object data)` - emit an event on behalf of this window.
+* `dispatchEvent({ string type, ... })` - alias for `emit`, `type` is expected inside the event object.
+* `addEventListener(string type, func cb)` - alias for `on`.
+* `removeEventListener(string type, func cb)` - alia for `removeListener`.
+* `number requestAnimationFrame(cb)` - **BOUND** `requestAnimationFrame` method, returns id.
+* `cancelAnimationFrame(id)` - **BOUND** `cancelAnimationFrame` method. Cancels by id.
+
+`Monitor` = {
+	`bool is_primary` - is this screen primary
+	`string name` - screen name
+	`number pos_x` - global position `x` of the screen
+	`number pos_y` - global position `y` of the screen
+	`number width_mm` - screen width in mm
+	`number height_mm` - screen height in mm
+	`number width` - screen width
+	`number height` - screen height
+	`number rate` - refresh rate
+	`modes`: [{
+		`number width` - screen width
+		`number height` - screen height
+		`number rate` - refresh rate
+	}]
+}
+
+---
+
+**Events:**
 
 * `'blur'` - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/blur)
 * `'click'` - mouse button [clicked](https://developer.mozilla.org/en-US/docs/Web/Events/click)
@@ -60,7 +180,7 @@ Classes `Window` and `Document` are created for convenience and documented in mo
 * `'focus'` - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
 * `'focusin'` - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focusin)
 * `'focusout'` - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/focusout)
-* `'resize'` - render-surface resized in pixels `{ width, height }`
+* `'resize'` - render-surface resized (values in pixels) `{ width, height }`
 * `'iconifiy'` - window was iconified
 * `'keydown'` - keyboard [key down](https://developer.mozilla.org/en-US/docs/Web/Events/keydown)
 * `'keyup'` - keyboard [key up](https://developer.mozilla.org/en-US/docs/Web/Events/keyup)
@@ -75,79 +195,6 @@ Classes `Window` and `Document` are created for convenience and documented in mo
 * `'move'` - window moved `{ x, y }`
 
 > Note: `keypress` event is not supported.
-
-
-### class Window
-
-`Window` is higher level js-wrapper around the above functions, which helps in managing window
-instances. It basically has all the functionality where in GLFW Docs `window` parameter
-is mentioned. E.g. `glfwSetWindowTitle(window, title)` -> `window.title = title`.
-
-There are few simple rules for the above transformation to become intuitive:
-
-* API is available if it has `window` parameter.
-* All props start lowercase.
-* Word "Window" is omitted.
-* Whatever could have a `get/set` interface is made so.
-
-
-**Constructor:**
-
-* `Window({ title, width, height, display, vsync, mode, autoIconify, msaa })`
-	* `string title $PWD` - window title, takes current directory as default.
-	* `number width 800` - window initial width.
-	* `number height 600` - window initial height.
-	* `number display undefined` - display id to open window on a specific display.
-	* `boolean vsync false` - if vsync should be used.
-	* `string mode 'windowed'` - one of `'windowed', 'borderless', 'fullscreen'`.
-	* `boolean autoIconify true` - if fullscreen windows should iconify automatically on focus loss.
-	* `number msaa 2` - multisample antialiasing level.
-	* `boolean decorated true` - if window has borders (use `false` for borderless fullscreen).
-
-
-**Properties:**
-
-* `get number handle` - window pointer.
-* `get string version` - OpenGL vendor info.
-* `get number platformWindow` - window HWND pointer.
-* `get number platformContext` - OpenGL context handle.
-* `get {width, height} framebufferSize` - the size of allocated framebuffer.
-* `get number currentContext` - what GLFW window is now current.
-* `get number samples` - number of msaa samples passed to the constructor.
-
-* `get/set string mode` - one of `'windowed', 'borderless', 'fullscreen'`. Here
-`'borderless'` emulates fullscreen by a frameless, screen-sized window.
-This when this property is changed, a new window is created and the old is hidden.
-* `get/set number width|w` - window width.
-* `get/set number height|h` - window height.
-* `get/set [width, height] wh` - window width and height.
-* `get/set {width, height} size` - window width and height.
-* `get/set string title` - window title.
-* `get/set {width, height, Buffer data, ?noflip} icon` - window icon in RGBA format. Consider
-using [this Image implementation](https://github.com/node-3d/image-raub). The given image is
-vertically flipped if `noflip` is not set to `true`. Also see [this example](examples/icon.js).
-* `get/set boolean shouldClose` - if window is going to be closed.
-* `get/set number x` - window position X-coordinate on the screen.
-* `get/set number y` - window position Y-coordinate on the screen.
-* `get/set {x, y} pos` - where window is on the screen.
-* `get/set {x, y} cursorPos` - where mouse is relative to the window.
-
----
-
-**Methods:**
-
-* `getKey(number key)` - `glfw.getKey(window, key)`.
-* `getMouseButton(number button)` - `glfw.getMouseButton(window, button)`.
-* `getWindowAttrib(number attrib)` - `glfw.getWindowAttrib(window, attrib)`.
-* `setInputMode(number mode)` - `glfw.setInputMode(window, mode)`.
-* `swapBuffers()` - `glfw.swapBuffers(window)`.
-* `makeCurrent()` - `glfw.makeContextCurrent(window)`.
-* `destroy()` - `glfw.destroyWindow(window)`.
-* `iconify()` - `glfw.iconifyWindow(window)`.
-* `restore()` - `glfw.restoreWindow(window)`.
-* `hide()` - `glfw.hideWindow(window)`.
-* `show()` - `glfw.showWindow(window)`.
-* `on(string type, function cb)` - listen for window (GLFW) events.
 
 
 ----------
@@ -183,11 +230,6 @@ is designed to fit perfectly.
 **Properties:**
 
 * `get body` - returns `this`.
-* `get ratio/devicePixelRatio` - device pixel ratio, most likely to be 1.
-* `get/set innerWidth/clientWidth` - window width.
-* `get/set innerHeight/clientHeight` - window height.
-* `get/set onkeydown` - browser-style event listening.
-* `get/set onkeyup` - browser-style event listening.
 * `get style` - mimic web-element `style` property.
 * `get context` - returns `Document.webgl`, set through `Document.setWebgl`.
 
@@ -202,7 +244,3 @@ is designed to fit perfectly.
 then returns new instances of canvas-like object capable of using 2d or 3d context.
 This is done for some web APIs like three.js, which create additional canvases.
 For `'image'` returns `new Document.Image`, set through `Document.setImage`.
-* `dispatchEvent(event)` - invokes `emit(event.type, event)`.
-* `addEventListener(name, callback)` - adds event listener.
-* `removeEventListener(name, callback)` - removes event listener.
-* `requestAnimationFrame(cb)` - **BOUND** `requestAnimationFrame` method.

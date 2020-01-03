@@ -39,11 +39,6 @@ class Window extends EventEmitter {
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
-		// we use OpenGL 2.1, GLSL 1.20. Comment this for now as this is for GLSL 1.50
-		//glfw.windowHint(glfw.OPENGL_FORWARD_COMPAT, 1);
-		//glfw.windowHint(glfw.OPENGL_VERSION_MAJOR, 3);
-		//glfw.windowHint(glfw.OPENGL_VERSION_MINOR, 2);
-		//glfw.windowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
 		glfw.windowHint(glfw.RESIZABLE, 1);
 		glfw.windowHint(glfw.VISIBLE, 1);
 		glfw.windowHint(glfw.DECORATED, 1);
@@ -57,9 +52,7 @@ class Window extends EventEmitter {
 		glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
 		glfw.windowHint(glfw.SAMPLES, this._msaa);
 		
-		
 		this._emitter = { emit: (t, e) => this.emit(t, e) };
-		
 		
 		// This CREATES window, as mode switches from `undefined`
 		this.mode = mode;
@@ -402,6 +395,7 @@ class Window extends EventEmitter {
 	get platformContext() { return glfw.platformContext(this._window); }
 	
 	
+	get x() { return this._x; }
 	set x(v) {
 		if (this._x === v) {
 			return;
@@ -409,6 +403,8 @@ class Window extends EventEmitter {
 		this._x = v;
 		glfw.setWindowPos(this._window, this._x, this._y);
 	}
+	
+	get y() { return this._y; }
 	set y(v) {
 		if (this._y === v) {
 			return;
