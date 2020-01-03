@@ -1,6 +1,5 @@
 'use strict';
 
-const glfw   = require('../core');
 const Window = require('./window');
 
 
@@ -18,10 +17,6 @@ class Document extends Window {
 	static setWebgl(webgl) {
 		this.webgl = webgl;
 		this.isWebglInited = false;
-	}
-	
-	static exit() {
-		process.exit(0);
 	}
 	
 	constructor(opts = {}) {
@@ -64,53 +59,10 @@ class Document extends Window {
 			
 		}
 		
-		this.swapBuffers();
-		
-		const sizeWin = this.size;
-		const sizeFB  = this.framebufferSize;
-		
-		this._ratio = sizeFB.width / sizeWin.width;
-		
-		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
-		
 	}
 	
 	
 	get body() { return this; }
-	
-	get ratio() { return this._ratio; }
-	get devicePixelRatio() { return this._ratio; }
-	
-	get innerWidth() { return this.width; }
-	set innerWidth(v) { this.width = v; }
-	get innerHeight() { return this.height; }
-	set innerHeight(v) { this.height = v; }
-	
-	get clientWidth() { return this.width; }
-	set clientWidth(v) { this.width = v; }
-	get clientHeight() { return this.height; }
-	set clientHeight(v) { this.height = v; }
-	
-	get onkeydown() { return this.listeners('keydown'); }
-	set onkeydown(cb) { this.on('keydown', cb); }
-	
-	get onkeyup() { return this.listeners('keyup'); }
-	set onkeyup(cb) { this.on('keyup', cb); }
-	
-	get onmousedown() { return this.listeners('mousedown'); }
-	set onmousedown(cb) { this.on('mousedown', cb); }
-	
-	get onmouseup() { return this.listeners('mouseup'); }
-	set onmouseup(cb) { this.on('mouseup', cb); }
-	
-	get onwheel() { return this.listeners('wheel'); }
-	set onwheel(cb) { this.on('wheel', cb); }
-	
-	get onmousewheel() { return this.listeners('mousewheel'); }
-	set onmousewheel(cb) { this.on('mousewheel', cb); }
-	
-	get onresize() { return this.listeners('resize'); }
-	set onresize(cb) { this.on('resize', cb); }
 	
 	
 	get style() {
@@ -189,20 +141,6 @@ class Document extends Window {
 		
 		return null;
 		
-	}
-	
-	
-	dispatchEvent(event) { this.emit(event.type, event); }
-	
-	addEventListener(name, callback) { this.on(name, callback); }
-	
-	removeEventListener(name, callback) { this.removeListener(name, callback); }
-	
-	
-	_requestAnimationFrame(cb) {
-		this.swapBuffers();
-		glfw.pollEvents();
-		setImmediate(() => cb(Date.now()));
 	}
 	
 }

@@ -18,7 +18,10 @@ class Window extends EventEmitter {
 		this._pendingKeydown = null;
 		
 		this._width = opts.width || 800;
+		this._pxWidth = this._width;
 		this._height = opts.height || 600;
+		this._pxHeight = this._height;
+		this._ratio = 1;
 		
 		this._display = opts.display;
 		this._monitors = glfw.getMonitors();
@@ -61,6 +64,13 @@ class Window extends EventEmitter {
 		// This CREATES window, as mode switches from `undefined`
 		this.mode = mode;
 		
+		const sizeWin = this.size;
+		const sizeFB  = this.framebufferSize;
+		
+		this._ratio = sizeFB.width / sizeWin.width;
+		
+		this._pxWidth = sizeFB.width;
+		this._pxHeight = sizeFB.height;
 		
 		this.icon = opts.icon;
 		
@@ -83,12 +93,26 @@ class Window extends EventEmitter {
 			this._y = y;
 		});
 		
-		this.on('resize', ({ width, height }) => {
+		this.on('wresize', ({ width, height }) => {
 			this._width = width;
 			this._height = height;
 		});
 		
+		this.on('resize', ({ width, height }) => {
+			this._pxWidth = width;
+			this._pxHeight = height;
+		});
+		
+		this.swapBuffers();
+		
+		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
+		this.cancelAnimationFrame = this._cancelAnimationFrame.bind(this);
+		
 	}
+	
+	
+	get ratio() { return this._ratio; }
+	get devicePixelRatio() { return this._ratio; }
 	
 	
 	get handle() { return this._window; }
@@ -218,41 +242,117 @@ class Window extends EventEmitter {
 		// Vertical sync (on cards that support it)
 		glfw.swapInterval(this._vsync);
 		
-		this.emit('resize', { width: this._width, height: this._height });
+		this._pxWidth = this._width * this._ratio;
+		this._pxHeight = this._height * this._ratio;
+		
+		this.emit('resize', { width: this._pxWidth, height: this._pxHeight });
 		
 	}
 	
 	
-	get width() { return this._width; }
-	get height() { return this._height; }
+	get width() { return this._pxWidth; }
+	get height() { return this._pxHeight; }
 	
 	set width(v) {
-		if (this._width === v) {
+		if (this._pxWidth === v) {
 			return;
 		}
-		this._width = v;
+		this._width = Math.floor(v / this._ratio);
+		this._pxWidth = v;
 		glfw.setWindowSize(this._window, this._width, this._height);
 	}
 	set height(v) {
-		if (this._height === v) {
+		if (this._pxHeight === v) {
 			return;
 		}
-		this._height = v;
+		this._height = Math.floor(v / this._ratio);
+		this._pxHeight = v;
 		glfw.setWindowSize(this._window, this._width, this._height);
 	}
+	
+	get offsetWidth() { return this._pxWidth; }
+	set offsetWidth(v) { this.width = v; }
+	get offsetHeight() { return this._pxHeight; }
+	set offsetHeight(v) { this.height = v; }
 	
 	get w() { return this.width; }
 	set w(v) { this.width = v; }
 	get h() { return this.height; }
 	set h(v) { this.height = v; }
 	get wh() { return [this.width, this.height]; }
-	set wh([width, height]) { this.size = { width, height }; }
+	set wh([width, height]) {
+		if (this._pxWidth === width && this._pxHeight === height) {
+			return;
+		}
+		this._width = Math.floor(width / this._ratio);
+		this._pxWidth = width;
+		this._height = Math.floor(height / this._ratio);
+		this._pxHeight = height;
+		glfw.setWindowSize(this._window, this._width, this._height);
+	}
+	get pxSize() {
+		const size = glfw.getFramebufferSize(this._window);
+		this._pxWidth = size.width;
+		this._pxHeight = size.height;
+		this._width = this._pxWidth / this._ratio;
+		this._height = this._pxHeight / this._ratio;
+		return size;
+	}
 	
+	set pxSize({ width, height }) {
+		this.wh = [width, height];
+	}
+	
+	get innerWidth() { return this.width; }
+	set innerWidth(v) { this.width = v; }
+	get innerHeight() { return this.height; }
+	set innerHeight(v) { this.height = v; }
+	
+	get clientWidth() { return this.width; }
+	set clientWidth(v) { this.width = v; }
+	get clientHeight() { return this.height; }
+	set clientHeight(v) { this.height = v; }
+	
+	get onkeydown() { return this.listeners('keydown'); }
+	set onkeydown(cb) { this.on('keydown', cb); }
+	
+	get onkeyup() { return this.listeners('keyup'); }
+	set onkeyup(cb) { this.on('keyup', cb); }
+	
+	get onmousedown() { return this.listeners('mousedown'); }
+	set onmousedown(cb) { this.on('mousedown', cb); }
+	
+	get onmouseup() { return this.listeners('mouseup'); }
+	set onmouseup(cb) { this.on('mouseup', cb); }
+	
+	get onwheel() { return this.listeners('wheel'); }
+	set onwheel(cb) { this.on('wheel', cb); }
+	
+	get onmousewheel() { return this.listeners('mousewheel'); }
+	set onmousewheel(cb) { this.on('mousewheel', cb); }
+	
+	get onresize() { return this.listeners('resize'); }
+	set onresize(cb) { this.on('resize', cb); }
+	
+	getBoundingClientRect() {
+		return {
+			x: 0,
+			y: 0,
+			width: this._pxWidth,
+			height: this._pxHeight,
+			left: 0,
+			top: 0,
+			right: this._pxWidth,
+			bottom: this._pxHeight,
+		};
+	}
 	
 	get size() {
 		const size = glfw.getWindowSize(this._window);
 		this._width = size.width;
 		this._height = size.height;
+		this._pxWidth = size.width * this._ratio;
+		this._pxHeight = size.height * this._ratio;
 		return size;
 	}
 	
@@ -262,9 +362,14 @@ class Window extends EventEmitter {
 		}
 		this._width = width;
 		this._height = height;
+		this._pxWidth = width * this._ratio;
+		this._pxHeight = height * this._ratio;
 		glfw.setWindowSize(this._window, width, height);
 	}
 	
+	
+	get scrollX() { return 0; }
+	get scrollY() { return 0; }
 	
 	get title() { return this._title; }
 	set title(v) {
@@ -374,12 +479,15 @@ class Window extends EventEmitter {
 			);
 		}
 		
+		event.target = this;
 		event.preventDefault = () => {};
 		event.stopPropagation = () => {};
 		
 		this.makeCurrent();
 		
+		this.event = event;
 		super.emit(type, event);
+		this.event = null;
 		
 	}
 	
@@ -435,6 +543,23 @@ class Window extends EventEmitter {
 		
 	}
 	
+	_requestAnimationFrame(cb) {
+		this.swapBuffers();
+		glfw.pollEvents();
+		return setImmediate(() => cb(Date.now()));
+	}
+	
+	_cancelAnimationFrame(id) { clearImmediate(id); }
+	
+	dispatchEvent(event) { this.emit(event.type, event); }
+	
+	addEventListener(name, callback) { this.on(name, callback); }
+	
+	removeEventListener(name, callback) { this.removeListener(name, callback); }
+	
+	static exit() {
+		process.exit(0);
+	}
 	
 	// ----- Fullscreen mode helpers
 	

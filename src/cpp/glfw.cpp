@@ -463,6 +463,11 @@ JS_METHOD(createWindow) { NAPI_ENV;
 		monitor = monitors[monitor_idx];
 	}
 	
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	
 	if ( ! _share ) {
 		glfwWindowHint(GLFW_VISIBLE, false);
 		_share = glfwCreateWindow(128, 128, "_GLFW_ROOT_SHARED", nullptr, nullptr);
