@@ -31,7 +31,7 @@
 		"npm": ">=6.12.0"
 	},
 	"config": {
-		"install": "v4.2.0-rc2"
+		"install": "v4.2.0-rc3"
 	},
 	"scripts": {
 		"postinstall": "node install"
