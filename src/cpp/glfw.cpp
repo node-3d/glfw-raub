@@ -98,7 +98,6 @@ void deinit() {
 		// Destroy
 		glfwDestroyWindow(window);
 		state->window = nullptr;
-		delete state;
 	}
 	
 	states.clear();
