@@ -467,10 +467,10 @@ class Window extends EventEmitter {
 			event.keyCode = event.which;
 			event.key = event.charCode ?
 				String.fromCharCode(event.charCode) :
-				(event.code || ' ');
+				(event.code || Window.keyKeys[event.which] || '?');
 			event.code = (
 				Window.keyNames[event.which] ||
-				(event.code && `Key${event.code}`) ||
+				(event.code && `Key${event.code.toUpperCase()}`) ||
 				'UNKNOWN'
 			);
 		}
@@ -663,6 +663,15 @@ Window.keyNames = {
 	97  : 'Numpad1',
 	98  : 'Numpad2',
 	99  : 'Numpad3',
+};
+
+Window.keyKeys = {
+	...Window.keyNames,
+	32  : ' ',
+	37  : 'ArrowLeft',
+	38  : 'ArrowUp',
+	39  : 'ArrowRight',
+	40  : 'ArrowDown',
 };
 
 

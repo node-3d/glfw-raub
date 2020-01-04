@@ -98,6 +98,7 @@ void deinit() {
 		// Destroy
 		glfwDestroyWindow(window);
 		state->window = nullptr;
+		delete state;
 	}
 	
 	states.clear();
@@ -547,9 +548,9 @@ JS_METHOD(platformContext) { NAPI_ENV; THIS_WINDOW;
 JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW;
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
-	delete state;
-	
 	glfwDestroyWindow(window);
+	state->window = nullptr;
+	
 	RET_UNDEFINED;
 	
 }
