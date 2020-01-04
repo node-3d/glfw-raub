@@ -26,8 +26,8 @@ struct WinState {
 	pendingScan(0),
 	pendingAction(0),
 	window(_window),
-	emitter(Napi::Persistent(_emitter)),
-	context(_emitter.Env(), "GLFWEvent" ) {
+	context(_emitter.Env(), "GLFWEvent") {
+		emitter.Reset(_emitter, 1);
 	}
 	
 	~WinState() {
