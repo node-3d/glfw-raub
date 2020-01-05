@@ -153,22 +153,24 @@ rect of this window.
 * `number requestAnimationFrame(cb)` - **BOUND** `requestAnimationFrame` method, returns id.
 * `cancelAnimationFrame(id)` - **BOUND** `cancelAnimationFrame` method. Cancels by id.
 
-`Monitor` = {
-	`bool is_primary` - is this screen primary
-	`string name` - screen name
-	`number pos_x` - global position `x` of the screen
-	`number pos_y` - global position `y` of the screen
-	`number width_mm` - screen width in mm
-	`number height_mm` - screen height in mm
-	`number width` - screen width
-	`number height` - screen height
-	`number rate` - refresh rate
-	`modes`: [{
-		`number width` - screen width
-		`number height` - screen height
-		`number rate` - refresh rate
+```
+Monitor = {
+	bool is_primary // is this screen primary
+	string name // screen name
+	number pos_x // global position x of the screen
+	number pos_y // global position y of the screen
+	number width_mm // screen width in mm
+	number height_mm // screen height in mm
+	number width // screen width
+	number height // screen height
+	number rate // refresh rate
+	modes: [{
+		number width // screen width
+		number height // screen height
+		number rate // refresh rate
 	}]
 }
+```
 
 ---
 
