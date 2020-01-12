@@ -101,6 +101,9 @@ void deinit() {
 	}
 	
 	states.clear();
+	
+	glfwSetJoystickCallback(nullptr);
+	
 	isInited = false;
 	_share = nullptr;
 	
@@ -116,6 +119,9 @@ JS_METHOD(init) { NAPI_ENV;
 	glfwSetErrorCallback(errorCb);
 	
 	isInited = glfwInit() == GLFW_TRUE;
+	
+	glfwSetJoystickCallback(joystickCB);
+	
 	RET_BOOL(isInited);
 	
 }
@@ -434,14 +440,17 @@ JS_METHOD(getJoystickName) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, joy);
 	
-	const char* response = glfwGetJoystickName(joy);
+	const char* name = glfwGetJoystickName(joy);
 	
-	RET_STR(response);
+	if ( ! name ) {
+		RET_NULL;
+	}
+	
+	RET_STR(name);
 	
 }
 
 
-// Name altered due to windows.h collision
 JS_METHOD(createWindow) { NAPI_ENV;
 	
 	REQ_UINT32_ARG(0, width);
@@ -488,6 +497,8 @@ JS_METHOD(createWindow) { NAPI_ENV;
 	// make sure cursor is always shown
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	
+	emitter.Set("__mouse", Napi::Object::New(env));
+	emitter.Set("__key", Napi::Object::New(env));
 	
 	// Store WinState as user pointer
 	WinState *state = new WinState(window, emitter);

@@ -4,7 +4,10 @@ const glfw = require('../');
 const { Window } = glfw;
 
 
-const w1 = new Window({ title: 'GLFW Simple Test 1' });
+const w1 = new Window({
+	title: 'GLFW Simple Test 1',
+	vsync: 0,
+});
 
 // 'blur' - window focus lost
 // 'click' - mouse button clicked
@@ -28,7 +31,7 @@ const w1 = new Window({ title: 'GLFW Simple Test 1' });
 
 
 // testing events
-// w1.on('mousemove', e => console.log('[mousemove]', e));
+// w1.on('mousemove', e => { e.target = {}; console.log('[mousemove]', e); });
 w1.on('blur', e => { e.target = {}; console.log('[blur]', e); });
 w1.on('click', e => { e.target = {}; console.log('[click]', e); });
 w1.on('drop', e => { e.target = {}; console.log('[drop]', e); });
@@ -69,7 +72,7 @@ const animate = () => {
 	) ) {
 		
 		draw();
-		setTimeout(animate, 16);
+		w1.requestAnimationFrame(animate);
 		
 	} else {
 		// Close OpenGL window and terminate GLFW

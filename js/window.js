@@ -6,6 +6,9 @@ const path = require('path');
 const glfw = require('../core');
 
 
+const emptyFunction = () => {};
+
+
 class Window extends EventEmitter {
 	
 	constructor(opts = {}) {
@@ -99,6 +102,8 @@ class Window extends EventEmitter {
 		
 		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
 		this.cancelAnimationFrame = this._cancelAnimationFrame.bind(this);
+		
+		this.event = null;
 		
 	}
 	
@@ -479,8 +484,8 @@ class Window extends EventEmitter {
 		}
 		
 		event.target = this;
-		event.preventDefault = () => {};
-		event.stopPropagation = () => {};
+		event.preventDefault = emptyFunction;
+		event.stopPropagation = emptyFunction;
 		
 		this.makeCurrent();
 		

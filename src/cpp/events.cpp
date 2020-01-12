@@ -5,9 +5,6 @@
 #include "events.hpp"
 
 
-using namespace std;
-
-
 #define THIS_STATE                                                            \
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
 
@@ -15,6 +12,8 @@ using namespace std;
 	Napi::Env env = state->emitter.Env();
 
 namespace glfw {
+
+extern std::vector<WinState *> states;
 
 const char typeKeyup[] = "keyup";
 const char typeKeydown[] = "keydown";
@@ -267,7 +266,7 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 		typeFound = typeKeyup;
 	}
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = state->emitter.Get("__key").As<Napi::Object>();
 	fillKey(evt, glfwKey, scancode, action, mods);
 	evt.Set("charCode", JS_NUM(0));
 	evt.Set("type", typeFound);
@@ -284,7 +283,7 @@ void charCB(GLFWwindow* window, unsigned codepoint) {
 		return;
 	}
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = state->emitter.Get("__key").As<Napi::Object>();
 	fillKey(
 		evt,
 		state->pendingKey,
@@ -318,7 +317,7 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 	int newX = static_cast<int>(x);
 	int newY = static_cast<int>(y);
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = state->emitter.Get("__mouse").As<Napi::Object>();
 	evt.Set("movementX", JS_NUM(newX - state->mouseX));
 	evt.Set("movementY", JS_NUM(newY - state->mouseY));
 	
@@ -405,5 +404,22 @@ void scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
 	
 }
 
+void joystickCB(int jid, int event) {
+	
+	size_t stateNum = states.size();
+	for (size_t i = 0; i < stateNum; i++) {
+		WinState *state = states[i];
+		if ( ! state->window ) {
+			continue;
+		}
+		STATE_ENV; NAPI_HS;
+		Napi::Object evt = Napi::Object::New(env);
+		evt.Set("type", "joystick");
+		evt.Set("id", JS_NUM(jid));
+		evt.Set("event", JS_NUM(event)); // GLFW_CONNECTED or GLFW_DISCONNECTED
+		_emit(state, "joystick", evt);
+	}
+	
+}
 
 } // namespace glfw

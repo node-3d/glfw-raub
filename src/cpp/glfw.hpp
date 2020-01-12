@@ -29,6 +29,7 @@ JS_METHOD(joystickPresent);
 JS_METHOD(getJoystickAxes);
 JS_METHOD(getJoystickButtons);
 JS_METHOD(getJoystickName);
+JS_METHOD(getJoystickGUID);
 JS_METHOD(createWindow);
 JS_METHOD(destroyWindow);
 JS_METHOD(setWindowTitle);

@@ -20,6 +20,7 @@ void cursorPosCB(GLFWwindow* window, double x, double y);
 void cursorEnterCB(GLFWwindow* window, int entered);
 void mouseButtonCB(GLFWwindow *window, int button, int action, int mods);
 void scrollCB(GLFWwindow *window, double xoffset, double yoffset);
+void joystickCB(int jid, int event);
 
 } // namespace glfw
 
