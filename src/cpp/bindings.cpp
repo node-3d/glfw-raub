@@ -18,6 +18,9 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
 	// ------------ Methods ------------
 	
+	JS_GLFW_SET_METHOD(hideConsole);
+	JS_GLFW_SET_METHOD(showConsole);
+	
 	JS_GLFW_SET_METHOD(init);
 	JS_GLFW_SET_METHOD(initHint);
 	JS_GLFW_SET_METHOD(terminate);

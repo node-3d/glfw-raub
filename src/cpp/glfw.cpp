@@ -111,6 +111,21 @@ void deinit() {
 	
 }
 
+JS_METHOD(hideConsole) { NAPI_ENV;
+	#ifdef _WIN32
+		HWND wnd = FindWindowA("ConsoleWindowClass", nullptr);
+		ShowWindow(wnd, 0);
+	#endif
+	RET_UNDEFINED;
+}
+
+JS_METHOD(showConsole) { NAPI_ENV;
+	#ifdef _WIN32
+		HWND wnd = FindWindowA("ConsoleWindowClass", nullptr);
+		ShowWindow(wnd, 1);
+	#endif
+	RET_UNDEFINED;
+}
 
 JS_METHOD(init) { NAPI_ENV;
 	

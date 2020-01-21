@@ -12,6 +12,8 @@ std::string buttonToString(unsigned char c);
 
 void deinit();
 
+JS_METHOD(hideConsole);
+JS_METHOD(showConsole);
 JS_METHOD(init);
 JS_METHOD(initHint);
 JS_METHOD(terminate);
