@@ -9,6 +9,7 @@
 
 #ifdef __APPLE__
 #include <OpenGL/CGLCurrent.h>
+#include <OpenGL/CGLDevice.h>
 #endif
 
 
