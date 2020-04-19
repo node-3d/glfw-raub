@@ -42,6 +42,13 @@ class Window extends EventEmitter {
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
+		if (opts.osxCore) {
+			glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, 3);
+			glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, 2);
+			glfw.windowHint(glfw.OPENGL_FORWARD_COMPAT, glfw.TRUE);
+			glfw.windowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
+		}
+		
 		glfw.windowHint(glfw.RESIZABLE, glfw.TRUE);
 		glfw.windowHint(glfw.VISIBLE, glfw.TRUE);
 		glfw.windowHint(glfw.RED_BITS, 8);

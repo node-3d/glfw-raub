@@ -487,13 +487,6 @@ JS_METHOD(createWindow) { NAPI_ENV;
 		monitor = monitors[monitor_idx];
 	}
 	
-	#ifdef __APPLE__
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	#endif
-	
 	if ( ! _share ) {
 		glfwWindowHint(GLFW_VISIBLE, false);
 		_share = glfwCreateWindow(128, 128, "_GLFW_ROOT_SHARED", nullptr, nullptr);
@@ -546,6 +539,20 @@ JS_METHOD(createWindow) { NAPI_ENV;
 	glfwSetScrollCallback(window, scrollCB);
 	
 	RET_NUM(reinterpret_cast<uint64_t>(window));
+	
+}
+
+
+JS_METHOD(platformDevice) { NAPI_ENV; THIS_WINDOW;
+	
+#ifdef _WIN32
+	RET_NUM(reinterpret_cast<uint64_t>(wglGetCurrentDC()));
+#elif __linux__
+	RET_NUM(reinterpret_cast<uint64_t>(glfwGetX11Display()));
+#elif __APPLE__
+	CGLContextObj kCGLContext = CGLGetCurrentContext();
+	RET_NUM(reinterpret_cast<uint64_t>(CGLGetShareGroup(kCGLContext)));
+#endif
 	
 }
 
