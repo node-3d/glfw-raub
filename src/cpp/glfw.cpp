@@ -7,6 +7,10 @@
 #include "events.hpp"
 #include "glfw.hpp"
 
+#ifdef __APPLE__
+#include <OpenGL/CGLCurrent.h>
+#endif
+
 
 #define THIS_WINDOW                                                           \
 	REQ_OFFS_ARG(0, __win_handle);                                            \
