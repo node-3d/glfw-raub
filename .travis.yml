@@ -56,6 +56,6 @@ deploy:
   api_key: $GITHUB_TOKEN
   skip_cleanup: true
   overwrite: false
-  draft: true
+  prerelease: true
   file:
     - "build/Release/glfw.node"
