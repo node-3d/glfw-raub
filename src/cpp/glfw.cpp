@@ -548,7 +548,7 @@ JS_METHOD(createWindow) { NAPI_ENV;
 }
 
 
-JS_METHOD(platformDevice) { NAPI_ENV; THIS_WINDOW;
+JS_METHOD(platformDevice) { NAPI_ENV;
 	
 #ifdef _WIN32
 	RET_NUM(reinterpret_cast<uint64_t>(wglGetCurrentDC()));

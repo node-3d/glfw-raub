@@ -55,7 +55,9 @@ deploy:
   body: $TRAVIS_COMMIT_MESSAGE
   api_key: $GITHUB_TOKEN
   skip_cleanup: true
-  overwrite: false
-  prerelease: true
+  overwrite: true
+  draft: true
+  prerelease: false
+  tag_name: "$SYSNAME"
   file:
     - "build/Release/glfw.node"
