@@ -402,6 +402,7 @@ class Window extends EventEmitter {
 	get shouldClose() { return glfw.windowShouldClose(this._window); }
 	set shouldClose(v) { glfw.setWindowShouldClose(v); }
 	
+	get platformDevice() { return glfw.platformDevice(); }
 	get platformWindow() { return glfw.platformWindow(this._window); }
 	get platformContext() { return glfw.platformContext(this._window); }
 	

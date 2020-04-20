@@ -98,6 +98,7 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(getTimerValue);
 	JS_GLFW_SET_METHOD(getTimerFrequency);
 	
+	JS_GLFW_SET_METHOD(platformDevice);
 	JS_GLFW_SET_METHOD(platformWindow);
 	JS_GLFW_SET_METHOD(platformContext);
 	

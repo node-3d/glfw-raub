@@ -92,6 +92,7 @@ JS_METHOD(getClipboardString);
 JS_METHOD(getTimerValue);
 JS_METHOD(getTimerFrequency);
 
+JS_METHOD(platformDevice);
 JS_METHOD(platformWindow);
 JS_METHOD(platformContext);
 
