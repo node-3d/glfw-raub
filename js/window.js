@@ -42,7 +42,7 @@ class Window extends EventEmitter {
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
-		if (opts.osxCore) {
+		if (opts.osxCore && process.platform === 'darwin') {
 			glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, 3);
 			glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, 2);
 			glfw.windowHint(glfw.OPENGL_FORWARD_COMPAT, glfw.TRUE);

@@ -67,6 +67,8 @@ instances. It also extends
 	* `number display undefined` - display id to open window on a specific display.
 	* `boolean vsync false` - if vsync should be used.
 	* `boolean fullscreen false` - if the window is fullscreen, takes presedence over `mode`.
+	* `boolean osxCore false` - use OSX core profile 3.2.0 context. Works only for OSX.
+		This can also be replaced with a bunch of manual `glfw.windowHint` calls on any OS.
 	* `string mode 'windowed'` - one of `'windowed', 'borderless', 'fullscreen'`.
 	* `boolean autoIconify true` - if fullscreen windows should iconify automatically on focus loss.
 	* `number msaa 2` - multisample antialiasing level.
