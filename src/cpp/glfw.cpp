@@ -626,7 +626,7 @@ JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 	uint8_t *src = reinterpret_cast<unsigned char*>(getData(env, icon));
 	
 	if (noflip == false) {
-		uint8_t *dest = new uint8_t [image.width * image.height * 4];
+		uint8_t *dest = new uint8_t[image.width * image.height * 4];
 		int32_t lastY = image.height - 1;
 		for (int32_t y = 0; y < image.height; y++) {
 			for (int32_t x = 0; x < image.width; x++) {
