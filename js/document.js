@@ -68,10 +68,10 @@ class Document extends Window {
 	get style() {
 		const that = this;
 		return {
-			get width() { return that.width; },
-			set width(v) { that.width = parseInt(v); },
-			get height() { return that.height; },
-			set height(v) { that.height = parseInt(v); },
+			get width() { return that.innerWidth; },
+			set width(v) { that.width = parseInt(v) * that.devicePixelRatio; },
+			get height() { return that.innetHeight; },
+			set height(v) { that.height = parseInt(v) * that.devicePixelRatio; },
 		};
 	}
 	
