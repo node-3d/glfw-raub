@@ -15,6 +15,9 @@ class Window extends EventEmitter {
 		
 		super();
 		
+		this._major = opts.major === undefined ? 2 : opts.major;
+		this._minor = opts.minor === undefined ? 1 : opts.minor;
+		
 		this._title = null;
 		this._icon = null;
 		this._modeCache = {};
@@ -42,13 +45,9 @@ class Window extends EventEmitter {
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
 		
-		if (opts.osxCore && process.platform === 'darwin') {
-			glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, 3);
-			glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, 2);
-			glfw.windowHint(glfw.OPENGL_FORWARD_COMPAT, glfw.TRUE);
-			glfw.windowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE);
-		}
-		
+		glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, this._major);
+		glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, this._minor);
+
 		glfw.windowHint(glfw.RESIZABLE, glfw.TRUE);
 		glfw.windowHint(glfw.VISIBLE, glfw.TRUE);
 		glfw.windowHint(glfw.RED_BITS, 8);
@@ -70,9 +69,6 @@ class Window extends EventEmitter {
 		const sizeFB  = this.framebufferSize;
 		
 		this._ratio = sizeFB.width / sizeWin.width;
-		
-		this._pxWidth = sizeFB.width;
-		this._pxHeight = sizeFB.height;
 		
 		this.icon = opts.icon;
 		
@@ -253,7 +249,6 @@ class Window extends EventEmitter {
 		
 	}
 	
-	
 	get width() { return this._pxWidth; }
 	get height() { return this._pxHeight; }
 	
@@ -263,8 +258,11 @@ class Window extends EventEmitter {
 		}
 		this._width = Math.floor(v / this._ratio);
 		this._pxWidth = v;
+		
 		glfw.setWindowSize(this._window, this._width, this._height);
 	}
+	
+
 	set height(v) {
 		if (this._pxHeight === v) {
 			return;
@@ -307,14 +305,14 @@ class Window extends EventEmitter {
 		this.wh = [width, height];
 	}
 	
-	get innerWidth() { return this.width; }
+	get innerWidth() { return this._width; }
 	set innerWidth(v) { this.width = v; }
-	get innerHeight() { return this.height; }
+	get innerHeight() { return this._height; }
 	set innerHeight(v) { this.height = v; }
 	
-	get clientWidth() { return this.width; }
+	get clientWidth() { return this._width; }
 	set clientWidth(v) { this.width = v; }
-	get clientHeight() { return this.height; }
+	get clientHeight() { return this._height; }
 	set clientHeight(v) { this.height = v; }
 	
 	get onkeydown() { return this.listeners('keydown'); }
