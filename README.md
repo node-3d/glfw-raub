@@ -61,14 +61,14 @@ instances. It also extends
 **Constructor:**
 
 * `Window({ title, width, height, display, vsync, mode, autoIconify, msaa })`
+	* `number major 2` - major OpenGL version to be used.
+	* `number minor 1` - minor OpenGL version to be used.
 	* `string title $PWD` - window title, takes current directory as default.
 	* `number width 800` - window initial width.
 	* `number height 600` - window initial height.
 	* `number display undefined` - display id to open window on a specific display.
 	* `boolean vsync false` - if vsync should be used.
 	* `boolean fullscreen false` - if the window is fullscreen, takes presedence over `mode`.
-	* `boolean osxCore false` - use OSX core profile 3.2.0 context. Works only for OSX.
-		This can also be replaced with a bunch of manual `glfw.windowHint` calls on any OS.
 	* `string mode 'windowed'` - one of `'windowed', 'borderless', 'fullscreen'`.
 	* `boolean autoIconify true` - if fullscreen windows should iconify automatically on focus loss.
 	* `number msaa 2` - multisample antialiasing level.
