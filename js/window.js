@@ -73,8 +73,7 @@ class Window extends EventEmitter {
 		this.icon = opts.icon;
 		
 		if ( ! opts.title ) {
-			const dirpath = path.dirname(process.mainModule.filename);
-			const dirname = path.basename(dirpath);
+			const dirname = process.cwd();
 			this.title = dirname;
 		} else {
 			this.title = opts.title;
