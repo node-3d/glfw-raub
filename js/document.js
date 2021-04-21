@@ -85,7 +85,7 @@ class Document extends Window {
 	
 	getElementById() { return this; }
 	
-	getElementsByTagName() { return this; }
+	getElementsByTagName() { return [this]; }
 	
 	appendChild() {}
 	

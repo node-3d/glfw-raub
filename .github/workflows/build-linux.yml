@@ -1,0 +1,29 @@
+name: Build Linux
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    if: contains('["raub"]', github.actor)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.16.0
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+      - name: Store Binaries
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: true
+          tag_name: linux-${{ github.run }}-${{ github.sha }}
+          name: Linux
+          body: Linux binaries at ${{ github.sha }}
+          files: src/build/Release/segfault.node

@@ -3,11 +3,11 @@
 This is a part of [Node3D](https://github.com/node-3d) project.
 
 [![NPM](https://nodei.co/npm/glfw-raub.png?compact=true)](https://www.npmjs.com/package/glfw-raub)
-
-[![Build Status](https://api.travis-ci.com/node-3d/glfw-raub.svg?branch=master)](https://travis-ci.com/node-3d/glfw-raub)
 [![CodeFactor](https://www.codefactor.io/repository/github/node-3d/glfw-raub/badge)](https://www.codefactor.io/repository/github/node-3d/glfw-raub)
 
-> npm i glfw-raub
+```
+npm i glfw-raub
+```
 
 
 ## Synopsis
@@ -20,43 +20,47 @@ step during the `npm i` command.
 
 ![Example](examples/screenshot.jpg)
 
-* **GLFW** version **3.3** backend.
+* **GLFW** version **3.3.4** backend.
 * Exposes low-level **GLFW** interface.
 * Multiple windows for a single **Node.js** process.
 * Able to switch to fullscreen and back.
+* Has `Window` class, simplifying low-level interactions.
 * Has `Document` class, capable of tricking other libs, as if we are in a browser.
 
 
 ## Usage
 
-This is a rather low level interface, where most of the stuff is directly reflecting
-GLFW interfaces. Do not expect much. See [GLFW Docs](http://www.glfw.org/docs/latest/group__window.html)
+This is still a low-level interface, where most of the stuff is directly reflecting
+GLFW API. It **does NOT EXPOSE** OpenGL commands. See [GLFW Docs](http://www.glfw.org/docs/latest/group__window.html)
 for useful info on what it does and doesn't.
-
-As per this lib, 3 entities are exported: GLFW itself, and `Window` and `Document` classes.
 
 ```js
 const glfw = require('glfw-raub');
-const { Window, Document } = glfw;
 ```
 
-Here `glfw` is a low level interface container, where all `glfw*` functions are accessible as
+Here `glfw` is an API container, where all `glfw*` functions are accessible as
 `glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.setWindowTitle`.
 
+See [TypeSctipt defenitions](/index.d.ts) for more details.
+
 `glfw.createWindow(w, h, emitter, title, display)` - this function differs from GLFW Docs
-signature due to JS specifics. Here `emitter` is any object having **BOUND** `emit()` method.
+signature due to JS specifics. Here `emitter` is any object having a **BOUND** `emit()` method.
 It will be used to transmit GLFW events.
 
-Classes `Window` and `Document` are created for convenience and documented in more detail below.
+Classes `Window` and `Document` are added for convenience and documented in more detail below.
 
 ----------
 
 
 ### class Window
 
-`Window` is high level js-wrapper around the above functions, which helps in managing window
+```js
+const { Window } = glfw;
+```
+
+`Window` is a higher-level js-wrapper for GLFW API. It helps managing window
 instances. It also extends
-[EventEmitter](https://nodejs.org/docs/latest-v12.x/api/events.html#events_events).
+[EventEmitter](https://nodejs.org/docs/latest-v12.x/api/events.html#events_events) to provide event-handling.
 
 **Constructor:**
 

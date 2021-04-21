@@ -489,6 +489,7 @@ class Window extends EventEmitter {
 		}
 		
 		event.target = this;
+		event.type = type;
 		event.preventDefault = emptyFunction;
 		event.stopPropagation = emptyFunction;
 		

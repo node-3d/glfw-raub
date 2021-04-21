@@ -670,14 +670,14 @@ JS_METHOD(getWindowFrameSize) { NAPI_ENV; THIS_WINDOW;
 	int left, top, right, bottom;
 	glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
 	
-	Napi::Object jsMonitor = Napi::Object::New(env);
+	Napi::Object jsFrame = Napi::Object::New(env);
 	
-	jsMonitor.Set("left", left);
-	jsMonitor.Set("top", top);
-	jsMonitor.Set("right", right);
-	jsMonitor.Set("bottom", bottom);
+	jsFrame.Set("left", left);
+	jsFrame.Set("top", top);
+	jsFrame.Set("right", right);
+	jsFrame.Set("bottom", bottom);
 	
-	RET_VALUE(jsMonitor);
+	RET_VALUE(jsFrame);
 	
 }
 
@@ -687,12 +687,12 @@ JS_METHOD(getWindowContentScale) { NAPI_ENV; THIS_WINDOW;
 	float xscale, yscale;
 	glfwGetWindowContentScale(window, &xscale, &yscale);
 	
-	Napi::Object jsMonitor = Napi::Object::New(env);
+	Napi::Object jsScale = Napi::Object::New(env);
 	
-	jsMonitor.Set("xscale", xscale);
-	jsMonitor.Set("yscale", yscale);
+	jsScale.Set("xscale", xscale);
+	jsScale.Set("yscale", yscale);
 	
-	RET_VALUE(jsMonitor);
+	RET_VALUE(jsScale);
 	
 }
 
@@ -935,7 +935,7 @@ JS_METHOD(waitEvents) { NAPI_ENV;
 
 JS_METHOD(waitEventsTimeout) { NAPI_ENV;
 	
-	REQ_DOUBLE_ARG(1, timeout);
+	REQ_DOUBLE_ARG(0, timeout);
 	
 	glfwWaitEventsTimeout(timeout);
 	RET_UNDEFINED;
