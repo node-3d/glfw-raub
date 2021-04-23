@@ -1,0 +1,42 @@
+name: Validate
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  Validate:
+    strategy:
+        matrix:
+          os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+      - name: Fetch Repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.16.0
+
+      - name: Use XVFB
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          export DISPLAY=:99
+          /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x24
+    
+      - name: Install Modules
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run eslint
+
+      - name: Run Unit Tests
+        run: npm run test-ci
