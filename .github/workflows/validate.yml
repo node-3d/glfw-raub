@@ -12,7 +12,7 @@ jobs:
   Validate:
     strategy:
         matrix:
-          os: [ubuntu-latest, windows-latest, macos-latest]
+          os: [ubuntu-16.04, windows-latest, macos-10.15]
 
     runs-on: ${{ matrix.os }}
 
@@ -31,6 +31,11 @@ jobs:
 
       - name: Run Lint
         run: npm run eslint
+
+      - name: Use opengl32.dll
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        run: ci\windows-init.cmd
 
       - name: Run Unit Tests
         uses: GabrielBB/xvfb-action@v1
