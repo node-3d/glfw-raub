@@ -37,7 +37,10 @@ jobs:
         shell: cmd
         run: ci\windows-init.cmd
 
-      - name: Run Unit Tests
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: npm run test-ci
+      - name: Run Unit Tests Linux
+        if: matrix.os == 'ubuntu-16.04'
+        run: xvfb-run --auto-servernum && npm run test-ci
+
+      - name: Run Unit Tests Non-Linux
+        if: matrix.os != 'ubuntu-16.04'
+        run: npm run test-ci
