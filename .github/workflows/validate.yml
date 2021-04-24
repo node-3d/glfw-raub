@@ -33,4 +33,6 @@ jobs:
         run: npm run eslint
 
       - name: Run Unit Tests
-        run: npm run test-ci
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: npm run test-ci
