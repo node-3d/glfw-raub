@@ -12,7 +12,7 @@ jobs:
   Validate:
     strategy:
         matrix:
-          os: [ubuntu-latest, windows-latest, macos-10.15]
+          os: [windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -35,9 +35,10 @@ jobs:
       - name: Use opengl32.dll
         if: matrix.os == 'windows-latest'
         shell: cmd
-        run: ci\windows-init.cmd
+        run: ci\windows-init.cmd && npm run test-ci
 
       - name: Run Unit Tests
+        if: matrix.os != 'windows-latest'
         uses: GabrielBB/xvfb-action@v1
         with:
           run: npm run test-ci
