@@ -65,7 +65,7 @@ describe('GLFW', () => {
 		let instance = null;
 		
 		beforeAll(() => {
-			instance = current.create();;
+			instance = current.create();
 		});
 		
 		afterAll(() => {
