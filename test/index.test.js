@@ -19,6 +19,9 @@ const classes = {
 			'getKey','getMouseButton','getWindowAttrib','setInputMode','swapBuffers',
 			'makeCurrent','destroy','iconify','restore','hide','show',
 		],
+		destroy(instance) {
+			instance.destroy();
+		},
 	},
 	
 	Document: {
@@ -34,6 +37,9 @@ const classes = {
 			'createElementNS','createElement','dispatchEvent',
 			'addEventListener','removeEventListener','requestAnimationFrame',
 		],
+		destroy(instance) {
+			instance.destroy();
+		},
 	},
 	
 };
@@ -42,40 +48,46 @@ const classes = {
 describe('GLFW', () => {
 	
 	it('exports an object', () => {
-		expect(glfw).to.be.an('object');
+		expect(typeof glfw).toBe('object');
 	});
 	
 	
 	Object.keys(classes).forEach(
 		c => {
 			it(`${c} is exported`, () => {
-				expect(glfw).to.respondTo(c);
+				expect(glfw).toHaveProperty(c);
 			});
 		}
 	);
 	
 	Object.keys(classes).forEach(c => describe(c, () => {
-		
 		const current = classes[c];
-		const instance = current.create();
+		let instance = null;
+		
+		beforeAll(() => {
+			instance = current.create();;
+		});
+		
+		afterAll(() => {
+			current.destroy();
+		});
 		
 		it('can be created', () => {
-			expect(instance).to.be.an.instanceOf(glfw[c]);
+			expect(instance).toBeInstanceOf(glfw[c]);
 		});
 		
 		
 		current.props.forEach(prop => {
 			it(`#${prop} property exposed`, () => {
-				expect(instance).to.have.property(prop);
+				expect(instance).toHaveProperty(prop);
 			});
 		});
 		
 		current.methods.forEach(method => {
 			it(`#${method}() method exposed`, () => {
-				expect(instance).to.respondTo(method);
+				expect(typeof instance[method]).toBe('function');
 			});
 		});
-		
 	}));
 	
 });

@@ -1,7 +1,6 @@
 'use strict';
 
 const EventEmitter = require('events');
-const path = require('path');
 
 const glfw = require('../core');
 
