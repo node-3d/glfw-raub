@@ -13,24 +13,31 @@ on:
         default: Fixed minor issues.
 
 jobs:
-  publish:
+  Publish:
     if: contains('["raub"]', github.actor)
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+
+      - name: Fetch Repository
+        uses: actions/checkout@v2
+
       - name: Install Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 14.16
+          node-version: 14.16.0
+
       - name: Get Npm Version
         id: package-version
         uses: martinbeentjes/npm-get-version-action@master
+
       - name: Publish
         run: |
           npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
           npm publish --ignore-scripts
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: GitHub Release
         uses: actions/create-release@v1
         env:

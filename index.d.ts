@@ -112,113 +112,373 @@ declare module "glfw-raub" {
 		type TEventCb<T extends TEvent> = (event: T) => (void | boolean);
 
 		type TWindowOpts = Readonly<{
+			/** Major OpenGL version to be used. Default is 2. */
 			major?: number;
+			/** Minor OpenGL version to be used. Default is 1. */
 			minor?: number;
+			/** Window title, takes current directory as default. Default is $PWD. */
 			width?: number;
+			/** Window initial width. Default is 800. */
 			height?: number;
+			/** Window initial height. Default is 600. */
 			display?: number;
+			/** Display id to open window on a specific display. Default is undefined. */
 			vsync?: boolean;
+			/** If vsync should be used. Default is false. */
 			autoIconify?: boolean;
+			/** If the window is fullscreen, takes presedence over `mode`. Default is false. */
 			fullscreen?: boolean;
+			/** One of `'windowed', 'borderless', 'fullscreen'`. Default is 'windowed'. */
 			mode?: TWindowMode;
+			/** If fullscreen windows should iconify automatically on focus loss. Default is true. */
 			decorated?: boolean;
+			/** Multisample antialiasing level. Default is 2. */
 			msaa?: number;
+			/** Winodw icon. Default is null. */
 			icon?: TImage;
+			/** If window has borders (use `false` for borderless fullscreen). Default is true. */
 			title?: string;
 		}>;
 
 		type TWindowPtr = number;
-
+		
+		/** GLFW Window API wrapper
+		 * Window is a higher-level js-wrapper for GLFW API.
+		 * It helps managing window instances. It also extends
+		 * EventEmitter to provide event-handling.
+		*/
 		class Window extends EventEmitter {
 			constructor(opts?: TWindowOpts);
 			
+			/** The ratio between physical and logical pixels, e.g 2 for Retina. Default is 1.*/
 			readonly ratio: number;
+			
+			/** Alias for ratio. */
 			readonly devicePixelRatio: number;
+			
+			/** GLFW window pointer. Literally, the pointer from C++. */
 			readonly handle: number;
+			
+			/** Always 0 */
 			readonly scrollX: number;
+			
+			/** Always 0 */
 			readonly scrollY: number;
+			
+			/** Number of msaa samples. */
 			readonly msaa: number;
+			
+			/** OpenGL vendor info. */
 			readonly version: string;
+			
+			/** The size of allocated framebuffer, same as pxSize. */
 			readonly framebufferSize: Readonly<{ width: number; height: number }>;
+			
+			/** Which OpenGL context is now current. */
 			readonly currentContext: number;
 			
+			/** Window display mode. Default is 'windowed'.
+			 * One of 'windowed', 'borderless', 'fullscreen'.
+			 * Here 'borderless' emulates fullscreen by a frameless, screen-sized window.
+			 * When this property is changed, a new window is created and the old is hidden.
+			*/
 			mode: TWindowMode;
+			
+			/** Width in LOGICAL pixels.
+			 * For Retina - twice the window size.
+			*/
 			width: number;
+			
+			/** Height in LOGICAL pixels.
+			 * For Retina - twice the window size.
+			*/
 			height: number;
+			
+			/** Alias for width. */
 			offsetWidth: number;
+			
+			/** Alias for height. */
 			offsetHeight: number;
+			
+			/** Alias for width. */
 			w: number;
+			
+			/** Alias for height. */
 			h: number;
+			
+			/** An Array, containing LOGICAL width and height. */
 			wh: [number, number];
+			
+			/** An Object, containing LOGICAL width and height. */
 			pxSize: TSize;
+			
+			/** Alias for width. */
 			innerWidth: number;
+			
+			/** Alias for height. */
 			innerHeight: number;
+			
+			/** Alias for width. */
 			clientWidth: number;
+			
+			/** Alias for height. */
 			clientHeight: number;
+			
+			/** Alias for .on('keydown', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onkeydown: TEventCb<TKeyEvent> | ReadonlyArray<TEventCb<TKeyEvent>>;
+			
+			/** Alias for .on('keyup', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onkeyup: TEventCb<TKeyEvent> | ReadonlyArray<TEventCb<TKeyEvent>>;
+			
+			/** Alias for .on('mousedown', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onmousedown: TEventCb<TMouseButtonEvent> | ReadonlyArray<TEventCb<TMouseButtonEvent>>;
+			
+			/** Alias for .on('mouseup', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onmouseup: TEventCb<TMouseButtonEvent> | ReadonlyArray<TEventCb<TMouseButtonEvent>>;
+			
+			/** Alias for .on('wheel', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onwheel: TEventCb<TMouseScrollEvent> | ReadonlyArray<TEventCb<TMouseScrollEvent>>;
+			
+			/** Alias for .on('mousewheel', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onmousewheel: TEventCb<TMouseScrollEvent> | ReadonlyArray<TEventCb<TMouseScrollEvent>>;
+			
+			/** Alias for .on('resize', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			onresize: TEventCb<TSizeEvent> | ReadonlyArray<TEventCb<TSizeEvent>>;
+			
+			/** An Object, containing PHYSICAL width and height of the window. */
 			size: TSize;
+			
+			/** Alias for .on('keydown', cb).
+			 * Setter adds a new callback.
+			 * Getter returns an Array of currently existing callbacks.
+			*/
 			title: string;
+			
+			/** Window icon in RGBA format.
+			 * Consider using image-raub Image implementation.
+			 * The given image is vertically flipped if noflip is not set to true.
+			 * @see https://github.com/node-3d/image-raub
+			 * @see https://github.com/node-3d/glfw-raub/examples/icon.js
+			 * */
 			icon: TImage;
+			
+			/** If the window is going to be closed. */
 			shouldClose: boolean;
+			
+			/** Window position X-coordinate on the screen. */
 			x: number;
+			
+			/** Window position Y-coordinate on the screen. */
 			y: number;
+			
+			/** An Object, containing the window position coordinates. */
 			pos: TPos;
+			
+			/** An Object, containing the cursor position coordinates. */
 			cursorPos: TPos;
 			
+			/** Get a monitor having the most overlap with this window. */
 			getCurrentMonitor(): TMonitor;
+			
+			/** Gets a browserlike rect of this window.
+			 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+			*/
 			getBoundingClientRect(): TRect;
+			
+			/** Get key state (GLFW_PRESS/GLFW_RELEASE).
+			 * @see https://www.glfw.org/docs/latest/group__keys.html
+			*/
 			getKey(): number;
+			
+			/** Get mouse button state (GLFW_PRESS/GLFW_RELEASE).
+			 * @see https://www.glfw.org/docs/latest/group__buttons.html
+			*/
 			getMouseButton(): number;
+			
+			/** Get window attribute.
+			 * @see https://www.glfw.org/docs/latest/window_guide.html#window_attribs
+			*/
 			getWindowAttrib(): number;
+			
+			/** Set input mode option. */
 			setInputMode(mode: number): void;
+			
+			/** Swaps the front and back buffers of the window. */
 			swapBuffers(): void;
+			
+			/** Make this window's GL context current. */
 			makeCurrent(): void;
+			
+			/** Destroy the GLFW window. */
 			destroy(): void;
+			
+			/** Minimize the window. */
 			iconify(): void;
+			
+			/** Restore the window if it was previously iconified or maximized. */
 			restore(): void;
+			
+			/** Hide the window. */
 			hide(): void;
+			
+			/** Show the window, if it is hidden. */
 			show(): void;
+			
+			/** Emit an event on behalf of this window. */
 			emit(name: string, event: TEvent): boolean;
+			
+			/** Add event listener.
+			 * 'blur' - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/blur)
+			 * 'click' - mouse button [clicked](https://developer.mozilla.org/en-US/docs/Web/Events/click)
+			 * 'drop' - drag-[dropped](https://developer.mozilla.org/en-US/docs/Web/Events/drop) some files on the window
+			 * 'focus' - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focus)
+			 * 'focusin' - window [focus gained](https://developer.mozilla.org/en-US/docs/Web/Events/focusin)
+			 * 'focusout' - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/focusout)
+			 * 'resize' - render-surface resized (values in pixels) `{ width, height }`
+			 * 'iconifiy' - window was iconified
+			 * 'keydown' - keyboard [key down](https://developer.mozilla.org/en-US/docs/Web/Events/keydown)
+			 * 'keyup' - keyboard [key up](https://developer.mozilla.org/en-US/docs/Web/Events/keyup)
+			 * 'mousedown' - mouse [button down](https://developer.mozilla.org/en-US/docs/Web/Events/mousedown)
+			 * 'mouseenter' - mouse [entered](https://developer.mozilla.org/en-US/docs/Web/Events/mouseenter) the window
+			 * 'mouseleave' - mouse [left](https://developer.mozilla.org/en-US/docs/Web/Events/mouseleave) the window
+			 * 'mouseup' - mouse [button up](https://developer.mozilla.org/en-US/docs/Web/Events/mouseup)
+			 * 'quit' - window closed
+			 * 'refresh' - window needs to be redrawn
+			 * 'wresize' - window frame resized (NOT really pixels) `{ width, height }`
+			 * 'wheel' - mouse [wheel rotation](https://developer.mozilla.org/en-US/docs/Web/Events/wheel)
+			 * 'move' - window moved `{ x, y }`
+			 * Note: `keypress` event is not supported.
+			*/
+			on(name: string, cb: (event: TEvent) => (void | boolean)): this;
+			
+			/** Alias for emit, type is expected inside the event object. */
 			dispatchEvent(event: TEvent): void;
+			
+			/** Alias for on. */
 			addEventListener(name: string): void;
+			
+			/** Alia for removeListener. */
 			removeEventListener(name: string): void;
+			
+			/** BOUND requestAnimationFrame method, returns id. */
+			requestAnimationFrame(cb: (dateNow: number) => void): number;
+			
+			/** BOUND cancelAnimationFrame method. Cancels by id. */
+			cancelAnimationFrame(id: number): void;
 		}
 		
 		
 		type TDocumentOpts = TWindowOpts & Readonly<{
+			/** If the window should ignore the default quit signals, e.g. ESC key. */
 			ignoreQuit: boolean;
+			
+			/** If window has the default key handlers for fullscreen.
+			 * CTRL+F - borderless fullscreen window.
+			 * CTRL+ALT+F - real, exclusive fullscreen mode.
+			 * CTRL+SHIFT+F - back to windowed.
+			*/
 			autoFullscreen: boolean;
 		}>;
 		
+		/** Web-like Document
+		 * Document extends Window to provide an additional web-style compatibility layer.
+		 * As name suggests, objects of such class will mimic the behavior and properties of
+		 * your typical browser window.document. But also it is a Window, at the same time.
+		 * And it is incomplete at this point: you still have to provide an Image class of
+		 * your choice and WebGL context (implementation).
+		 * Two static methods are designated for this: setImage and setWebgl.
+		*/
 		class Document extends Window {
+			/** Set Image implementation
+			 * For example, [this Image implementation](https://github.com/raub/node-image).
+			 * Also sets global.HTMLImageElement.
+			*/
 			static setImage(Image: unknown): void;
+			
+			/** Set WebGL implementation
+			 * For example, [this WebGL implementation](https://github.com/raub/node-webgl).
+			*/
 			static setWebgl(Webgl: unknown): void;
 			
 			constructor(opts?: TDocumentOpts);
 			
+			/** Returns `this`. */
 			readonly body: Document;
+			
+			/** Mimic web-element `style` property.
+			 * But only `width` and `height` matters.
+			*/
 			readonly style: TSize;
+			
+			/** Returns `Document.webgl`, set through `Document.setWebgl`. */
 			readonly context: Readonly<{ [key: string]: unknown }>;
 			
+			/** Returns `Document.webgl`, set through `Document.setWebgl`. */
 			getContext(kind: string): Document | Readonly<{ [key: string]: unknown }>;
+			
+			/** Returns `this`. */
 			getElementById(id: string): Document;
+			
+			/** If contains 'canvas', returns `this`, otherwise `null`. */
 			getElementsByTagName(tag: string): ReadonlyArray<Document>;
+			
+			/** Does nothing. */
 			appendChild(): void;
+			
+			/** Returns the result of `createElement(tag)` */
 			createElementNS(unused: unknown, tag: string): void;
+			
+			/** Fake createElement.
+			 * For `'canvas'` returns `this` for *the first call*,
+			 * then returns new instances of canvas-like object capable of using 2d or 3d context.
+			 * This is done for some web APIs like three.js, which create additional canvases.
+			 * For `'image'` returns `new Document.Image`, set through `Document.setImage`.
+			*/
 			createElement(tag: string): void;
 		}
 
-		
+		/** Hide the terminal window.
+		 * **Windows ONLY** hides the console window, but only in case
+		 * this console window is property of this process. For instance this works if you use
+		 * `pkg` module to bundle your app, and then doubleclick the EXE. But if you are running
+		 * a command, like `node script.js`, then this won't hide the window. **It's safe to call
+		 * this function on all platforms, but it will be ignored, unless the platform is Windows**.
+		*/
 		const hideConsole: () => void;
+		
+		/** Show the terminal window.
+		 * **Windows ONLY** shows the console window
+		 * if it was previously hidden with `glfw.hideConsole()`.
+		*/
 		const showConsole: () => void;
+		
+		/** Draws a test scene, used in examples here. */
 		const testScene: () => void;
+		
+		/** Draws a test scene, that reacts to a joystick. */
 		const testJoystick: () => void;
+		
 		const init: () => void;
 		const initHint: (hint: number, value: number) => void;
 		const terminate: () => void;
@@ -240,6 +500,12 @@ declare module "glfw-raub" {
 		const getJoystickAxes: (id: number) => string;
 		const getJoystickButtons: (id: number) => string;
 		const getJoystickName: (id: number) => string;
+		
+		/** Create a GLFW window.
+		 * This function differs from GLFW Docs signature due to JS specifics.
+		 * Here `emitter` is any object having a **BOUND** `emit()` method.
+		 * It will be used to transmit GLFW events.
+		 */
 		const createWindow: (
 			width: number,
 			height: number,
@@ -247,6 +513,7 @@ declare module "glfw-raub" {
 			title: string,
 			monitor: number,
 		) => TWindowPtr;
+		
 		const destroyWindow: (window: TWindowPtr) => void;
 		const setWindowTitle: (window: TWindowPtr, title: string) => void;
 		const setWindowIcon: (window: TWindowPtr, icon: TImage) => void;

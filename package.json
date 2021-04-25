@@ -62,8 +62,8 @@
 	},
 	"dependencies": {
 		"addon-tools-raub": "5.3.x",
-		"deps-opengl-raub": "https://github.com/node-3d/deps-opengl-raub.git",
-		"segfault-raub": "https://github.com/node-3d/segfault-raub.git"
+		"deps-opengl-raub": "4.0.x",
+		"segfault-raub": "1.2.x"
 	},
 	"devDependencies": {
 		"eslint": "7.23.0",
