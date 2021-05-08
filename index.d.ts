@@ -172,7 +172,7 @@ declare module "glfw-raub" {
 			readonly version: string;
 			
 			/** The size of allocated framebuffer, same as pxSize. */
-			readonly framebufferSize: Readonly<{ width: number; height: number }>;
+			readonly framebufferSize: TSize;
 			
 			/** Which OpenGL context is now current. */
 			readonly currentContext: number;
@@ -378,7 +378,7 @@ declare module "glfw-raub" {
 			/** Alias for on. */
 			addEventListener(name: string): void;
 			
-			/** Alia for removeListener. */
+			/** Alias for removeListener. */
 			removeEventListener(name: string): void;
 			
 			/** BOUND requestAnimationFrame method, returns id. */
