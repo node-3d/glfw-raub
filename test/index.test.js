@@ -20,7 +20,9 @@ const classes = {
 			'makeCurrent','destroy','iconify','restore','hide','show',
 		],
 		destroy(instance) {
-			instance.destroy();
+			if (instance) {
+				instance.destroy();
+			}
 		},
 	},
 	
@@ -38,7 +40,9 @@ const classes = {
 			'addEventListener','removeEventListener','requestAnimationFrame',
 		],
 		destroy(instance) {
-			instance.destroy();
+			if (instance) {
+				instance.destroy();
+			}
 		},
 	},
 	
@@ -69,13 +73,12 @@ describe('GLFW', () => {
 		});
 		
 		afterAll(() => {
-			current.destroy();
+			current.destroy(instance);
 		});
 		
 		it('can be created', () => {
 			expect(instance).toBeInstanceOf(glfw[c]);
 		});
-		
 		
 		current.props.forEach(prop => {
 			it(`#${prop} property exposed`, () => {
