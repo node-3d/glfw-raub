@@ -2,7 +2,7 @@
 
 const glfw = require('./core');
 
-const Window   = require('./js/window');
+const Window = require('./js/window');
 const Document = require('./js/document');
 
 
