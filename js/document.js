@@ -132,7 +132,7 @@ class Document extends Window {
 				removeEventListener : emptyFunction,
 				
 			};
-		} 
+		}
 		
 		return null;
 	}
