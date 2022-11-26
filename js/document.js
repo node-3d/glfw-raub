@@ -6,21 +6,23 @@ const Window = require('./window');
 const ESC_KEY = 27;
 const F_KEY = 70;
 
+const emptyFunction = () => {};
+
 
 class Document extends Window {
-	
 	static setImage(Image) {
 		this.Image = Image;
 		global.HTMLImageElement = Image;
 	}
+	
 	
 	static setWebgl(webgl) {
 		this.webgl = webgl;
 		this.isWebglInited = false;
 	}
 	
+	
 	constructor(opts = {}) {
-		
 		super(opts);
 		
 		if (Document.webgl && ! Document.isWebglInited) {
@@ -30,8 +32,7 @@ class Document extends Window {
 			Document.isWebglInited = true;
 		}
 		
-		if ( ! opts.ignoreQuit ) {
-			
+		if (!opts.ignoreQuit) {
 			const isUnix = process.platform !== 'win32';
 			if ( isUnix && process.listeners('SIGINT').indexOf(Document.exit) < 0 ) {
 				process.on('SIGINT', Document.exit);
@@ -42,11 +43,9 @@ class Document extends Window {
 			if ( opts.autoEsc ) {
 				this.on('keydown', e => e.keyCode === ESC_KEY && process.exit(0));
 			}
-			
 		}
 		
 		if (opts.autoFullscreen) {
-			
 			this.on('keydown', e => {
 				if (e.keyCode === F_KEY && e.ctrlKey && e.shiftKey) {
 					this.mode = 'windowed';
@@ -56,9 +55,7 @@ class Document extends Window {
 					this.mode = 'borderless';
 				}
 			});
-			
 		}
-		
 	}
 	
 	
@@ -92,12 +89,15 @@ class Document extends Window {
 	
 	createElementNS(_0, name) { return this.createElement(name); }
 	
+	
 	createElement(name) {
-		
 		name = name.toLowerCase();
 		
+		if (name.indexOf('img') >= 0) {
+			return new Document.Image();
+		}
+		
 		if (name.indexOf('canvas') >= 0) {
-			
 			if ( ! this._isCanvasRequested ) {
 				this._isCanvasRequested = true;
 				return this;
@@ -119,30 +119,23 @@ class Document extends Window {
 					return this._ctx && this._ctx.data;
 				},
 				
-				onkeydown    : () => {},
-				onkeyup      : () => {},
-				onmousedown  : () => {},
-				onmouseup    : () => {},
-				onwheel      : () => {},
-				onmousewheel : () => {},
-				onresize     : () => {},
+				onkeydown    : emptyFunction,
+				onkeyup      : emptyFunction,
+				onmousedown  : emptyFunction,
+				onmouseup    : emptyFunction,
+				onwheel      : emptyFunction,
+				onmousewheel : emptyFunction,
+				onresize     : emptyFunction,
 				
-				dispatchEvent       : () => {},
-				addEventListener    : () => {},
-				removeEventListener : () => {},
+				dispatchEvent       : emptyFunction,
+				addEventListener    : emptyFunction,
+				removeEventListener : emptyFunction,
 				
 			};
-			
-		} else if (name.indexOf('img') >= 0) {
-			
-			return new Document.Image();
-			
-		}
+		} 
 		
 		return null;
-		
 	}
-	
 }
 
 

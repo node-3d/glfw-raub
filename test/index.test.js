@@ -5,7 +5,6 @@ const glfw = require('..');
 
 
 const classes = {
-	
 	Window: {
 		create() {
 			return new glfw.Window();
@@ -45,24 +44,20 @@ const classes = {
 			}
 		},
 	},
-	
 };
 
 
 describe('GLFW', () => {
-	
 	it('exports an object', () => {
 		expect(typeof glfw).toBe('object');
 	});
 	
 	
-	Object.keys(classes).forEach(
-		c => {
-			it(`${c} is exported`, () => {
-				expect(glfw).toHaveProperty(c);
-			});
-		}
-	);
+	Object.keys(classes).forEach(c => {
+		it(`${c} is exported`, () => {
+			expect(glfw).toHaveProperty(c);
+		});
+	});
 	
 	Object.keys(classes).forEach(c => describe(c, () => {
 		const current = classes[c];
@@ -92,5 +87,4 @@ describe('GLFW', () => {
 			});
 		});
 	}));
-	
 });

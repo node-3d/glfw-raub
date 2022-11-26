@@ -9,10 +9,14 @@ const emptyFunction = () => {};
 
 
 class Window extends EventEmitter {
-	
 	constructor(opts = {}) {
-		
 		super();
+		
+		this._prevX = null;
+		this._prevY = null;
+		this._prevWidth = null;
+		this._prevHeight = null;
+		this._prevDecorated = null;
 		
 		this._major = opts.major === undefined ? 2 : opts.major;
 		this._minor = opts.minor === undefined ? 1 : opts.minor;
@@ -105,11 +109,11 @@ class Window extends EventEmitter {
 		this.cancelAnimationFrame = this._cancelAnimationFrame.bind(this);
 		
 		this.event = null;
-		
 	}
 	
 	
 	get ratio() { return this._ratio; }
+	
 	get devicePixelRatio() { return this._ratio; }
 	
 	
@@ -117,8 +121,7 @@ class Window extends EventEmitter {
 	
 	
 	getCurrentMonitor() {
-		
-		if ( ! this._window ) {
+		if (!this._window) {
 			return this._primaryDisplay;
 		}
 		
@@ -144,13 +147,12 @@ class Window extends EventEmitter {
 		});
 		
 		return bestmonitor;
-		
 	}
 	
 	
 	get mode() { return this._mode; }
+	
 	set mode(v) {
-		
 		if (this._mode === v) {
 			return;
 		}
@@ -161,7 +163,6 @@ class Window extends EventEmitter {
 		this._mode = v;
 		
 		if (this._window) {
-			
 			// Fullscreen can't be hidden (uh-oh)
 			if (prevMode === 'fullscreen') {
 				this.destroy();
@@ -169,7 +170,6 @@ class Window extends EventEmitter {
 			} else {
 				this.hide();
 			}
-			
 		}
 		
 		if (this._monitors.length < 1) {
@@ -179,54 +179,42 @@ class Window extends EventEmitter {
 		this._display = this._monitors.indexOf(currentMonitor);
 		
 		if (this._mode === 'windowed') {
-			
 			this._x = this._prevX || this._x;
 			this._y = this._prevY || this._y;
 			this._width = this._prevWidth || this._width;
 			this._height = this._prevHeight || this._height;
 			this._decorated = this._prevDecorated || this._decorated;
-			delete this._prevX;
-			delete this._prevY;
-			delete this._prevWidth;
-			delete this._prevHeight;
-			delete this._prevDecorated;
-			
-		} else {
-			
-			if (
-				this._width !== currentMonitor.width ||
-				this._height !== currentMonitor.height
-			) {
-				this._prevX = this._x;
-				this._prevY = this._y;
-				this._prevWidth = this._width;
-				this._prevHeight = this._height;
-				this._x = currentMonitor.pos_x;
-				this._y = currentMonitor.pos_y;
-				this._width = currentMonitor.width;
-				this._height = currentMonitor.height;
-			}
-			
+			this._prevX = null;
+			this._prevY = null;
+			this._prevWidth = null;
+			this._prevHeight = null;
+			this._prevDecorated = null;
+		} else if (
+			this._width !== currentMonitor.width ||
+			this._height !== currentMonitor.height
+		) {
+			this._prevX = this._x;
+			this._prevY = this._y;
+			this._prevWidth = this._width;
+			this._prevHeight = this._height;
+			this._x = currentMonitor.pos_x;
+			this._y = currentMonitor.pos_y;
+			this._width = currentMonitor.width;
+			this._height = currentMonitor.height;
 		}
 		
 		if ( ! this._modeCache[this._mode] ) {
-			
 			this._create();
 			this._modeCache[this._mode] = this._window;
-			
 		} else {
-			
 			this._window = this._modeCache[this._mode];
 			this.show();
-			
 		}
 		
 		if (this._mode === 'windowed') {
-			
 			if (this._x && this._y) {
 				glfw.setWindowPos(this._window, this._x, this._y);
 			}
-			
 		} else if (this._mode === 'borderless') {
 			
 			const monitor = this._monitors[this._display];
@@ -244,7 +232,6 @@ class Window extends EventEmitter {
 		this._pxHeight = this._height * this._ratio;
 		
 		this.emit('resize', { width: this._pxWidth, height: this._pxHeight });
-		
 	}
 	
 	get width() { return this._pxWidth; }
@@ -469,7 +456,6 @@ class Window extends EventEmitter {
 	
 	
 	emit(type, event) {
-		
 		if (type === 'keydown' || type === 'keyup') {
 			const glfwCode = event.which;
 			event.which = Window.extraCodes[glfwCode] || glfwCode;
@@ -497,15 +483,12 @@ class Window extends EventEmitter {
 		this.event = event;
 		super.emit(type, event);
 		this.event = null;
-		
 	}
 	
 	
 	// Create a new window according to the current 'mode'
 	_create() {
-		
 		if (this._mode === 'windowed') {
-			
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
 			this._window = glfw.createWindow(
 				this._width,
@@ -513,9 +496,7 @@ class Window extends EventEmitter {
 				this._emitter,
 				this._title
 			);
-			
 		} else if (this._mode === 'borderless') {
-			
 			this._prevDecorated = this._decorated;
 			this._decorated = false;
 			
@@ -527,9 +508,7 @@ class Window extends EventEmitter {
 				this._emitter,
 				this._title
 			);
-			
 		} else if (this._mode === 'fullscreen') {
-			
 			this._adjustFullscreen();
 			
 			this._window = glfw.createWindow(
@@ -539,11 +518,8 @@ class Window extends EventEmitter {
 				this._title,
 				this._display
 			);
-			
 		} else {
-			
 			throw new Error(`Not supported display mode: '${this._mode}'.`);
-			
 		}
 		
 		if ( ! this._window ) {
@@ -595,7 +571,6 @@ class Window extends EventEmitter {
 	
 	
 	_adjustFullscreen() {
-		
 		const mode = (() => {
 			const modes = this._monitors[this._display].modes;
 			const exact = modes.filter(mode => this._sizeEqual(mode));
@@ -607,9 +582,7 @@ class Window extends EventEmitter {
 		this._height = mode.height;
 		
 		glfw.windowHint(glfw.REFRESH_RATE, mode.rate);
-		
 	}
-	
 }
 
 

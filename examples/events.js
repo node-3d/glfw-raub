@@ -6,7 +6,7 @@ const { Window } = glfw;
 
 const w1 = new Window({
 	title: 'GLFW Simple Test 1',
-	vsync: 0,
+	vsync: true,
 });
 
 // 'blur' - window focus lost
@@ -54,36 +54,30 @@ w1.on('move', e => { e.target = {}; console.log('[move]', e); });
 
 
 const draw = () => {
-	
 	const wsize1 = w1.framebufferSize;
 	glfw.testScene(wsize1.width, wsize1.height);
 	w1.swapBuffers();
 	
 	glfw.pollEvents();
-	
+};
+
+
+const close = () => {
+	// Close the window and terminate GLFW
+	w1.destroy();
+	glfw.terminate();
+	process.exit(0);
 };
 
 
 const animate = () => {
-	
-	if ( ! (
-		w1.shouldClose ||
-		w1.getKey(glfw.KEY_ESCAPE)
-	) ) {
-		
-		draw();
-		w1.requestAnimationFrame(animate);
-		
-	} else {
-		// Close OpenGL window and terminate GLFW
-		w1.destroy();
-		
-		glfw.terminate();
-		
-		process.exit(0);
+	if (w1.shouldClose || w1.getKey(glfw.KEY_ESCAPE)) {
+		close();
+		return;
 	}
 	
+	draw();
+	w1.requestAnimationFrame(animate);
 };
-
 
 animate();

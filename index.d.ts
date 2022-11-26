@@ -2,27 +2,27 @@ import { EventEmitter } from 'events';
 
 declare module "glfw-raub" {
 	type TWindowMode = 'windowed' | 'borderless' | 'fullscreen';
-
+	
 	type TSize = Readonly<{ width: number; height: number }>;
-
+	
 	type TPos = Readonly<{ x: number; y: number }>;
-
+	
 	type TRect = TSize & TPos & {
 		left: number;
 		top: number;
 		right: number;
 		bottom: number;
 	};
-
+	
 	type TImage = TSize & Readonly<{
 		data: Buffer;
 		noflip?: boolean;
 	}>;
-
+	
 	type TMonitorMode = TSize & Readonly<{
 		rate: number; // refresh rate
 	}>;
-
+	
 	type TMonitor = TMonitorMode & {
 		is_primary: boolean; // is this screen primary
 		name: string; // screen name
@@ -32,12 +32,12 @@ declare module "glfw-raub" {
 		height_mm: number; // screen height in mm
 		modes: ReadonlyArray<TMonitorMode>;
 	};
-
+	
 	type TEvent = {
 		type: string;
 		[key: string]: any;
 	};
-
+	
 	type TMouseEvent = TEvent & {
 		buttons: number;
 		clientX: number;
@@ -51,17 +51,17 @@ declare module "glfw-raub" {
 		altKey: boolean;
 		metaKey: boolean;
 	};
-
+	
 	type TMouseMoveEvent = TMouseEvent & {
 		movementX: number;
 		movementY: number;
 	};
-
+	
 	type TMouseButtonEvent = TMouseEvent & {
 		button: number;
 		which: number;
 	};
-
+	
 	type TMouseScrollEvent = TMouseEvent & {
 		deltaX: number;
 		deltaY: number;
@@ -70,12 +70,12 @@ declare module "glfw-raub" {
 		wheelDeltaY: number;
 		wheelDelta: number;
 	};
-
+	
 	type TJoystickEvent = TEvent & {
 		id: number;
 		event: number;
 	};
-
+	
 	type TKeyEvent = TEvent & {
 		repeat: boolean;
 		altKey: boolean;
@@ -87,7 +87,7 @@ declare module "glfw-raub" {
 		which: number;
 		charCode: number;
 	};
-
+	
 	type TDropEvent = TEvent & {
 		dataTransfer: Readonly<{ [key: string]: never }>
 		dropEffect: 'none';
@@ -96,45 +96,47 @@ declare module "glfw-raub" {
 		items: ReadonlyArray<string>;
 		types: ReadonlyArray<never>;
 	};
-
+	
 	type TIconifyEvent = TEvent & {
 		iconified: boolean;
 	};
-
+	
 	type TPosEvent = TEvent & TPos;
-
+	
 	type TSizeEvent = TEvent & TSize;
-
+	
 	type TEventCb<T extends TEvent> = (event: T) => (void | boolean);
-
-	type TWindowOpts = Readonly<{
+	
+	type TCbField<T extends TEvent> = TEventCb<T> | ReadonlyArray<TEventCb<T>>;
+	
+	type TWindowOpts = Readonly<Partial<{
 		/** Major OpenGL version to be used. Default is 2. */
-		major?: number;
+		major: number;
 		/** Minor OpenGL version to be used. Default is 1. */
-		minor?: number;
+		minor: number;
 		/** Window title, takes current directory as default. Default is $PWD. */
-		width?: number;
+		width: number;
 		/** Window initial width. Default is 800. */
-		height?: number;
+		height: number;
 		/** Window initial height. Default is 600. */
-		display?: number;
+		display: number;
 		/** Display id to open window on a specific display. Default is undefined. */
-		vsync?: boolean;
+		vsync: boolean;
 		/** If vsync should be used. Default is false. */
-		autoIconify?: boolean;
+		autoIconify: boolean;
 		/** If the window is fullscreen, takes presedence over `mode`. Default is false. */
-		fullscreen?: boolean;
+		fullscreen: boolean;
 		/** One of `'windowed', 'borderless', 'fullscreen'`. Default is 'windowed'. */
-		mode?: TWindowMode;
+		mode: TWindowMode;
 		/** If fullscreen windows should iconify automatically on focus loss. Default is true. */
-		decorated?: boolean;
+		decorated: boolean;
 		/** Multisample antialiasing level. Default is 2. */
-		msaa?: number;
+		msaa: number;
 		/** Winodw icon. Default is null. */
-		icon?: TImage;
+		icon: TImage;
 		/** If window has borders (use `false` for borderless fullscreen). Default is true. */
-		title?: string;
-	}>;
+		title: string;
+	}>>;
 
 	type TWindowPtr = number;
 	
@@ -224,43 +226,43 @@ declare module "glfw-raub" {
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onkeydown: TEventCb<TKeyEvent> | ReadonlyArray<TEventCb<TKeyEvent>>;
+		onkeydown: TCbField<TKeyEvent>;
 		
 		/** Alias for .on('keyup', cb).
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onkeyup: TEventCb<TKeyEvent> | ReadonlyArray<TEventCb<TKeyEvent>>;
+		onkeyup: TCbField<TKeyEvent>;
 		
 		/** Alias for .on('mousedown', cb).
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onmousedown: TEventCb<TMouseButtonEvent> | ReadonlyArray<TEventCb<TMouseButtonEvent>>;
+		onmousedown: TCbField<TMouseButtonEvent>;
 		
 		/** Alias for .on('mouseup', cb).
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onmouseup: TEventCb<TMouseButtonEvent> | ReadonlyArray<TEventCb<TMouseButtonEvent>>;
+		onmouseup: TCbField<TMouseButtonEvent>;
 		
 		/** Alias for .on('wheel', cb).
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onwheel: TEventCb<TMouseScrollEvent> | ReadonlyArray<TEventCb<TMouseScrollEvent>>;
+		onwheel: TCbField<TMouseScrollEvent>;
 		
 		/** Alias for .on('mousewheel', cb).
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onmousewheel: TEventCb<TMouseScrollEvent> | ReadonlyArray<TEventCb<TMouseScrollEvent>>;
+		onmousewheel: TCbField<TMouseScrollEvent>;
 		
 		/** Alias for .on('resize', cb).
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
 		*/
-		onresize: TEventCb<TSizeEvent> | ReadonlyArray<TEventCb<TSizeEvent>>;
+		onresize: TCbField<TSizeEvent>;
 		
 		/** An Object, containing PHYSICAL width and height of the window. */
 		size: TSize;
@@ -521,9 +523,9 @@ declare module "glfw-raub" {
 		bottom: number;
 	}>;
 	const getWindowContentScale: (window: TWindowPtr) => Readonly<{
-			xscale: number;
-			yscale: number;
-		}>;
+		xscale: number;
+		yscale: number;
+	}>;
 	const setWindowSize: (window: TWindowPtr, w: number, h: number) => void;
 	const setWindowSizeLimits: (
 		window: TWindowPtr,

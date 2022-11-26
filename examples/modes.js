@@ -11,7 +11,7 @@ if (process.argv.includes('--fullscreen')) {
 	mode = 'borderless';
 }
 
-const doc = new Document({ title: 'GLFW Simple Test 1', mode });
+const doc = new Document({ title: 'GLFW Simple Test 1', mode, vsync: true });
 
 doc.on(
 	'resize',
@@ -34,33 +34,32 @@ doc.on('keydown', e => {
 	
 });
 
+
 const draw = () => {
-	
 	const wsize1 = doc.framebufferSize;
 	glfw.testScene(wsize1.width, wsize1.height);
 	doc.swapBuffers();
 	
 	glfw.pollEvents();
-	
+};
+
+
+const close = () => {
+	// Close OpenGL window and terminate GLFW
+	doc.destroy();
+	glfw.terminate();
+	process.exit(0);
 };
 
 
 const animate = () => {
-	
-	if ( ! doc.shouldClose ) {
-		
-		draw();
-		setTimeout(animate, 16);
-		
-	} else {
-		// Close OpenGL window and terminate GLFW
-		doc.destroy();
-		
-		glfw.terminate();
-		
-		process.exit(0);
+	if (doc.shouldClose) {
+		close();
+		return;
 	}
 	
+	draw();
+	setTimeout(animate, 16);
 };
 
 
