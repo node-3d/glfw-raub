@@ -1,5 +1,19 @@
-#include "platform.hpp"
-#include "glfw.hpp"
+#include "glfw-common.hpp"
+#include "glfw-platform.hpp"
+#include "glfw-console.hpp"
+#include "glfw-context.hpp"
+#include "glfw-window.hpp"
+#include "glfw-joystick.hpp"
+#include "glfw-init.hpp"
+#include "glfw-monitors.hpp"
+#include "glfw-events.hpp"
+#include "glfw-time.hpp"
+#include "glfw-version.hpp"
+#include "glfw-info.hpp"
+#include "glfw-input.hpp"
+#include "glfw-clipboard.hpp"
+#include "glfw-cursor.hpp"
+#include "glfw-timers.hpp"
 
 
 #define JS_GLFW_CONSTANT(name)                                                \
@@ -12,9 +26,7 @@
 
 
 Napi::Object initModule(Napi::Env env, Napi::Object exports) {
-	
 	std::atexit(glfw::deinit);
-	
 	
 	// ------------ Methods ------------
 	
@@ -424,9 +436,7 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	
 	JS_GLFW_CONSTANT(DONT_CARE);
 	
-	
 	return exports;
-	
 }
 
 

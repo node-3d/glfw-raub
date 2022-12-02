@@ -1,19 +1,35 @@
 #include <sstream>
 
-#include "platform.hpp"
-#include "win-state.hpp"
-#include "events.hpp"
+#include "glfw-common.hpp"
+#include "glfw-events.hpp"
+#include "glfw-window.hpp"
 
-
-#define THIS_STATE                                                            \
-	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
-
-#define STATE_ENV                                                             \
-	Napi::Env env = state->emitter.Env();
 
 namespace glfw {
 
-extern std::vector<WinState *> states;
+JS_METHOD(pollEvents) { NAPI_ENV;
+	glfwPollEvents();
+	RET_UNDEFINED;
+}
+
+
+JS_METHOD(waitEvents) { NAPI_ENV;
+	glfwWaitEvents();
+	RET_UNDEFINED;
+}
+
+
+JS_METHOD(waitEventsTimeout) { NAPI_ENV;
+	REQ_DOUBLE_ARG(0, timeout);
+	glfwWaitEventsTimeout(timeout);
+	RET_UNDEFINED;
+}
+
+
+JS_METHOD(postEmptyEvent) { NAPI_ENV;
+	glfwPostEmptyEvent();
+	RET_UNDEFINED;
+}
 
 const char typeKeyup[] = "keyup";
 const char typeKeydown[] = "keydown";
@@ -26,18 +42,15 @@ const char typeBlur[] = "blur";
 
 
 inline void _emit(WinState *state, const char* name, Napi::Value argv) {
-	
-	if ( ! state->window ) {
+	if (!state->window) {
 		return;
 	}
 	
 	eventEmitAsync(state->emitter.Value(), name, 1, &argv, state->context);
-	
 }
 
 
 void fillMouse(Napi::Object evt, GLFWwindow *window, int mods = -1) {
-	
 	Napi::Env env = evt.Env();
 	
 	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
@@ -84,12 +97,10 @@ void fillMouse(Napi::Object evt, GLFWwindow *window, int mods = -1) {
 			glfwGetKey(window, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS
 		));
 	}
-	
 }
 
 
 void fillKey(Napi::Object evt, int glfwKey, int scancode, int action, int mods) {
-	
 	Napi::Env env = evt.Env();
 	
 	const char *keyName = glfwGetKeyName(glfwKey, scancode);
@@ -110,7 +121,6 @@ void fillKey(Napi::Object evt, int glfwKey, int scancode, int action, int mods) 
 	}
 	
 	evt.Set("which", JS_NUM(glfwKey));
-	
 }
 
 
@@ -123,7 +133,6 @@ void windowPosCB(GLFWwindow *window, int xpos, int ypos) {
 	evt.Set("y", JS_NUM(ypos));
 	
 	_emit(state, "move", evt);
-	
 }
 
 
@@ -136,7 +145,6 @@ void windowSizeCB(GLFWwindow *window, int w, int h) {
 	evt.Set("height", JS_NUM(h));
 	
 	_emit(state, "wresize", evt);
-	
 }
 
 
@@ -149,7 +157,6 @@ void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
 	evt.Set("height", JS_NUM(h));
 	
 	_emit(state, "resize", evt);
-	
 }
 
 
@@ -175,7 +182,6 @@ void windowDropCB(GLFWwindow *window, int count, const char **paths) {
 	evt.Set("types", Napi::Array());
 	
 	_emit(state, "drop", evt);
-	
 }
 
 
@@ -188,7 +194,6 @@ void windowCloseCB(GLFWwindow *window) {
 	_emit(state, "quit", evt);
 	
 	state->window = nullptr;
-	
 }
 
 
@@ -199,7 +204,6 @@ void windowRefreshCB(GLFWwindow *window) {
 	evt.Set("type", "refresh");
 	
 	_emit(state, "refresh", evt);
-	
 }
 
 
@@ -211,7 +215,6 @@ void windowIconifyCB(GLFWwindow *window, int iconified) {
 	evt.Set("iconified", static_cast<bool>(iconified));
 	
 	_emit(state, "iconify", evt);
-	
 }
 
 
@@ -235,7 +238,6 @@ void windowFocusCB(GLFWwindow *window, int focused) {
 	Napi::Object evt2 = Napi::Object::New(env);
 	evt2.Set("type", typeDirFound);
 	_emit(state, typeDirFound, evt2);
-	
 }
 
 
@@ -272,7 +274,6 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 	evt.Set("type", typeFound);
 	
 	_emit(state, typeFound, evt);
-	
 }
 
 
@@ -300,7 +301,6 @@ void charCB(GLFWwindow* window, unsigned codepoint) {
 	state->pendingMods = 0;
 	
 	_emit(state, typeKeydown, evt);
-	
 }
 
 
@@ -328,7 +328,6 @@ void cursorPosCB(GLFWwindow* window, double x, double y) {
 	evt.Set("type", "mousemove");
 	
 	_emit(state, "mousemove", evt);
-	
 }
 
 
@@ -347,7 +346,6 @@ void cursorEnterCB(GLFWwindow* window, int entered) {
 	evt.Set("type", typeFound);
 	
 	_emit(state, typeFound, evt);
-	
 }
 
 
@@ -371,8 +369,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
 	
 	_emit(state, action ? "mousedown" : "mouseup", evt1);
 	
-	if ( ! action ) {
-		
+	if (!action) {
 		Napi::Object evt2 = Napi::Object::New(env);
 		fillMouse(evt2, window);
 		evt2.Set("type", "click");
@@ -380,9 +377,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
 		evt2.Set("which", JS_NUM(which));
 		
 		_emit(state, "click", evt2);
-		
 	}
-	
 }
 
 
@@ -401,25 +396,20 @@ void scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
 	
 	_emit(state, "wheel", evt);
 	_emit(state, "mousewheel", evt);
-	
 }
 
-void joystickCB(int jid, int event) {
-	
-	size_t stateNum = states.size();
-	for (size_t i = 0; i < stateNum; i++) {
-		WinState *state = states[i];
-		if ( ! state->window ) {
-			continue;
-		}
+
+void joystickCb(int jid, int event) {
+	// Emit to all windows
+	forEachWindow([jid, event](WinState *state) {
+		GLFWwindow *window = state->window;
 		STATE_ENV; NAPI_HS;
 		Napi::Object evt = Napi::Object::New(env);
 		evt.Set("type", "joystick");
 		evt.Set("id", JS_NUM(jid));
 		evt.Set("event", JS_NUM(event)); // GLFW_CONNECTED or GLFW_DISCONNECTED
 		_emit(state, "joystick", evt);
-	}
-	
+	});
 }
 
 } // namespace glfw

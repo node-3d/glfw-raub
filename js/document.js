@@ -31,6 +31,9 @@ class Document extends Window {
 			}
 			Document.isWebglInited = true;
 		}
+		if (Document.webgl) {
+			Document.webgl.canvas = this;
+		}
 		
 		if (!opts.ignoreQuit) {
 			const isUnix = process.platform !== 'win32';
@@ -56,6 +59,13 @@ class Document extends Window {
 				}
 			});
 		}
+	}
+	
+	makeCurrent() {
+		if (Document.webgl) {
+			Document.webgl.canvas = this;
+		}
+		super.makeCurrent();
 	}
 	
 	
