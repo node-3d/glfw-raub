@@ -44,12 +44,12 @@ class Document extends Window {
 			this.on('quit', () => process.exit(0));
 			
 			if ( opts.autoEsc ) {
-				this.on('keydown', e => e.keyCode === ESC_KEY && process.exit(0));
+				this.on('keydown', (e) => e.keyCode === ESC_KEY && process.exit(0));
 			}
 		}
 		
 		if (opts.autoFullscreen) {
-			this.on('keydown', e => {
+			this.on('keydown', (e) => {
 				if (e.keyCode === F_KEY && e.ctrlKey && e.shiftKey) {
 					this.mode = 'windowed';
 				} else if (e.keyCode === F_KEY && e.ctrlKey && e.altKey) {

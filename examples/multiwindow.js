@@ -9,9 +9,9 @@ const w2 = new Window({ title: 'GLFW Simple Test 2', vsync: true });
 
 
 // testing events
-w1.on('mousemove', e => console.log(`[#1 mousemove] ${e.x}, ${e.y}`));
+w1.on('mousemove', (e) => console.log(`[#1 mousemove] ${e.x}, ${e.y}`));
 
-w2.on('mousemove', e => console.log(`[#2 mousemove] ${e.x}, ${e.y}`));
+w2.on('mousemove', (e) => console.log(`[#2 mousemove] ${e.x}, ${e.y}`));
 
 console.log(w1.version);
 

@@ -37,7 +37,7 @@ std::vector<std::string> toVectorCstr(const Napi::Array &arr) {
 }
 
 
-Napi::Array toStringArray(Napi::Env &env, const char **strings, size_t count) {
+Napi::Array toStringArray(Napi::Env env, const char **strings, size_t count) {
 	Napi::Array arr = JS_ARRAY;
 	
 	for (auto i = 0; i < count; i++) {

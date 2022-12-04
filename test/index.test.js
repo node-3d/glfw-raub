@@ -53,13 +53,13 @@ describe('GLFW', () => {
 	});
 	
 	
-	Object.keys(classes).forEach(c => {
+	Object.keys(classes).forEach((c) => {
 		it(`${c} is exported`, () => {
 			expect(glfw).toHaveProperty(c);
 		});
 	});
 	
-	Object.keys(classes).forEach(c => describe(c, () => {
+	Object.keys(classes).forEach((c) => describe(c, () => {
 		const current = classes[c];
 		let instance = null;
 		
@@ -75,13 +75,13 @@ describe('GLFW', () => {
 			expect(instance).toBeInstanceOf(glfw[c]);
 		});
 		
-		current.props.forEach(prop => {
+		current.props.forEach((prop) => {
 			it(`#${prop} property exposed`, () => {
 				expect(instance).toHaveProperty(prop);
 			});
 		});
 		
-		current.methods.forEach(method => {
+		current.methods.forEach((method) => {
 			it(`#${method}() method exposed`, () => {
 				expect(typeof instance[method]).toBe('function');
 			});

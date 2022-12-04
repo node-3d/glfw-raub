@@ -20,7 +20,7 @@ doc.on(
 
 const F_KEY = 70;
 
-doc.on('keydown', e => {
+doc.on('keydown', (e) => {
 	
 	if (e.keyCode === F_KEY && e.ctrlKey && e.shiftKey) {
 		doc.mode = 'windowed';

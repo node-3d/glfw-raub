@@ -31,26 +31,26 @@ const w1 = new Window({
 
 
 // testing events
-// w1.on('mousemove', e => { e.target = {}; console.log('[mousemove]', e); });
-w1.on('blur', e => { e.target = {}; console.log('[blur]', e); });
-w1.on('click', e => { e.target = {}; console.log('[click]', e); });
-w1.on('drop', e => { e.target = {}; console.log('[drop]', e); });
-w1.on('focus', e => { e.target = {}; console.log('[focus]', e); });
-w1.on('focusin', e => { e.target = {}; console.log('[focusin]', e); });
-w1.on('focusout', e => { e.target = {}; console.log('[focusout]', e); });
-w1.on('resize', e => { e.target = {}; console.log('[resize]', e); });
-w1.on('iconifiy', e => { e.target = {}; console.log('[iconifiy]', e); });
-w1.on('keydown', e => { e.target = {}; console.log('[keydown]', e); });
-w1.on('keyup', e => { e.target = {}; console.log('[keyup]', e); });
-w1.on('mousedown', e => { e.target = {}; console.log('[mousedown]', e); });
-w1.on('mouseenter', e => { e.target = {}; console.log('[mouseenter]', e); });
-w1.on('mouseleave', e => { e.target = {}; console.log('[mouseleave]', e); });
-w1.on('mouseup', e => { e.target = {}; console.log('[mouseup]', e); });
-w1.on('quit', e => { e.target = {}; console.log('[quit]', e); });
-w1.on('refresh', e => { e.target = {}; console.log('[refresh]', e); });
-w1.on('wresize', e => { e.target = {}; console.log('[wresize]', e); });
-w1.on('wheel', e => { e.target = {}; console.log('[wheel]', e); });
-w1.on('move', e => { e.target = {}; console.log('[move]', e); });
+// w1.on('mousemove', (e) => { e.target = {}; console.log('[mousemove]', e); });
+w1.on('blur', (e) => { e.target = {}; console.log('[blur]', e); });
+w1.on('click', (e) => { e.target = {}; console.log('[click]', e); });
+w1.on('drop', (e) => { e.target = {}; console.log('[drop]', e); });
+w1.on('focus', (e) => { e.target = {}; console.log('[focus]', e); });
+w1.on('focusin', (e) => { e.target = {}; console.log('[focusin]', e); });
+w1.on('focusout', (e) => { e.target = {}; console.log('[focusout]', e); });
+w1.on('resize', (e) => { e.target = {}; console.log('[resize]', e); });
+w1.on('iconifiy', (e) => { e.target = {}; console.log('[iconifiy]', e); });
+w1.on('keydown', (e) => { e.target = {}; console.log('[keydown]', e); });
+w1.on('keyup', (e) => { e.target = {}; console.log('[keyup]', e); });
+w1.on('mousedown', (e) => { e.target = {}; console.log('[mousedown]', e); });
+w1.on('mouseenter', (e) => { e.target = {}; console.log('[mouseenter]', e); });
+w1.on('mouseleave', (e) => { e.target = {}; console.log('[mouseleave]', e); });
+w1.on('mouseup', (e) => { e.target = {}; console.log('[mouseup]', e); });
+w1.on('quit', (e) => { e.target = {}; console.log('[quit]', e); });
+w1.on('refresh', (e) => { e.target = {}; console.log('[refresh]', e); });
+w1.on('wresize', (e) => { e.target = {}; console.log('[wresize]', e); });
+w1.on('wheel', (e) => { e.target = {}; console.log('[wheel]', e); });
+w1.on('move', (e) => { e.target = {}; console.log('[move]', e); });
 
 
 const draw = () => {

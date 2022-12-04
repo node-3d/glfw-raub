@@ -34,7 +34,7 @@ class Window extends EventEmitter {
 		
 		this._display = opts.display;
 		this._monitors = glfw.getMonitors();
-		this._primaryDisplay = this._monitors.filter(d => d.is_primary)[0];
+		this._primaryDisplay = this._monitors.filter((d) => d.is_primary)[0];
 		
 		this._vsync = opts.vsync ? 1 : 0; // 0 for vsync off
 		this._autoIconify = opts.autoIconify === false ? false : true;
@@ -133,7 +133,7 @@ class Window extends EventEmitter {
 		
 		this._monitors = glfw.getMonitors();
 		
-		this._monitors.forEach(monitor => {
+		this._monitors.forEach((monitor) => {
 			const { width: mw, height: mh } = monitor;
 			const { pos_x: mx, pos_y: my } = monitor;
 			let overlap = (
@@ -561,7 +561,7 @@ class Window extends EventEmitter {
 	_sortByAreaDiff(modes) {
 		const sorted = modes.sort((a, b) => this._areaDiff(a) - this._areaDiff(b));
 		const best = this._areaDiff(sorted[0]);
-		return sorted.filter(mode => this._areaDiff(mode) === best);
+		return sorted.filter((mode) => this._areaDiff(mode) === best);
 	}
 	
 	
@@ -573,7 +573,7 @@ class Window extends EventEmitter {
 	_adjustFullscreen() {
 		const mode = (() => {
 			const modes = this._monitors[this._display].modes;
-			const exact = modes.filter(mode => this._sizeEqual(mode));
+			const exact = modes.filter((mode) => this._sizeEqual(mode));
 			const chosen = (exact.length ? exact : this._sortByAreaDiff(modes));
 			return chosen.sort((a, b) => b.rate - a.rate)[0];
 		})();
