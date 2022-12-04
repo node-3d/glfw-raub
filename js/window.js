@@ -50,7 +50,7 @@ class Window extends EventEmitter {
 		
 		glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, this._major);
 		glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, this._minor);
-
+		
 		glfw.windowHint(glfw.RESIZABLE, glfw.TRUE);
 		glfw.windowHint(glfw.VISIBLE, glfw.TRUE);
 		glfw.windowHint(glfw.RED_BITS, 8);
@@ -75,7 +75,7 @@ class Window extends EventEmitter {
 		
 		this.icon = opts.icon;
 		
-		if ( ! opts.title ) {
+		if (!opts.title) {
 			const dirname = process.cwd();
 			this.title = dirname;
 		} else {
@@ -203,7 +203,7 @@ class Window extends EventEmitter {
 			this._height = currentMonitor.height;
 		}
 		
-		if ( ! this._modeCache[this._mode] ) {
+		if (!this._modeCache[this._mode]) {
 			this._create();
 			this._modeCache[this._mode] = this._window;
 		} else {
@@ -247,7 +247,7 @@ class Window extends EventEmitter {
 		glfw.setWindowSize(this._window, this._width, this._height);
 	}
 	
-
+	
 	set height(v) {
 		if (this._pxHeight === v) {
 			return;
@@ -367,7 +367,7 @@ class Window extends EventEmitter {
 	
 	get icon() { return this._icon; }
 	set icon(v) {
-		if ( ! (v && typeof v === 'object') ) {
+		if (!(v && typeof v === 'object')) {
 			this._icon = null;
 			return;
 		}
@@ -522,7 +522,7 @@ class Window extends EventEmitter {
 			throw new Error(`Not supported display mode: '${this._mode}'.`);
 		}
 		
-		if ( ! this._window ) {
+		if (!this._window) {
 			throw new Error('Failed to open a new GLFW Window');
 		}
 		

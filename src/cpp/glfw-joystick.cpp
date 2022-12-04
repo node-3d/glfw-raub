@@ -102,7 +102,7 @@ JS_METHOD(getJoystickHats) { NAPI_ENV;
 	int count;
 	const unsigned char *hats = glfwGetJoystickHats(jid, &count);
 	
-	Napi::Array jsHats = Napi::Array::New(env);
+	Napi::Array jsHats = JS_ARRAY;
 	
 	if (!hats) {
 		RET_VALUE(jsHats);
@@ -165,8 +165,8 @@ JS_METHOD(getGamepadState) { NAPI_ENV;
 	}
 	
 	Napi::Object jsState = Napi::Object::New(env);
-	Napi::Array jsButtons = Napi::Array::New(env);
-	Napi::Array jsAxes = Napi::Array::New(env);
+	Napi::Array jsButtons = JS_ARRAY;
+	Napi::Array jsAxes = JS_ARRAY;
 	
 	for (int j = 0; j < 15; j++) {
 		jsButtons.Set(j, JS_NUM(state.buttons[j]));

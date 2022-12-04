@@ -1,6 +1,4 @@
-#include <sstream>
 #include <iostream>
-#include <locale.h>
 
 #include "glfw-common.hpp"
 #include "glfw-monitors.hpp"
@@ -109,21 +107,24 @@ JS_METHOD(createWindow) { NAPI_ENV;
 	REQ_OBJ_ARG(2, emitter);
 	LET_STR_ARG(3, str);
 	LET_INT32_ARG(4, monitor_idx);
+	LET_BOOL_ARG(5, isNoApi);
 	
 	GLFWmonitor **monitors = nullptr;
 	GLFWmonitor *monitor = nullptr;
 	int monitorCount;
 	
-	if (info.Length() >= 5 && monitor_idx >= 0) {
+	bool hasMonitor = info.Length() >= 5 && !(info[4].IsNull() || info[4].IsUndefined());
+	
+	if (hasMonitor) {
 		monitors = glfwGetMonitors(&monitorCount);
-		if (monitor_idx >= monitorCount) {
-			JS_THROW("Invalid monitor");
-			RET_NULL;
+		if (monitor_idx < monitorCount) {
+			monitor = monitors[monitor_idx];
+		} else {
+			std::cerr << "Error. Ignoring invalid monitor index: " << monitor_idx << "." << std::endl;
 		}
-		monitor = monitors[monitor_idx];
 	}
 	
-	if (!_share) {
+	if (!isNoApi && !_share) {
 		glfwWindowHint(GLFW_VISIBLE, false);
 		_share = glfwCreateWindow(128, 128, "_GLFW_ROOT_SHARED", nullptr, nullptr);
 		glfwWindowHint(GLFW_VISIBLE, isHintVisible);
@@ -134,15 +135,17 @@ JS_METHOD(createWindow) { NAPI_ENV;
 		height,
 		str.c_str(),
 		monitor,
-		_share
+		isNoApi ? nullptr : _share
 	);
 	
-	if ( ! window ) {
+	if (!window) {
 		JS_THROW("Can't create GLFW window");
 		RET_NULL;
 	}
 	
-	glfwMakeContextCurrent(window);
+	if (!isNoApi) {
+		glfwMakeContextCurrent(window);
+	}
 	
 	// make sure cursor is always shown
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -178,10 +181,11 @@ JS_METHOD(createWindow) { NAPI_ENV;
 }
 
 
-JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW;
-	WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
+JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW; THIS_STATE;
 	glfwDestroyWindow(window);
-	state->window = nullptr;
+	if (state) {
+		state->window = nullptr;
+	}
 	
 	RET_UNDEFINED;
 }
@@ -360,7 +364,7 @@ JS_METHOD(requestWindowAttention) { NAPI_ENV; THIS_WINDOW;
 JS_METHOD(getWindowMonitor) { NAPI_ENV; THIS_WINDOW;
 	GLFWmonitor *monitor = glfwGetWindowMonitor(window);
 	
-	if ( ! monitor ) {
+	if (!monitor) {
 		RET_NULL;
 	}
 	

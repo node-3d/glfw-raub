@@ -1,19 +1,19 @@
-#include "glfw-common.hpp"
-#include "glfw-platform.hpp"
+#include "glfw-clipboard.hpp"
 #include "glfw-console.hpp"
 #include "glfw-context.hpp"
-#include "glfw-window.hpp"
-#include "glfw-joystick.hpp"
-#include "glfw-init.hpp"
-#include "glfw-monitors.hpp"
-#include "glfw-events.hpp"
-#include "glfw-time.hpp"
-#include "glfw-version.hpp"
-#include "glfw-info.hpp"
-#include "glfw-input.hpp"
-#include "glfw-clipboard.hpp"
 #include "glfw-cursor.hpp"
+#include "glfw-events.hpp"
+#include "glfw-info.hpp"
+#include "glfw-init.hpp"
+#include "glfw-input.hpp"
+#include "glfw-joystick.hpp"
+#include "glfw-monitors.hpp"
+#include "glfw-platform.hpp"
+#include "glfw-time.hpp"
 #include "glfw-timers.hpp"
+#include "glfw-version.hpp"
+#include "glfw-vulkan.hpp"
+#include "glfw-window.hpp"
 
 
 #define JS_GLFW_CONSTANT(name)                                                \
@@ -51,6 +51,7 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(getJoystickButtons);
 	JS_GLFW_SET_METHOD(getJoystickName);
 	JS_GLFW_SET_METHOD(createWindow);
+	// JS_GLFW_SET_METHOD(createWindowRaw);
 	JS_GLFW_SET_METHOD(destroyWindow);
 	JS_GLFW_SET_METHOD(setWindowTitle);
 	JS_GLFW_SET_METHOD(setWindowIcon);
@@ -95,11 +96,10 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(rawMouseMotionSupported);
 	JS_GLFW_SET_METHOD(getKeyName);
 	JS_GLFW_SET_METHOD(getKeyScancode);
-	// TODO
-	// JS_GLFW_SET_METHOD(createCursor);
-	// JS_GLFW_SET_METHOD(createStandardCursor);
-	// JS_GLFW_SET_METHOD(destroyCursor);
-	// JS_GLFW_SET_METHOD(setCursor);
+	JS_GLFW_SET_METHOD(createCursor);
+	JS_GLFW_SET_METHOD(createStandardCursor);
+	JS_GLFW_SET_METHOD(destroyCursor);
+	JS_GLFW_SET_METHOD(setCursor);
 	JS_GLFW_SET_METHOD(getJoystickHats);
 	JS_GLFW_SET_METHOD(joystickIsGamepad);
 	JS_GLFW_SET_METHOD(updateGamepadMappings);
@@ -118,6 +118,16 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(testJoystick);
 	
 	JS_GLFW_SET_METHOD(getJoystickGUID);
+	
+	JS_GLFW_SET_METHOD(vulkanSupported);
+	JS_GLFW_SET_METHOD(getRequiredInstanceExtensions);
+	JS_GLFW_SET_METHOD(getInstanceProcAddress);
+	JS_GLFW_SET_METHOD(getPhysicalDevicePresentationSupport);
+	JS_GLFW_SET_METHOD(createWindowSurface);
+	JS_GLFW_SET_METHOD(vulkanCreateInstance);
+	JS_GLFW_SET_METHOD(vulkanCreateDevice);
+	JS_GLFW_SET_METHOD(vulkanDestroyDevice);
+	JS_GLFW_SET_METHOD(vulkanDestroyInstance);
 	
 	// ------------ Constants ------------
 	
@@ -435,6 +445,8 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_CONSTANT(COCOA_MENUBAR);
 	
 	JS_GLFW_CONSTANT(DONT_CARE);
+	
+	JS_GLFW_CONSTANT(NO_API);
 	
 	return exports;
 }

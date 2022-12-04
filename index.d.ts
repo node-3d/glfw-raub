@@ -7,6 +7,8 @@ declare module "glfw-raub" {
 	
 	type TPos = Readonly<{ x: number; y: number }>;
 	
+	type TFnVoid = () => void;
+	
 	type TRect = TSize & TPos & {
 		left: number;
 		top: number;
@@ -139,6 +141,13 @@ declare module "glfw-raub" {
 	}>>;
 
 	type TWindowPtr = number;
+	type TVkInstancePtr = number;
+	type TVkSurfacePtr = number;
+	type TVkDevicePtr = number;
+	type TVkPhysicalDevicePtr = number;
+	type TVkProcedurePtr = number;
+	type TVkAllocationCallbacksPtr = number;
+	type TFnWindow = (window: TWindowPtr) => void;
 	
 	/** GLFW Window API wrapper
 	 * Window is a higher-level js-wrapper for GLFW API.
@@ -463,23 +472,23 @@ declare module "glfw-raub" {
 	 * a command, like `node script.js`, then this won't hide the window. **It's safe to call
 	 * this function on all platforms, but it will be ignored, unless the platform is Windows**.
 	*/
-	const hideConsole: () => void;
+	const hideConsole: TFnVoid;
 	
 	/** Show the terminal window.
 	 * **Windows ONLY** shows the console window
 	 * if it was previously hidden with `glfw.hideConsole()`.
 	*/
-	const showConsole: () => void;
+	const showConsole: TFnVoid;
 	
 	/** Draws a test scene, used in examples here. */
-	const testScene: () => void;
+	const testScene: TFnVoid;
 	
 	/** Draws a test scene, that reacts to a joystick. */
-	const testJoystick: () => void;
+	const testJoystick: TFnVoid;
 	
-	const init: () => void;
+	const init: TFnVoid;
 	const initHint: (hint: number, value: number) => void;
-	const terminate: () => void;
+	const terminate: TFnVoid;
 	const getVersion: () => Readonly<{
 		major: number;
 		minor: number;
@@ -493,7 +502,7 @@ declare module "glfw-raub" {
 	const getPrimaryMonitor: () => TMonitor;
 	const windowHint: (hint: number, value: number) => void;
 	const windowHintString: (hint: number, value: string) => void;
-	const defaultWindowHints: () => void;
+	const defaultWindowHints: TFnVoid;
 	const joystickPresent: () => boolean;
 	const getJoystickAxes: (id: number) => string;
 	const getJoystickButtons: (id: number) => string;
@@ -510,9 +519,10 @@ declare module "glfw-raub" {
 		emitter: Readonly<{ emit: (name: string, event: TEvent ) => void }>,
 		title: string,
 		monitor: number,
+		isNoApi: boolean,
 	) => TWindowPtr;
 	
-	const destroyWindow: (window: TWindowPtr) => void;
+	const destroyWindow: TFnWindow;
 	const setWindowTitle: (window: TWindowPtr, title: string) => void;
 	const setWindowIcon: (window: TWindowPtr, icon: TImage) => void;
 	const getWindowSize: (window: TWindowPtr) => TSize;
@@ -539,32 +549,32 @@ declare module "glfw-raub" {
 	const getWindowPos: (window: TWindowPtr) => TPos;
 	const getWindowOpacity: (window: TWindowPtr) => number;
 	const setWindowOpacity: (window: TWindowPtr, opacity: number) => void;
-	const maximizeWindow: (window: TWindowPtr) => void;
-	const focusWindow: (window: TWindowPtr) => void;
-	const requestWindowAttention: (window: TWindowPtr) => void;
+	const maximizeWindow: TFnWindow;
+	const focusWindow: TFnWindow;
+	const requestWindowAttention: TFnWindow;
 	const getWindowMonitor: (window: TWindowPtr) => TMonitor;
 	const getFramebufferSize: (window: TWindowPtr) => TSize;
-	const iconifyWindow: (window: TWindowPtr) => void;
-	const restoreWindow: (window: TWindowPtr) => void;
-	const hideWindow: (window: TWindowPtr) => void;
-	const showWindow: (window: TWindowPtr) => void;
+	const iconifyWindow: TFnWindow;
+	const restoreWindow: TFnWindow;
+	const hideWindow: TFnWindow;
+	const showWindow: TFnWindow;
 	const windowShouldClose: (window: TWindowPtr) => number;
 	const setWindowShouldClose: (window: TWindowPtr, shouldClose: number) => void;
 	const getWindowAttrib: (window: TWindowPtr) => number;
 	const setWindowAttrib: (window: TWindowPtr, value: number) => void;
 	const setInputMode: (window: TWindowPtr, mode: number, value: number) => void;
 	const getInputMode: (window: TWindowPtr, mode: number) => number;
-	const pollEvents: () => void;
-	const waitEvents: () => void;
+	const pollEvents: TFnVoid;
+	const waitEvents: TFnVoid;
 	const waitEventsTimeout: (timeout: number) => void;
-	const postEmptyEvent: () => void;
+	const postEmptyEvent: TFnVoid;
 	const getKey: (window: TWindowPtr, key: number) => number;
 	const getMouseButton: (window: TWindowPtr, button: number) => number;
 	const getCursorPos: (window: TWindowPtr, x: number, y: number) => void;
 	const setCursorPos: (window: TWindowPtr) => TPos;
-	const makeContextCurrent: (window: TWindowPtr) => void;
+	const makeContextCurrent: TFnWindow;
 	const getCurrentContext: () => TWindowPtr;
-	const swapBuffers: (window: TWindowPtr) => void;
+	const swapBuffers: TFnWindow;
 	const swapInterval: (interval: number) => void;
 	const extensionSupported: (name: string) => boolean;
 	const rawMouseMotionSupported: () => boolean;
@@ -586,6 +596,29 @@ declare module "glfw-raub" {
 	const platformContext: (window: TWindowPtr) => number;
 	const platformDevice: (window: TWindowPtr) => number;
 	const getJoystickGUID: (id: number) => (null | string);
+	
+	const vulkanSupported: () => boolean;
+	const getRequiredInstanceExtensions: () => string[];
+	const getInstanceProcAddress: (instance: TVkInstancePtr, name: string) => TVkProcedurePtr;
+	const getPhysicalDevicePresentationSupport: (
+		instance: TVkInstancePtr,
+		physicalDevice: TVkPhysicalDevicePtr,
+		queueFamily: number,
+	) => boolean;
+	const createWindowSurface: (
+		instance: TVkInstancePtr,
+		window: TWindowPtr,
+		allocator: TVkAllocationCallbacksPtr,
+	) => TVkSurfacePtr;
+	const vulkanCreateInstance: () => TVkInstancePtr;
+	const vulkanCreateDevice: () => ({
+		device: TVkDevicePtr,
+		physicalDevice: TVkPhysicalDevicePtr,
+		queueFamily: number,
+	});
+	const vulkanDestroyDevice: (instance: TVkInstancePtr, device: TVkDevicePtr) => void;
+	const vulkanDestroyInstance: (instance: TVkInstancePtr) => void;
+	
 	const VERSION_MAJOR: number;
 	const VERSION_MINOR: number;
 	const VERSION_REVISION: number;

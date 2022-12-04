@@ -25,7 +25,7 @@ class Document extends Window {
 	constructor(opts = {}) {
 		super(opts);
 		
-		if (Document.webgl && ! Document.isWebglInited) {
+		if (Document.webgl && !Document.isWebglInited) {
 			if (typeof Document.webgl.init === 'function') {
 				Document.webgl.init();
 			}
@@ -108,7 +108,7 @@ class Document extends Window {
 		}
 		
 		if (name.indexOf('canvas') >= 0) {
-			if ( ! this._isCanvasRequested ) {
+			if (!this._isCanvasRequested) {
 				this._isCanvasRequested = true;
 				return this;
 			}
@@ -116,9 +116,9 @@ class Document extends Window {
 			const that = this;
 			
 			return {
-				_ctx   : null,
-				width  : this.width,
-				height : this.height,
+				_ctx: null,
+				width: this.width,
+				height: this.height,
 				
 				getContext(kind) {
 					this._ctx = that.getContext(kind);
@@ -129,18 +129,17 @@ class Document extends Window {
 					return this._ctx && this._ctx.data;
 				},
 				
-				onkeydown    : emptyFunction,
-				onkeyup      : emptyFunction,
-				onmousedown  : emptyFunction,
-				onmouseup    : emptyFunction,
-				onwheel      : emptyFunction,
-				onmousewheel : emptyFunction,
-				onresize     : emptyFunction,
+				onkeydown: emptyFunction,
+				onkeyup: emptyFunction,
+				onmousedown: emptyFunction,
+				onmouseup: emptyFunction,
+				onwheel: emptyFunction,
+				onmousewheel: emptyFunction,
+				onresize: emptyFunction,
 				
-				dispatchEvent       : emptyFunction,
-				addEventListener    : emptyFunction,
-				removeEventListener : emptyFunction,
-				
+				dispatchEvent: emptyFunction,
+				addEventListener: emptyFunction,
+				removeEventListener: emptyFunction,
 			};
 		}
 		

@@ -11,7 +11,7 @@ const core = require(`./${bin}/glfw`);
 
 
 // Initialize GLFW
-if ( ! core.init() ) {
+if (!core.init()) {
 	throw new Error('Failed to initialize GLFW');
 }
 

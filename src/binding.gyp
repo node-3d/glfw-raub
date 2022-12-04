@@ -23,11 +23,16 @@
 				'cpp/glfw-time.cpp',
 				'cpp/glfw-timers.cpp',
 				'cpp/glfw-version.cpp',
+				'cpp/glfw-vulkan.cpp',
 				'cpp/glfw-window.cpp',
+			],
+			'defines': [
+				'UNICODE', '_UNICODE'
 			],
 			'include_dirs': [
 				'<(gl_include)',
 				'<!@(node -p "require(\'addon-tools-raub\').include")',
+				'include',
 			],
 			'cflags!': ['-fno-exceptions'],
 			'cflags_cc!': ['-fno-exceptions'],

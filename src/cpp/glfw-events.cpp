@@ -251,7 +251,7 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 	
 	if (
 		keyName && (action == GLFW_PRESS || action == GLFW_REPEAT) &&
-		! (isAltPressed || isCtrlPressed)
+		!(isAltPressed || isCtrlPressed)
 	) {
 		WinState *state = reinterpret_cast<WinState*>(glfwGetWindowUserPointer(window));
 		state->pendingKey = glfwKey;
@@ -280,7 +280,7 @@ void keyCB(GLFWwindow *window, int glfwKey, int scancode, int action, int mods) 
 void charCB(GLFWwindow* window, unsigned codepoint) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	if ( ! state->pendingKey ) {
+	if (!state->pendingKey) {
 		return;
 	}
 	

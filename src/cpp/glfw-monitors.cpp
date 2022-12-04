@@ -1,7 +1,3 @@
-#include <sstream>
-#include <iostream>
-#include <locale.h>
-
 #include "glfw-common.hpp"
 #include "glfw-events.hpp"
 
@@ -39,7 +35,7 @@ Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary
 	
 	int modeCount;
 	const GLFWvidmode *modes = glfwGetVideoModes(monitor, &modeCount);
-	Napi::Array jsModes = Napi::Array::New(env);
+	Napi::Array jsModes = JS_ARRAY;
 	
 	for (int j = 0; j < modeCount; j++) {
 		
@@ -66,7 +62,7 @@ JS_METHOD(getMonitors) { NAPI_ENV;
 	GLFWmonitor **monitors = glfwGetMonitors(&monitorCount);
 	GLFWmonitor *primary = glfwGetPrimaryMonitor();
 	
-	Napi::Array jsMonitors = Napi::Array::New(env);
+	Napi::Array jsMonitors = JS_ARRAY;
 	
 	for (int i = 0; i < monitorCount; i++) {
 		jsMonitors.Set(
