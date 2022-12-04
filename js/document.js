@@ -2,11 +2,9 @@
 
 const Window = require('./window');
 
-
-const ESC_KEY = 27;
-const F_KEY = 70;
-
-const emptyFunction = () => {};
+const {
+	emptyFunction, ESC_KEY, F_KEY,
+} = require('./constants');
 
 
 class Document extends Window {

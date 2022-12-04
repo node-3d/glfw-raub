@@ -34,7 +34,9 @@
 	"scripts": {
 		"postinstall": "node install",
 		"eslint": "eslint .",
-		"build": "cd src && node-gyp rebuild && node -e \"require('../node_modules/addon-tools-raub/cpbin')('glfw')\" && cd ..",
+		"build": "cd src && node-gyp rebuild && cd ..",
+		"rebuild-dev": "cd src && node-gyp rebuild && node -e \"require('../node_modules/addon-tools-raub/cpbin')('glfw')\" && cd ..",
+		"build-dev": "cd src && node-gyp build && node -e \"require('../node_modules/addon-tools-raub/cpbin')('glfw')\" && cd ..",
 		"test": "jest --coverage=false --watch",
 		"test-ci": "jest --coverage=false --verbose",
 		"test-coverage": "rm -rf doc/jest && jest --coverage --silent"
