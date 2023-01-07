@@ -2,6 +2,12 @@
 
 
 const { getPlatform } = require('addon-tools-raub');
+
+const platform = getPlatform();
+if (platform !== 'linux') {
+	global.__isGlfwInited = true;
+}
+
 const glfw = require('..');
 
 
@@ -60,34 +66,36 @@ describe('GLFW', () => {
 		});
 	});
 	
-	if (getPlatform() === 'linux') {
-		Object.keys(classes).forEach((c) => describe(c, () => {
-			const current = classes[c];
-			let instance = null;
-			
-			beforeAll(() => {
-				instance = current.create();
-			});
-			
-			afterAll(() => {
-				current.destroy(instance);
-			});
-			
-			it('can be created', () => {
-				expect(instance).toBeInstanceOf(glfw[c]);
-			});
-			
-			current.props.forEach((prop) => {
-				it(`#${prop} property exposed`, () => {
-					expect(instance).toHaveProperty(prop);
-				});
-			});
-			
-			current.methods.forEach((method) => {
-				it(`#${method}() method exposed`, () => {
-					expect(typeof instance[method]).toBe('function');
-				});
-			});
-		}));
+	if (getPlatform() !== 'linux') {
+		return;
 	}
+	
+	Object.keys(classes).forEach((c) => describe(c, () => {
+		const current = classes[c];
+		let instance = null;
+		
+		beforeAll(() => {
+			instance = current.create();
+		});
+		
+		afterAll(() => {
+			current.destroy(instance);
+		});
+		
+		it('can be created', () => {
+			expect(instance).toBeInstanceOf(glfw[c]);
+		});
+		
+		current.props.forEach((prop) => {
+			it(`#${prop} property exposed`, () => {
+				expect(instance).toHaveProperty(prop);
+			});
+		});
+		
+		current.methods.forEach((method) => {
+			it(`#${method}() method exposed`, () => {
+				expect(typeof instance[method]).toBe('function');
+			});
+		});
+	}));
 });
