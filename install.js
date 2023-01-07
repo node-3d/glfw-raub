@@ -1,9 +1,9 @@
 'use strict';
 
-const install = require('addon-tools-raub/install');
+const { install } = require('addon-tools-raub');
 
 
 const prefix = 'https://github.com/node-3d/glfw-raub/releases/download';
-const tag = '4.8.0';
+const tag = '5.0.0';
 
 install(`${prefix}/${tag}`);

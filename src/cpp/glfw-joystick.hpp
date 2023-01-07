@@ -5,17 +5,17 @@
 
 
 namespace glfw {
-	JS_METHOD(joystickPresent);
-	JS_METHOD(getJoystickAxes);
-	JS_METHOD(getJoystickButtons);
-	JS_METHOD(getJoystickName);
-	JS_METHOD(getJoystickGUID);
-	JS_METHOD(getJoystickHats);
-	JS_METHOD(joystickIsGamepad);
-	JS_METHOD(testJoystick);
-	JS_METHOD(updateGamepadMappings);
-	JS_METHOD(getGamepadName);
-	JS_METHOD(getGamepadState);
+	DBG_EXPORT JS_METHOD(joystickPresent);
+	DBG_EXPORT JS_METHOD(getJoystickAxes);
+	DBG_EXPORT JS_METHOD(getJoystickButtons);
+	DBG_EXPORT JS_METHOD(getJoystickName);
+	DBG_EXPORT JS_METHOD(getJoystickGUID);
+	DBG_EXPORT JS_METHOD(getJoystickHats);
+	DBG_EXPORT JS_METHOD(joystickIsGamepad);
+	DBG_EXPORT JS_METHOD(testJoystick);
+	DBG_EXPORT JS_METHOD(updateGamepadMappings);
+	DBG_EXPORT JS_METHOD(getGamepadName);
+	DBG_EXPORT JS_METHOD(getGamepadState);
 } // namespace glfw
 
 

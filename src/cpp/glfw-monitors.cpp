@@ -9,8 +9,8 @@
 
 namespace glfw {
 
-Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary) {
-	Napi::Object jsMonitor = Napi::Object::New(env);
+DBG_EXPORT Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary) {
+	Napi::Object jsMonitor = JS_OBJECT;
 	
 	jsMonitor.Set("is_primary", isPrimary);
 	jsMonitor.Set("name", JS_STR(glfwGetMonitorName(monitor)));
@@ -39,7 +39,7 @@ Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary
 	
 	for (int j = 0; j < modeCount; j++) {
 		
-		Napi::Object jsMode = Napi::Object::New(env);
+		Napi::Object jsMode = JS_OBJECT;
 		jsMode.Set("width", JS_NUM(modes[j].width));
 		jsMode.Set("height", JS_NUM(modes[j].height));
 		jsMode.Set("rate", JS_NUM(modes[j].refreshRate));
@@ -56,7 +56,7 @@ Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary
 
 /* TODO: Monitor configuration change callback */
 
-JS_METHOD(getMonitors) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getMonitors) { NAPI_ENV;
 	int monitorCount;
 	
 	GLFWmonitor **monitors = glfwGetMonitors(&monitorCount);
@@ -75,7 +75,7 @@ JS_METHOD(getMonitors) { NAPI_ENV;
 }
 
 
-JS_METHOD(getPrimaryMonitor) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getPrimaryMonitor) { NAPI_ENV;
 	GLFWmonitor *primary = glfwGetPrimaryMonitor();
 	if (!primary) {
 		RET_NULL;

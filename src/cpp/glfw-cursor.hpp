@@ -5,13 +5,13 @@
 
 
 namespace glfw {
-	JS_METHOD(getCursorPos);
-	JS_METHOD(setCursorPos);
-    
-	JS_METHOD(createCursor);
-	JS_METHOD(createStandardCursor);
-	JS_METHOD(destroyCursor);
-	JS_METHOD(setCursor);
+	DBG_EXPORT JS_METHOD(getCursorPos);
+	DBG_EXPORT JS_METHOD(setCursorPos);
+	
+	DBG_EXPORT JS_METHOD(createCursor);
+	DBG_EXPORT JS_METHOD(createStandardCursor);
+	DBG_EXPORT JS_METHOD(destroyCursor);
+	DBG_EXPORT JS_METHOD(setCursor);
 } // namespace glfw
 
 

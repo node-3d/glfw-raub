@@ -5,8 +5,8 @@
 
 
 namespace glfw {
-	JS_METHOD(makeContextCurrent);
-	JS_METHOD(getCurrentContext);
+	DBG_EXPORT JS_METHOD(makeContextCurrent);
+	DBG_EXPORT JS_METHOD(getCurrentContext);
 } // namespace glfw
 
 

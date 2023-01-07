@@ -5,11 +5,11 @@
 
 
 namespace glfw {
-	JS_METHOD(getError);
-	JS_METHOD(getFramebufferSize);
-	JS_METHOD(swapBuffers);
-	JS_METHOD(swapInterval);
-	JS_METHOD(extensionSupported);
+	DBG_EXPORT JS_METHOD(getError);
+	DBG_EXPORT JS_METHOD(getFramebufferSize);
+	DBG_EXPORT JS_METHOD(swapBuffers);
+	DBG_EXPORT JS_METHOD(swapInterval);
+	DBG_EXPORT JS_METHOD(extensionSupported);
 } // namespace glfw
 
 

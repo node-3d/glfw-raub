@@ -22,20 +22,6 @@
 
 namespace glfw {
 
-std::vector<std::string> toVectorCstr(const Napi::Array &arr) {
-	uint32_t N = arr.Length();
-	std::vector<std::string> result(N);
-	
-	for (uint32_t i = 0; i < N; i++) {
-		Napi::Value item = arr[i];
-		if (item.IsString()) {
-			result[i] = item.ToString().Utf8Value();
-		}
-	}
-	
-	return result;
-}
-
 
 Napi::Array toStringArray(Napi::Env env, const char **strings, size_t count) {
 	Napi::Array arr = JS_ARRAY;
@@ -48,19 +34,19 @@ Napi::Array toStringArray(Napi::Env env, const char **strings, size_t count) {
 }
 
 
-JS_METHOD(vulkanSupported) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(vulkanSupported) { NAPI_ENV;
 	RET_BOOL(glfwVulkanSupported());
 }
 
 
-JS_METHOD(getRequiredInstanceExtensions) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getRequiredInstanceExtensions) { NAPI_ENV;
 	uint32_t count;
 	const char** extensions = glfwGetRequiredInstanceExtensions(&count);
 	RET_VALUE(toStringArray(env, extensions, count));
 }
 
 
-JS_METHOD(getInstanceProcAddress) { NAPI_ENV; THIS_VULKAN;
+DBG_EXPORT JS_METHOD(getInstanceProcAddress) { NAPI_ENV; THIS_VULKAN;
 	REQ_STR_ARG(1, name)
 	uint64_t addr = reinterpret_cast<uint64_t>(
 		glfwGetInstanceProcAddress(instance, name.c_str())
@@ -69,7 +55,7 @@ JS_METHOD(getInstanceProcAddress) { NAPI_ENV; THIS_VULKAN;
 }
 
 
-JS_METHOD(getPhysicalDevicePresentationSupport) { NAPI_ENV; THIS_VULKAN;
+DBG_EXPORT JS_METHOD(getPhysicalDevicePresentationSupport) { NAPI_ENV; THIS_VULKAN;
 	REQ_OFFS_ARG(1, __vk_physDevice);
 	VkPhysicalDevice physDevice = reinterpret_cast<VkPhysicalDevice>(__vk_physDevice);
 	REQ_UINT_ARG(2, queuefamily);
@@ -78,7 +64,7 @@ JS_METHOD(getPhysicalDevicePresentationSupport) { NAPI_ENV; THIS_VULKAN;
 }
 
 
-JS_METHOD(createWindowSurface) { NAPI_ENV; THIS_VULKAN;
+DBG_EXPORT JS_METHOD(createWindowSurface) { NAPI_ENV; THIS_VULKAN;
 	REQ_OFFS_ARG(1, __win_handle);
 	GLFWwindow *window = reinterpret_cast<GLFWwindow*>(__win_handle);
 	
@@ -96,7 +82,7 @@ JS_METHOD(createWindowSurface) { NAPI_ENV; THIS_VULKAN;
 }
 
 
-JS_METHOD(vulkanCreateInstance) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(vulkanCreateInstance) { NAPI_ENV;
 	VkApplicationInfo appInfo;
 	memset(&appInfo, 0, sizeof(VkApplicationInfo));
 	
@@ -180,7 +166,7 @@ bool checkDeviceProperties(
 }
 
 
-JS_METHOD(vulkanCreateDevice) { NAPI_ENV; THIS_VULKAN;
+DBG_EXPORT JS_METHOD(vulkanCreateDevice) { NAPI_ENV; THIS_VULKAN;
 	VK_INSTANCE_LEVEL_FUNCTION(vkEnumeratePhysicalDevices);
 	VK_INSTANCE_LEVEL_FUNCTION(vkCreateDevice);
 	
@@ -246,7 +232,7 @@ JS_METHOD(vulkanCreateDevice) { NAPI_ENV; THIS_VULKAN;
 }
 
 
-JS_METHOD(vulkanDestroyDevice) { NAPI_ENV; THIS_VULKAN;
+DBG_EXPORT JS_METHOD(vulkanDestroyDevice) { NAPI_ENV; THIS_VULKAN;
 	REQ_OFFS_ARG(1, __vk_device);
 	VkDevice device = reinterpret_cast<VkDevice>(__vk_device);
 	
@@ -262,7 +248,7 @@ JS_METHOD(vulkanDestroyDevice) { NAPI_ENV; THIS_VULKAN;
 }
 
 
-JS_METHOD(vulkanDestroyInstance) { NAPI_ENV; THIS_VULKAN;
+DBG_EXPORT JS_METHOD(vulkanDestroyInstance) { NAPI_ENV; THIS_VULKAN;
 	VK_INSTANCE_LEVEL_FUNCTION(vkDestroyInstance);
 	
 	if (instance != VK_NULL_HANDLE) {

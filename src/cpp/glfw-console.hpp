@@ -5,8 +5,8 @@
 
 
 namespace glfw {
-	JS_METHOD(hideConsole);
-	JS_METHOD(showConsole);
+	DBG_EXPORT JS_METHOD(hideConsole);
+	DBG_EXPORT JS_METHOD(showConsole);
 } // namespace glfw
 
 

@@ -5,7 +5,7 @@
 
 namespace glfw {
 
-JS_METHOD(testJoystick) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(testJoystick) { NAPI_ENV;
 	REQ_UINT32_ARG(0, width);
 	REQ_UINT32_ARG(1, height);
 	REQ_FLOAT_ARG(2, translateX);
@@ -42,7 +42,7 @@ JS_METHOD(testJoystick) { NAPI_ENV;
 }
 
 
-JS_METHOD(joystickPresent) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(joystickPresent) { NAPI_ENV;
 	REQ_UINT32_ARG(0, joy);
 	
 	bool isPresent = glfwJoystickPresent(joy);
@@ -51,7 +51,7 @@ JS_METHOD(joystickPresent) { NAPI_ENV;
 }
 
 
-JS_METHOD(getJoystickAxes) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getJoystickAxes) { NAPI_ENV;
 	REQ_UINT32_ARG(0, joy);
 	
 	int count;
@@ -67,7 +67,7 @@ JS_METHOD(getJoystickAxes) { NAPI_ENV;
 }
 
 
-JS_METHOD(getJoystickButtons) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getJoystickButtons) { NAPI_ENV;
 	REQ_UINT32_ARG(0, joy);
 	
 	int count = 0;
@@ -83,7 +83,7 @@ JS_METHOD(getJoystickButtons) { NAPI_ENV;
 }
 
 
-JS_METHOD(getJoystickName) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getJoystickName) { NAPI_ENV;
 	REQ_UINT32_ARG(0, joy);
 	
 	const char* name = glfwGetJoystickName(joy);
@@ -96,7 +96,7 @@ JS_METHOD(getJoystickName) { NAPI_ENV;
 }
 
 
-JS_METHOD(getJoystickHats) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getJoystickHats) { NAPI_ENV;
 	REQ_INT32_ARG(0, jid);
 	
 	int count;
@@ -116,7 +116,7 @@ JS_METHOD(getJoystickHats) { NAPI_ENV;
 }
 
 
-JS_METHOD(getJoystickGUID) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getJoystickGUID) { NAPI_ENV;
 	REQ_INT32_ARG(0, jid);
 	
 	const char *guid = glfwGetJoystickGUID(jid);
@@ -129,21 +129,21 @@ JS_METHOD(getJoystickGUID) { NAPI_ENV;
 }
 
 
-JS_METHOD(joystickIsGamepad) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(joystickIsGamepad) { NAPI_ENV;
 	REQ_INT32_ARG(0, jid);
 	
 	RET_BOOL(glfwJoystickIsGamepad(jid) == GLFW_TRUE);
 }
 
 
-JS_METHOD(updateGamepadMappings) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(updateGamepadMappings) { NAPI_ENV;
 	REQ_STR_ARG(0, mappings);
 	// https://www.glfw.org/docs/latest/input_guide.html#gamepad_mapping
 	RET_BOOL(glfwUpdateGamepadMappings(mappings.c_str()) == GLFW_TRUE);
 }
 
 
-JS_METHOD(getGamepadName) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getGamepadName) { NAPI_ENV;
 	REQ_INT32_ARG(0, jid);
 	
 	const char *name = glfwGetGamepadName(jid);
@@ -156,7 +156,7 @@ JS_METHOD(getGamepadName) { NAPI_ENV;
 }
 
 
-JS_METHOD(getGamepadState) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(getGamepadState) { NAPI_ENV;
 	REQ_INT32_ARG(0, jid);
 	
 	GLFWgamepadstate state;
@@ -164,7 +164,7 @@ JS_METHOD(getGamepadState) { NAPI_ENV;
 		RET_NULL;
 	}
 	
-	Napi::Object jsState = Napi::Object::New(env);
+	Napi::Object jsState = JS_OBJECT;
 	Napi::Array jsButtons = JS_ARRAY;
 	Napi::Array jsAxes = JS_ARRAY;
 	

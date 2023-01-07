@@ -7,26 +7,26 @@
 
 namespace glfw {
 
-JS_METHOD(pollEvents) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(pollEvents) { NAPI_ENV;
 	glfwPollEvents();
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(waitEvents) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(waitEvents) { NAPI_ENV;
 	glfwWaitEvents();
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(waitEventsTimeout) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(waitEventsTimeout) { NAPI_ENV;
 	REQ_DOUBLE_ARG(0, timeout);
 	glfwWaitEventsTimeout(timeout);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(postEmptyEvent) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(postEmptyEvent) { NAPI_ENV;
 	glfwPostEmptyEvent();
 	RET_UNDEFINED;
 }
@@ -46,7 +46,7 @@ inline void _emit(WinState *state, const char* name, Napi::Value argv) {
 		return;
 	}
 	
-	eventEmitAsync(state->emitter.Value(), name, 1, &argv, state->context);
+	eventEmit(state->emitter.Value(), name, 1, &argv, state->context);
 }
 
 
@@ -127,7 +127,7 @@ void fillKey(Napi::Object evt, int glfwKey, int scancode, int action, int mods) 
 void windowPosCB(GLFWwindow *window, int xpos, int ypos) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	evt.Set("type", "move");
 	evt.Set("x", JS_NUM(xpos));
 	evt.Set("y", JS_NUM(ypos));
@@ -139,7 +139,7 @@ void windowPosCB(GLFWwindow *window, int xpos, int ypos) {
 void windowSizeCB(GLFWwindow *window, int w, int h) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	evt.Set("type", "resize");
 	evt.Set("width", JS_NUM(w));
 	evt.Set("height", JS_NUM(h));
@@ -151,7 +151,7 @@ void windowSizeCB(GLFWwindow *window, int w, int h) {
 void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	evt.Set("type", "resize");
 	evt.Set("width", JS_NUM(w));
 	evt.Set("height", JS_NUM(h));
@@ -163,11 +163,11 @@ void windowFramebufferSizeCB(GLFWwindow *window, int w, int h) {
 void windowDropCB(GLFWwindow *window, int count, const char **paths) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	fillMouse(evt, window);
 	evt.Set("type", "drop");
 	
-	Napi::Object dataTransfer = Napi::Object::New(env);
+	Napi::Object dataTransfer = JS_OBJECT;
 	evt.Set("dataTransfer", dataTransfer);
 	
 	Napi::Array list = Napi::Array();
@@ -188,7 +188,7 @@ void windowDropCB(GLFWwindow *window, int count, const char **paths) {
 void windowCloseCB(GLFWwindow *window) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	evt.Set("type", "quit");
 	
 	_emit(state, "quit", evt);
@@ -200,7 +200,7 @@ void windowCloseCB(GLFWwindow *window) {
 void windowRefreshCB(GLFWwindow *window) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	evt.Set("type", "refresh");
 	
 	_emit(state, "refresh", evt);
@@ -210,7 +210,7 @@ void windowRefreshCB(GLFWwindow *window) {
 void windowIconifyCB(GLFWwindow *window, int iconified) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	evt.Set("type", "iconify");
 	evt.Set("iconified", static_cast<bool>(iconified));
 	
@@ -231,11 +231,11 @@ void windowFocusCB(GLFWwindow *window, int focused) {
 		typeDirFound = typeFocusout;
 	}
 	
-	Napi::Object evt1 = Napi::Object::New(env);
+	Napi::Object evt1 = JS_OBJECT;
 	evt1.Set("type", typeFound);
 	_emit(state, typeFound, evt1);
 	
-	Napi::Object evt2 = Napi::Object::New(env);
+	Napi::Object evt2 = JS_OBJECT;
 	evt2.Set("type", typeDirFound);
 	_emit(state, typeDirFound, evt2);
 }
@@ -341,7 +341,7 @@ void cursorEnterCB(GLFWwindow* window, int entered) {
 		typeFound = typeMouseleave;
 	}
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	fillMouse(evt, window);
 	evt.Set("type", typeFound);
 	
@@ -360,7 +360,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
 	}
 	int which = btnId + 1;
 	
-	Napi::Object evt1 = Napi::Object::New(env);
+	Napi::Object evt1 = JS_OBJECT;
 	fillMouse(evt1, window);
 	evt1.Set("type", action ? "mousedown" : "mouseup");
 	evt1.Set("button", JS_NUM(btnId));
@@ -370,7 +370,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
 	_emit(state, action ? "mousedown" : "mouseup", evt1);
 	
 	if (!action) {
-		Napi::Object evt2 = Napi::Object::New(env);
+		Napi::Object evt2 = JS_OBJECT;
 		fillMouse(evt2, window);
 		evt2.Set("type", "click");
 		evt2.Set("button", JS_NUM(btnId));
@@ -384,7 +384,7 @@ void mouseButtonCB(GLFWwindow *window, int button, int action, int mods) {
 void scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	Napi::Object evt = Napi::Object::New(env);
+	Napi::Object evt = JS_OBJECT;
 	fillMouse(evt, window);
 	evt.Set("type", "wheel");
 	evt.Set("deltaX", JS_NUM(static_cast<int>(xoffset * 100)));
@@ -404,7 +404,7 @@ void joystickCb(int jid, int event) {
 	forEachWindow([jid, event](WinState *state) {
 		GLFWwindow *window = state->window;
 		STATE_ENV; NAPI_HS;
-		Napi::Object evt = Napi::Object::New(env);
+		Napi::Object evt = JS_OBJECT;
 		evt.Set("type", "joystick");
 		evt.Set("id", JS_NUM(jid));
 		evt.Set("event", JS_NUM(event)); // GLFW_CONNECTED or GLFW_DISCONNECTED

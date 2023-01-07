@@ -19,12 +19,12 @@ bool isHintVisible = true;
 GLFWwindow *_share = nullptr;
 
 
-void dropShare() {
+DBG_EXPORT void dropShare() {
 	_share = nullptr;
 }
 
 
-void forEachWindow(const StatesIterator& fn) {
+DBG_EXPORT void forEachWindow(const StatesIterator& fn) {
 	size_t stateNum = states.size();
 	
 	std::for_each(
@@ -41,7 +41,7 @@ void forEachWindow(const StatesIterator& fn) {
 
 
 // Cleanup resources
-void destroyAllWindows() {
+DBG_EXPORT void destroyAllWindows() {
 	// Clear all callbacks
 	forEachWindow([](WinState *state) {
 		GLFWwindow *window = state->window;
@@ -73,7 +73,7 @@ void destroyAllWindows() {
 }
 
 
-JS_METHOD(windowHint) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(windowHint) { NAPI_ENV;
 	REQ_UINT32_ARG(0, hint);
 	REQ_UINT32_ARG(1, value);
 	
@@ -86,7 +86,7 @@ JS_METHOD(windowHint) { NAPI_ENV;
 }
 
 
-JS_METHOD(windowHintString) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(windowHintString) { NAPI_ENV;
 	REQ_UINT32_ARG(0, hint);
 	REQ_STR_ARG(1, value);
 	
@@ -95,13 +95,13 @@ JS_METHOD(windowHintString) { NAPI_ENV;
 }
 
 
-JS_METHOD(defaultWindowHints) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(defaultWindowHints) { NAPI_ENV;
 	glfwDefaultWindowHints();
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(createWindow) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(createWindow) { NAPI_ENV;
 	REQ_UINT32_ARG(0, width);
 	REQ_UINT32_ARG(1, height);
 	REQ_OBJ_ARG(2, emitter);
@@ -150,8 +150,8 @@ JS_METHOD(createWindow) { NAPI_ENV;
 	// make sure cursor is always shown
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	
-	emitter.Set("__mouse", Napi::Object::New(env));
-	emitter.Set("__key", Napi::Object::New(env));
+	emitter.Set("__mouse", JS_OBJECT);
+	emitter.Set("__key", JS_OBJECT);
 	
 	// Store WinState as user pointer
 	WinState *state = new WinState(window, emitter);
@@ -181,7 +181,7 @@ JS_METHOD(createWindow) { NAPI_ENV;
 }
 
 
-JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW; THIS_STATE;
+DBG_EXPORT JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW; THIS_STATE;
 	glfwDestroyWindow(window);
 	if (state) {
 		state->window = nullptr;
@@ -191,7 +191,7 @@ JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW; THIS_STATE;
 }
 
 
-JS_METHOD(setWindowTitle) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowTitle) { NAPI_ENV; THIS_WINDOW;
 	REQ_STR_ARG(1, str);
 	
 	glfwSetWindowTitle(window, str.c_str());
@@ -199,7 +199,7 @@ JS_METHOD(setWindowTitle) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 	REQ_OBJ_ARG(1, icon);
 	
 	if (!(icon.Has("width") && icon.Has("height"))) {
@@ -239,11 +239,11 @@ JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(getWindowSize) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowSize) { NAPI_ENV; THIS_WINDOW;
 	int w, h;
 	glfwGetWindowSize(window, &w, &h);
 	
-	Napi::Object obj = Napi::Object::New(env);
+	Napi::Object obj = JS_OBJECT;
 	obj.Set("width", JS_NUM(w));
 	obj.Set("height", JS_NUM(h));
 	
@@ -251,11 +251,11 @@ JS_METHOD(getWindowSize) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(getWindowFrameSize) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowFrameSize) { NAPI_ENV; THIS_WINDOW;
 	int left, top, right, bottom;
 	glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
 	
-	Napi::Object jsFrame = Napi::Object::New(env);
+	Napi::Object jsFrame = JS_OBJECT;
 	
 	jsFrame.Set("left", left);
 	jsFrame.Set("top", top);
@@ -266,11 +266,11 @@ JS_METHOD(getWindowFrameSize) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(getWindowContentScale) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowContentScale) { NAPI_ENV; THIS_WINDOW;
 	float xscale, yscale;
 	glfwGetWindowContentScale(window, &xscale, &yscale);
 	
-	Napi::Object jsScale = Napi::Object::New(env);
+	Napi::Object jsScale = JS_OBJECT;
 	
 	jsScale.Set("xscale", xscale);
 	jsScale.Set("yscale", yscale);
@@ -279,7 +279,7 @@ JS_METHOD(getWindowContentScale) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(setWindowSize) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowSize) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(1, w);
 	REQ_UINT32_ARG(2, h);
 	
@@ -288,7 +288,7 @@ JS_METHOD(setWindowSize) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(setWindowSizeLimits) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowSizeLimits) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(1, minwidth);
 	REQ_UINT32_ARG(2, minheight);
 	REQ_UINT32_ARG(3, maxwidth);
@@ -299,7 +299,7 @@ JS_METHOD(setWindowSizeLimits) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(setWindowAspectRatio) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowAspectRatio) { NAPI_ENV; THIS_WINDOW;
 	USE_UINT32_ARG(1, numer, GLFW_DONT_CARE);
 	USE_UINT32_ARG(2, denom, GLFW_DONT_CARE);
 	
@@ -308,7 +308,7 @@ JS_METHOD(setWindowAspectRatio) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(setWindowPos) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowPos) { NAPI_ENV; THIS_WINDOW;
 	REQ_INT32_ARG(1, x);
 	REQ_INT32_ARG(2, y);
 	
@@ -317,11 +317,11 @@ JS_METHOD(setWindowPos) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(getWindowPos) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowPos) { NAPI_ENV; THIS_WINDOW;
 	int xpos, ypos;
 	glfwGetWindowPos(window, &xpos, &ypos);
 	
-	Napi::Object obj = Napi::Object::New(env);
+	Napi::Object obj = JS_OBJECT;
 	obj.Set("x", JS_NUM(xpos));
 	obj.Set("y", JS_NUM(ypos));
 	
@@ -329,13 +329,13 @@ JS_METHOD(getWindowPos) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(getWindowOpacity) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowOpacity) { NAPI_ENV; THIS_WINDOW;
 	float opacity = glfwGetWindowOpacity(window);
 	RET_NUM(opacity);
 }
 
 
-JS_METHOD(setWindowOpacity) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowOpacity) { NAPI_ENV; THIS_WINDOW;
 	REQ_FLOAT_ARG(1, opacity);
 	
 	glfwSetWindowOpacity(window, opacity);
@@ -343,25 +343,25 @@ JS_METHOD(setWindowOpacity) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(maximizeWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(maximizeWindow) { NAPI_ENV; THIS_WINDOW;
 	glfwMaximizeWindow(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(focusWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(focusWindow) { NAPI_ENV; THIS_WINDOW;
 	glfwFocusWindow(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(requestWindowAttention) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(requestWindowAttention) { NAPI_ENV; THIS_WINDOW;
 	glfwRequestWindowAttention(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(getWindowMonitor) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowMonitor) { NAPI_ENV; THIS_WINDOW;
 	GLFWmonitor *monitor = glfwGetWindowMonitor(window);
 	
 	if (!monitor) {
@@ -374,36 +374,36 @@ JS_METHOD(getWindowMonitor) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(iconifyWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(iconifyWindow) { NAPI_ENV; THIS_WINDOW;
 	glfwIconifyWindow(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(restoreWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(restoreWindow) { NAPI_ENV; THIS_WINDOW;
 	glfwRestoreWindow(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(hideWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(hideWindow) { NAPI_ENV; THIS_WINDOW;
 	glfwHideWindow(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(showWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(showWindow) { NAPI_ENV; THIS_WINDOW;
 	glfwShowWindow(window);
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(windowShouldClose) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(windowShouldClose) { NAPI_ENV; THIS_WINDOW;
 	RET_NUM(glfwWindowShouldClose(window));
 }
 
 
-JS_METHOD(setWindowShouldClose) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowShouldClose) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(1, value);
 	
 	glfwSetWindowShouldClose(window, value);
@@ -411,14 +411,14 @@ JS_METHOD(setWindowShouldClose) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(getWindowAttrib) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getWindowAttrib) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(1, attrib);
 	
 	RET_NUM(glfwGetWindowAttrib(window, attrib));
 }
 
 
-JS_METHOD(setWindowAttrib) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setWindowAttrib) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(1, attrib);
 	REQ_UINT32_ARG(2, value);
 	

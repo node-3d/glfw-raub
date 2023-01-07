@@ -5,8 +5,8 @@
 
 
 namespace glfw {
-	JS_METHOD(setClipboardString);
-	JS_METHOD(getClipboardString);
+	DBG_EXPORT JS_METHOD(setClipboardString);
+	DBG_EXPORT JS_METHOD(getClipboardString);
 } // namespace glfw
 
 

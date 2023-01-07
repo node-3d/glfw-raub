@@ -9,7 +9,7 @@
 
 namespace glfw {
 
-JS_METHOD(platformDevice) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(platformDevice) { NAPI_ENV;
 #ifdef _WIN32
 	RET_NUM(reinterpret_cast<uint64_t>(wglGetCurrentDC()));
 #elif __linux__
@@ -21,7 +21,7 @@ JS_METHOD(platformDevice) { NAPI_ENV;
 }
 
 
-JS_METHOD(platformWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(platformWindow) { NAPI_ENV; THIS_WINDOW;
 #ifdef _WIN32
 	RET_NUM(reinterpret_cast<uint64_t>(glfwGetWin32Window(window)));
 #elif __linux__
@@ -32,7 +32,7 @@ JS_METHOD(platformWindow) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(platformContext) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(platformContext) { NAPI_ENV; THIS_WINDOW;
 #ifdef _WIN32
 	RET_NUM(reinterpret_cast<uint64_t>(glfwGetWGLContext(window)));
 #elif __linux__

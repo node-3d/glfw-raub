@@ -4,11 +4,11 @@
 
 namespace glfw {
 
-JS_METHOD(getCursorPos) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(getCursorPos) { NAPI_ENV; THIS_WINDOW;
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	
-	Napi::Object obj = Napi::Object::New(env);
+	Napi::Object obj = JS_OBJECT;
 	obj.Set("x", JS_NUM(x));
 	obj.Set("y", JS_NUM(y));
 	
@@ -16,7 +16,7 @@ JS_METHOD(getCursorPos) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(setCursorPos) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setCursorPos) { NAPI_ENV; THIS_WINDOW;
 	REQ_INT32_ARG(1, x);
 	REQ_INT32_ARG(2, y);
 	
@@ -25,7 +25,7 @@ JS_METHOD(setCursorPos) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-JS_METHOD(createCursor) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(createCursor) { NAPI_ENV; THIS_WINDOW;
 	REQ_OBJ_ARG(0, icon);
 	
 	if (!(icon.Has("width") && icon.Has("height"))) {
@@ -66,14 +66,14 @@ JS_METHOD(createCursor) { NAPI_ENV; THIS_WINDOW;
 	RET_NUM(reinterpret_cast<uint64_t>(cursor));
 }
 
-JS_METHOD(createStandardCursor) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(createStandardCursor) { NAPI_ENV;
 	REQ_INT32_ARG(0, shape);
 	GLFWcursor *cursor = glfwCreateStandardCursor(shape);
 	RET_NUM(reinterpret_cast<uint64_t>(cursor));
 }
 
 
-JS_METHOD(destroyCursor) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(destroyCursor) { NAPI_ENV;
 	REQ_OFFS_ARG(0, cursorPtr);
 	GLFWcursor *cursor = reinterpret_cast<GLFWcursor*>(cursorPtr);
 	glfwDestroyCursor(cursor);
@@ -81,7 +81,7 @@ JS_METHOD(destroyCursor) { NAPI_ENV;
 }
 
 
-JS_METHOD(setCursor) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(setCursor) { NAPI_ENV; THIS_WINDOW;
 	REQ_OFFS_ARG(1, cursorPtr);
 	GLFWcursor *cursor = reinterpret_cast<GLFWcursor*>(cursorPtr);
 	glfwSetCursor(window, cursor);

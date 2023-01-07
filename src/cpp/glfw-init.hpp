@@ -5,12 +5,12 @@
 
 
 namespace glfw {
-	void deinit();
+	DBG_EXPORT void deinit();
 	
-	JS_METHOD(init);
-	JS_METHOD(initHint);
-	JS_METHOD(terminate);
-	JS_METHOD(testScene);
+	DBG_EXPORT JS_METHOD(init);
+	DBG_EXPORT JS_METHOD(initHint);
+	DBG_EXPORT JS_METHOD(terminate);
+	DBG_EXPORT JS_METHOD(testScene);
 } // namespace glfw
 
 

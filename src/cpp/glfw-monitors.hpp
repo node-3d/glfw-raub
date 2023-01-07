@@ -5,10 +5,10 @@
 
 
 namespace glfw {
-	Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary);
+	DBG_EXPORT Napi::Object describeMonitor(Napi::Env env, GLFWmonitor *monitor, bool isPrimary);
 	
-	JS_METHOD(getMonitors);
-	JS_METHOD(getPrimaryMonitor);
+	DBG_EXPORT JS_METHOD(getMonitors);
+	DBG_EXPORT JS_METHOD(getPrimaryMonitor);
 } // namespace glfw
 
 

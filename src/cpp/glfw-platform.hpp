@@ -18,9 +18,9 @@
 
 
 namespace glfw {
-	JS_METHOD(platformDevice);
-	JS_METHOD(platformWindow);
-	JS_METHOD(platformContext);
+	DBG_EXPORT JS_METHOD(platformDevice);
+	DBG_EXPORT JS_METHOD(platformWindow);
+	DBG_EXPORT JS_METHOD(platformContext);
 } // namespace glfw
 
 

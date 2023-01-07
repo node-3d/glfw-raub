@@ -11,13 +11,13 @@ namespace glfw {
 
 bool isInited = false;
 
-void errorCb(int error, const char* description) {
+DBG_EXPORT void errorCb(int error, const char* description) {
 	std::cout << "GLFW Error " << error << ": " << description << std::endl;
 }
 
 
 // Cleanup resources
-void deinit() {
+DBG_EXPORT void deinit() {
 	if (!isInited) {
 		return;
 	}
@@ -33,7 +33,7 @@ void deinit() {
 }
 
 
-JS_METHOD(init) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(init) { NAPI_ENV;
 	setlocale(LC_ALL, "");
 	
 	glfwSetErrorCallback(errorCb);
@@ -46,7 +46,7 @@ JS_METHOD(init) { NAPI_ENV;
 }
 
 
-JS_METHOD(initHint) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(initHint) { NAPI_ENV;
 	REQ_INT32_ARG(0, hint);
 	REQ_INT32_ARG(1, value);
 	
@@ -55,13 +55,13 @@ JS_METHOD(initHint) { NAPI_ENV;
 }
 
 
-JS_METHOD(terminate) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(terminate) { NAPI_ENV;
 	deinit();
 	RET_UNDEFINED;
 }
 
 
-JS_METHOD(testScene) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(testScene) { NAPI_ENV;
 	REQ_UINT32_ARG(0, width);
 	REQ_UINT32_ARG(1, height);
 	LET_FLOAT_ARG(2, z);

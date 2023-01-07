@@ -4,7 +4,7 @@
 
 namespace glfw {
 
-JS_METHOD(hideConsole) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(hideConsole) { NAPI_ENV;
 	#ifdef _WIN32
 		auto wnd = FindWindowA("ConsoleWindowClass", nullptr);
 		ShowWindow(wnd, 0);
@@ -12,7 +12,7 @@ JS_METHOD(hideConsole) { NAPI_ENV;
 	RET_UNDEFINED;
 }
 
-JS_METHOD(showConsole) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(showConsole) { NAPI_ENV;
 	#ifdef _WIN32
 		auto wnd = FindWindowA("ConsoleWindowClass", nullptr);
 		ShowWindow(wnd, 1);

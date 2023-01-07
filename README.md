@@ -2,15 +2,12 @@
 
 This is a part of [Node3D](https://github.com/node-3d) project.
 
-[![NPM](https://nodei.co/npm/glfw-raub.png?compact=true)](https://www.npmjs.com/package/glfw-raub)
+[![NPM](https://badge.fury.io/js/glfw-raub.svg)](https://badge.fury.io/js/glfw-raub)
 [![CodeFactor](https://www.codefactor.io/repository/github/node-3d/glfw-raub/badge)](https://www.codefactor.io/repository/github/node-3d/glfw-raub)
 
 ```
 npm i glfw-raub
 ```
-
-
-## Synopsis
 
 **Node.js** addon with **GLFW3** bindings.
 
@@ -53,6 +50,9 @@ See [TypeSctipt defenitions](/index.d.ts) for more details.
 const { Window } = glfw;
 ```
 
+This class helps managing window objects and their events. It can also switch between
+fullscreen, borderless and windowed modes.
+
 See [TypeSctipt defenitions](/index.d.ts) for more details.
 
 ----------
@@ -62,5 +62,8 @@ See [TypeSctipt defenitions](/index.d.ts) for more details.
 ```js
 const { Document } = glfw;
 ```
+
+It can be used to facilitate the environment for other
+JS libraries, such as [three.js](https://threejs.org/).
 
 See [TypeSctipt defenitions](/index.d.ts) for more details.

@@ -33,41 +33,41 @@ namespace glfw {
 	};
 	
 	using StatesIterator = std::function<void(WinState *)>;
-	void forEachWindow(const StatesIterator& fn);
+	DBG_EXPORT void forEachWindow(const StatesIterator& fn);
 	
-	void dropShare();
-	void destroyAllWindows();
+	DBG_EXPORT void dropShare();
+	DBG_EXPORT void destroyAllWindows();
 	
-	JS_METHOD(windowHint);
-	JS_METHOD(windowHintString);
-	JS_METHOD(defaultWindowHints);
-	JS_METHOD(createWindow);
-	JS_METHOD(destroyWindow);
-	JS_METHOD(setWindowTitle);
-	JS_METHOD(setWindowIcon);
-	JS_METHOD(getWindowSize);
-	JS_METHOD(getWindowFrameSize);
-	JS_METHOD(getWindowContentScale);
-	JS_METHOD(setWindowSize);
-	JS_METHOD(setWindowSizeLimits);
-	JS_METHOD(setWindowAspectRatio);
-	JS_METHOD(setWindowPos);
-	JS_METHOD(getWindowPos);
-	JS_METHOD(getWindowOpacity);
-	JS_METHOD(setWindowOpacity);
-	JS_METHOD(maximizeWindow);
-	JS_METHOD(focusWindow);
-	JS_METHOD(requestWindowAttention);
-	JS_METHOD(getWindowMonitor);
-	JS_METHOD(getFramebufferSize);
-	JS_METHOD(iconifyWindow);
-	JS_METHOD(restoreWindow);
-	JS_METHOD(hideWindow);
-	JS_METHOD(showWindow);
-	JS_METHOD(windowShouldClose);
-	JS_METHOD(setWindowShouldClose);
-	JS_METHOD(getWindowAttrib);
-	JS_METHOD(setWindowAttrib);
+	DBG_EXPORT JS_METHOD(windowHint);
+	DBG_EXPORT JS_METHOD(windowHintString);
+	DBG_EXPORT JS_METHOD(defaultWindowHints);
+	DBG_EXPORT JS_METHOD(createWindow);
+	DBG_EXPORT JS_METHOD(destroyWindow);
+	DBG_EXPORT JS_METHOD(setWindowTitle);
+	DBG_EXPORT JS_METHOD(setWindowIcon);
+	DBG_EXPORT JS_METHOD(getWindowSize);
+	DBG_EXPORT JS_METHOD(getWindowFrameSize);
+	DBG_EXPORT JS_METHOD(getWindowContentScale);
+	DBG_EXPORT JS_METHOD(setWindowSize);
+	DBG_EXPORT JS_METHOD(setWindowSizeLimits);
+	DBG_EXPORT JS_METHOD(setWindowAspectRatio);
+	DBG_EXPORT JS_METHOD(setWindowPos);
+	DBG_EXPORT JS_METHOD(getWindowPos);
+	DBG_EXPORT JS_METHOD(getWindowOpacity);
+	DBG_EXPORT JS_METHOD(setWindowOpacity);
+	DBG_EXPORT JS_METHOD(maximizeWindow);
+	DBG_EXPORT JS_METHOD(focusWindow);
+	DBG_EXPORT JS_METHOD(requestWindowAttention);
+	DBG_EXPORT JS_METHOD(getWindowMonitor);
+	DBG_EXPORT JS_METHOD(getFramebufferSize);
+	DBG_EXPORT JS_METHOD(iconifyWindow);
+	DBG_EXPORT JS_METHOD(restoreWindow);
+	DBG_EXPORT JS_METHOD(hideWindow);
+	DBG_EXPORT JS_METHOD(showWindow);
+	DBG_EXPORT JS_METHOD(windowShouldClose);
+	DBG_EXPORT JS_METHOD(setWindowShouldClose);
+	DBG_EXPORT JS_METHOD(getWindowAttrib);
+	DBG_EXPORT JS_METHOD(setWindowAttrib);
 } // namespace glfw
 
 
