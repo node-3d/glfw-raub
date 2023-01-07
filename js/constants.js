@@ -67,8 +67,7 @@ const keyNames = {
 	[glfw.KEY_TAB]           : 'Tab',
 };
 
-const codeNames = {
-	...keyNames,
+const codeNames = Object.assign({}, keyNames, {
 	[glfw.KEY_EQUAL]         : 'Equal',
 	[glfw.KEY_COMMA]         : 'Comma',
 	[glfw.KEY_MINUS]         : 'Minus',
@@ -118,7 +117,7 @@ const codeNames = {
 	[glfw.KEY_KP_EQUAL]      : 'Equal',
 	[glfw.KEY_KP_MULTIPLY]   : 'NumpadMultiply',
 	[glfw.KEY_KP_SUBTRACT]   : 'NumpadSubtract',
-};
+});
 
 
 const extraCodes = {
