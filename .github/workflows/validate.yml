@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Unit Tests - Linux
         if: matrix.os == 'ubuntu-20.04'
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1
         with:
           run: npm run test-ci
 
