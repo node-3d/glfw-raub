@@ -138,6 +138,13 @@ declare module "glfw-raub" {
 		icon: TImage;
 		/** If window has borders (use `false` for borderless fullscreen). Default is true. */
 		title: string;
+		/**
+		 * This callback is called right before the window creation.
+		 *
+		 * `window` - a reference to the Window object (`this`).
+		 * `glfw` - is a reference to GLFW module, just in case if needed.
+		 */
+		onBeforeWindow: (window: Window, glfw: unknown) => void;
 	}>>;
 
 	type TWindowPtr = number;

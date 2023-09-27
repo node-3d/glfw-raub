@@ -33,6 +33,7 @@ class Window extends EventEmitter {
 		this._pxHeight = this._height;
 		this._ratio = 1;
 		
+		this._onBeforeWindow = opts.onBeforeWindow;
 		this._display = opts.display;
 		this._monitors = glfw.getMonitors();
 		this._primaryDisplay = this._monitors.filter((d) => d.is_primary)[0];
@@ -491,6 +492,11 @@ class Window extends EventEmitter {
 	_create() {
 		if (this._mode === 'windowed') {
 			glfw.windowHint(glfw.DECORATED, this._decorated ? glfw.TRUE : glfw.FALSE);
+			
+			if (this._onBeforeWindow) {
+				this._onBeforeWindow(this, glfw);
+			}
+			
 			this._window = glfw.createWindow(
 				this._width,
 				this._height,
@@ -503,6 +509,10 @@ class Window extends EventEmitter {
 			
 			glfw.windowHint(glfw.DECORATED, glfw.FALSE);
 			
+			if (this._onBeforeWindow) {
+				this._onBeforeWindow(this, glfw);
+			}
+			
 			this._window = glfw.createWindow(
 				this._width,
 				this._height,
@@ -511,6 +521,10 @@ class Window extends EventEmitter {
 			);
 		} else if (this._mode === 'fullscreen') {
 			this._adjustFullscreen();
+			
+			if (this._onBeforeWindow) {
+				this._onBeforeWindow(this, glfw);
+			}
 			
 			this._window = glfw.createWindow(
 				this._width,
