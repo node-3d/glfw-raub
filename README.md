@@ -3,10 +3,11 @@
 This is a part of [Node3D](https://github.com/node-3d) project.
 
 [![NPM](https://badge.fury.io/js/glfw-raub.svg)](https://badge.fury.io/js/glfw-raub)
-[![CodeFactor](https://www.codefactor.io/repository/github/node-3d/glfw-raub/badge)](https://www.codefactor.io/repository/github/node-3d/glfw-raub)
+[![ESLint](https://github.com/node-3d/glfw-raub/actions/workflows/eslint.yml/badge.svg)](https://github.com/node-3d/glfw-raub/actions/workflows/eslint.yml)
+[![Test](https://github.com/node-3d/glfw-raub/actions/workflows/test.yml/badge.svg)](https://github.com/node-3d/glfw-raub/actions/workflows/test.yml)
 
 ```
-npm i glfw-raub
+npm i -s glfw-raub
 ```
 
 **Node.js** addon with **GLFW3** bindings.
@@ -17,7 +18,7 @@ step during the `npm i` command.
 
 ![Example](examples/screenshot.jpg)
 
-* **GLFW** version **3.3.4** backend.
+* **GLFW** version **3.3.8** backend.
 * Exposes low-level **GLFW** interface.
 * Multiple windows for a single **Node.js** process.
 * Able to switch to fullscreen and back.
@@ -47,7 +48,7 @@ See [TypeSctipt definitions](/index.d.ts) for more details.
 ### class Window
 
 ```js
-const { Window } = glfw;
+const { Window } = require('glfw-raub');
 ```
 
 This class helps managing window objects and their events. It can also switch between
@@ -60,7 +61,7 @@ See [TypeSctipt definitions](/index.d.ts) for more details.
 ### class Document
 
 ```js
-const { Document } = glfw;
+const { Document } = require('glfw-raub');
 ```
 
 It can be used to facilitate the environment for other
