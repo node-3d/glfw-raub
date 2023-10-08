@@ -1,6 +1,8 @@
 'use strict';
 
 
+const assert = require('node:assert').strict;
+const { describe, it, before, after } = require('node:test');
 const { getPlatform } = require('addon-tools-raub');
 
 const platform = getPlatform();
@@ -56,13 +58,13 @@ const classes = {
 
 describe('GLFW', () => {
 	it('exports an object', () => {
-		expect(typeof glfw).toBe('object');
+		assert.strictEqual(typeof glfw, 'object');
 	});
 	
 	
 	Object.keys(classes).forEach((c) => {
 		it(`${c} is exported`, () => {
-			expect(glfw).toHaveProperty(c);
+			assert.ok(glfw[c] !== undefined);
 		});
 	});
 	
@@ -74,27 +76,27 @@ describe('GLFW', () => {
 		const current = classes[c];
 		let instance = null;
 		
-		beforeAll(() => {
+		before(() => {
 			instance = current.create();
 		});
 		
-		afterAll(() => {
+		after(() => {
 			current.destroy(instance);
 		});
 		
 		it('can be created', () => {
-			expect(instance).toBeInstanceOf(glfw[c]);
+			assert.ok(instance instanceof glfw[c]);
 		});
 		
 		current.props.forEach((prop) => {
 			it(`#${prop} property exposed`, () => {
-				expect(instance).toHaveProperty(prop);
+				assert.ok(instance[prop] !== undefined);
 			});
 		});
 		
 		current.methods.forEach((method) => {
 			it(`#${method}() method exposed`, () => {
-				expect(typeof instance[method]).toBe('function');
+				assert.strictEqual(typeof instance[method], 'function');
 			});
 		});
 	}));
