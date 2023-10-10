@@ -1,13 +1,13 @@
-import { EventEmitter } from 'events';
-
 declare module "glfw-raub" {
+	type EventEmitter = import('node:events').EventEmitter;
+	
 	type TWindowMode = 'windowed' | 'borderless' | 'fullscreen';
 	
 	type TSize = Readonly<{ width: number; height: number }>;
 	
 	type TPos = Readonly<{ x: number; y: number }>;
 	
-	type TFnVoid = () => void;
+	type TCbVoid = () => void;
 	
 	type TRect = TSize & TPos & {
 		left: number;
@@ -16,7 +16,7 @@ declare module "glfw-raub" {
 		bottom: number;
 	};
 	
-	type TImage = TSize & Readonly<{
+	type TImageData = TSize & Readonly<{
 		data: Buffer;
 		noflip?: boolean;
 	}>;
@@ -111,7 +111,7 @@ declare module "glfw-raub" {
 	
 	type TCbField<T extends TEvent> = TEventCb<T> | ReadonlyArray<TEventCb<T>>;
 	
-	type TWindowOpts = Readonly<Partial<{
+	export type TWindowOpts = Readonly<Partial<{
 		/** Major OpenGL version to be used. Default is 2. */
 		major: number;
 		/** Minor OpenGL version to be used. Default is 1. */
@@ -135,7 +135,7 @@ declare module "glfw-raub" {
 		/** Multisample antialiasing level. Default is 2. */
 		msaa: number;
 		/** Winodw icon. Default is null. */
-		icon: TImage;
+		icon: TImageData;
 		/** If window has borders (use `false` for borderless fullscreen). Default is true. */
 		title: string;
 		/**
@@ -161,7 +161,7 @@ declare module "glfw-raub" {
 	 * It helps managing window instances. It also extends
 	 * EventEmitter to provide event-handling.
 	*/
-	class Window extends EventEmitter {
+	export class Window implements EventEmitter {
 		constructor(opts?: TWindowOpts);
 		
 		/** The ratio between physical and logical pixels, e.g 2 for Retina. Default is 1.*/
@@ -295,7 +295,7 @@ declare module "glfw-raub" {
 		 * @see https://github.com/node-3d/image-raub
 		 * @see https://github.com/node-3d/glfw-raub/examples/icon.js
 		 * */
-		icon: TImage;
+		icon: TImageData;
 		
 		/** If the window is going to be closed. */
 		shouldClose: boolean;
@@ -400,10 +400,28 @@ declare module "glfw-raub" {
 		
 		/** BOUND cancelAnimationFrame method. Cancels by id. */
 		cancelAnimationFrame(id: number): void;
+		
+		// ------ implements EventEmitter
+		
+		addListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		on(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		once(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		removeListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		off(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		removeAllListeners(event?: string | symbol): this;
+		setMaxListeners(n: number): this;
+		getMaxListeners(): number;
+		listeners(eventName: string | symbol): Function[];
+		rawListeners(eventName: string | symbol): Function[];
+		emit(eventName: string | symbol, ...args: any[]): boolean;
+		listenerCount(eventName: string | symbol, listener?: Function): number;
+		prependListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		prependOnceListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
+		eventNames(): Array<string | symbol>;
 	}
 	
 	
-	type TDocumentOpts = TWindowOpts & Readonly<{
+	export type TDocumentOpts = TWindowOpts & Readonly<Partial<{
 		/** If the window should ignore the default quit signals, e.g. ESC key. */
 		ignoreQuit: boolean;
 		
@@ -413,7 +431,7 @@ declare module "glfw-raub" {
 		 * CTRL+SHIFT+F - back to windowed.
 		*/
 		autoFullscreen: boolean;
-	}>;
+	}>>;
 	
 	/** Web-like Document
 	 * Document extends Window to provide an additional web-style compatibility layer.
@@ -423,7 +441,7 @@ declare module "glfw-raub" {
 	 * your choice and WebGL context (implementation).
 	 * Two static methods are designated for this: setImage and setWebgl.
 	*/
-	class Document extends Window {
+	export class Document extends Window {
 		/** Set Image implementation
 		 * For example, [this Image implementation](https://github.com/raub/node-image).
 		 * Also sets global.HTMLImageElement.
@@ -479,23 +497,23 @@ declare module "glfw-raub" {
 	 * a command, like `node script.js`, then this won't hide the window. **It's safe to call
 	 * this function on all platforms, but it will be ignored, unless the platform is Windows**.
 	*/
-	const hideConsole: TFnVoid;
+	const hideConsole: TCbVoid;
 	
 	/** Show the terminal window.
 	 * **Windows ONLY** shows the console window
 	 * if it was previously hidden with `glfw.hideConsole()`.
 	*/
-	const showConsole: TFnVoid;
+	const showConsole: TCbVoid;
 	
 	/** Draws a test scene, used in examples here. */
-	const testScene: TFnVoid;
+	const testScene: TCbVoid;
 	
 	/** Draws a test scene, that reacts to a joystick. */
-	const testJoystick: TFnVoid;
+	const testJoystick: TCbVoid;
 	
-	const init: TFnVoid;
+	const init: TCbVoid;
 	const initHint: (hint: number, value: number) => void;
-	const terminate: TFnVoid;
+	const terminate: TCbVoid;
 	const getVersion: () => Readonly<{
 		major: number;
 		minor: number;
@@ -509,7 +527,7 @@ declare module "glfw-raub" {
 	const getPrimaryMonitor: () => TMonitor;
 	const windowHint: (hint: number, value: number) => void;
 	const windowHintString: (hint: number, value: string) => void;
-	const defaultWindowHints: TFnVoid;
+	const defaultWindowHints: TCbVoid;
 	const joystickPresent: () => boolean;
 	const getJoystickAxes: (id: number) => string;
 	const getJoystickButtons: (id: number) => string;
@@ -531,7 +549,7 @@ declare module "glfw-raub" {
 	
 	const destroyWindow: TFnWindow;
 	const setWindowTitle: (window: TWindowPtr, title: string) => void;
-	const setWindowIcon: (window: TWindowPtr, icon: TImage) => void;
+	const setWindowIcon: (window: TWindowPtr, icon: TImageData) => void;
 	const getWindowSize: (window: TWindowPtr) => TSize;
 	const getWindowFrameSize: (window: TWindowPtr) => Readonly<{
 		left: number;
@@ -571,10 +589,10 @@ declare module "glfw-raub" {
 	const setWindowAttrib: (window: TWindowPtr, value: number) => void;
 	const setInputMode: (window: TWindowPtr, mode: number, value: number) => void;
 	const getInputMode: (window: TWindowPtr, mode: number) => number;
-	const pollEvents: TFnVoid;
-	const waitEvents: TFnVoid;
+	const pollEvents: TCbVoid;
+	const waitEvents: TCbVoid;
 	const waitEventsTimeout: (timeout: number) => void;
-	const postEmptyEvent: TFnVoid;
+	const postEmptyEvent: TCbVoid;
 	const getKey: (window: TWindowPtr, key: number) => number;
 	const getMouseButton: (window: TWindowPtr, button: number) => number;
 	const getCursorPos: (window: TWindowPtr, x: number, y: number) => void;
