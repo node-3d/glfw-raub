@@ -43,4 +43,4 @@ jobs:
       - name: Run Cpplint
         run: |
           node -e "require('addon-tools-raub').cpcpplint()"
-          cpplint --recursive ./src
+          cpplint --recursive ./src/cpp
