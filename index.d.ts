@@ -16,22 +16,31 @@ declare module "glfw-raub" {
 		bottom: number;
 	};
 	
+	/* Image data for icons and cursors. */
 	type TImageData = TSize & Readonly<{
 		data: Buffer;
 		noflip?: boolean;
 	}>;
 	
 	type TMonitorMode = TSize & Readonly<{
-		rate: number; // refresh rate
+		/** Refresh rate. */
+		rate: number;
 	}>;
 	
 	type TMonitor = TMonitorMode & {
-		is_primary: boolean; // is this screen primary
-		name: string; // screen name
-		pos_x: number; // global position x of the screen
-		pos_y: number; // global position y of the screen
-		width_mm: number; // screen width in mm
-		height_mm: number; // screen height in mm
+		/** Is this screen primary. */
+		is_primary: boolean;
+		/** Screen name. */
+		name: string;
+		/** Global position x of the screen. */
+		pos_x: number;
+		/** Global position y of the screen. */
+		pos_y: number;
+		/** Screen width in mm. */
+		width_mm: number;
+		/** Screen height in mm. */
+		height_mm: number;
+		/** An array of supported display modes. */
 		modes: ReadonlyArray<TMonitorMode>;
 	};
 	
@@ -156,11 +165,13 @@ declare module "glfw-raub" {
 	type TVkAllocationCallbacksPtr = number;
 	type TFnWindow = (window: TWindowPtr) => void;
 	
-	/** GLFW Window API wrapper
+	/**
+	 * GLFW Window API wrapper.
+	 *
 	 * Window is a higher-level js-wrapper for GLFW API.
 	 * It helps managing window instances. It also extends
 	 * EventEmitter to provide event-handling.
-	*/
+	 */
 	export class Window implements EventEmitter {
 		constructor(opts?: TWindowOpts);
 		
@@ -173,10 +184,10 @@ declare module "glfw-raub" {
 		/** GLFW window pointer. Literally, the pointer from C++. */
 		readonly handle: number;
 		
-		/** Always 0 */
+		/** Always 0. */
 		readonly scrollX: number;
 		
-		/** Always 0 */
+		/** Always 0. */
 		readonly scrollY: number;
 		
 		/** Number of msaa samples. */
@@ -191,21 +202,27 @@ declare module "glfw-raub" {
 		/** Which OpenGL context is now current. */
 		readonly currentContext: number;
 		
-		/** Window display mode. Default is 'windowed'.
-		 * One of 'windowed', 'borderless', 'fullscreen'.
+		/**
+		 * Window display mode. Default is 'windowed'.
+		 *
+		 * One of: 'windowed', 'borderless', 'fullscreen'.
 		 * Here 'borderless' emulates fullscreen by a frameless, screen-sized window.
 		 * When this property is changed, a new window is created and the old is hidden.
-		*/
+		 */
 		mode: TWindowMode;
 		
-		/** Width in LOGICAL pixels.
+		/**
+		 * Width in LOGICAL pixels.
+		 *
 		 * For Retina - twice the window size.
-		*/
+		 */
 		width: number;
 		
-		/** Height in LOGICAL pixels.
+		/**
+		 * Height in LOGICAL pixels.
+		 *
 		 * For Retina - twice the window size.
-		*/
+		 */
 		height: number;
 		
 		/** Alias for width. */
@@ -238,58 +255,76 @@ declare module "glfw-raub" {
 		/** Alias for height. */
 		clientHeight: number;
 		
-		/** Alias for .on('keydown', cb).
+		/**
+		 * Alias for .on('keydown', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onkeydown: TCbField<TKeyEvent>;
 		
-		/** Alias for .on('keyup', cb).
+		/**
+		 * Alias for .on('keyup', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onkeyup: TCbField<TKeyEvent>;
 		
-		/** Alias for .on('mousedown', cb).
+		/**
+		 * Alias for .on('mousedown', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onmousedown: TCbField<TMouseButtonEvent>;
 		
-		/** Alias for .on('mouseup', cb).
+		/**
+		 * Alias for .on('mouseup', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onmouseup: TCbField<TMouseButtonEvent>;
 		
-		/** Alias for .on('wheel', cb).
+		/**
+		 * Alias for .on('wheel', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onwheel: TCbField<TMouseScrollEvent>;
 		
-		/** Alias for .on('mousewheel', cb).
+		/**
+		 * Alias for .on('mousewheel', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onmousewheel: TCbField<TMouseScrollEvent>;
 		
-		/** Alias for .on('resize', cb).
+		/**
+		 * Alias for .on('resize', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		onresize: TCbField<TSizeEvent>;
 		
 		/** An Object, containing PHYSICAL width and height of the window. */
 		size: TSize;
 		
-		/** Alias for .on('keydown', cb).
+		/**
+		 * Alias for .on('keydown', cb).
+		 *
 		 * Setter adds a new callback.
 		 * Getter returns an Array of currently existing callbacks.
-		*/
+		 */
 		title: string;
 		
-		/** Window icon in RGBA format.
+		/**
+		 * Window icon in RGBA format.
+		 *
 		 * Consider using image-raub Image implementation.
 		 * The given image is vertically flipped if noflip is not set to true.
 		 * @see https://github.com/node-3d/image-raub
@@ -315,24 +350,32 @@ declare module "glfw-raub" {
 		/** Get a monitor having the most overlap with this window. */
 		getCurrentMonitor(): TMonitor;
 		
-		/** Gets a browserlike rect of this window.
+		/**
+		 * Gets a browserlike rect of this window.
+		 *
 		 * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
-		*/
+		 */
 		getBoundingClientRect(): TRect;
 		
-		/** Get key state (GLFW_PRESS/GLFW_RELEASE).
+		/**
+		 * Get key state (GLFW_PRESS/GLFW_RELEASE).
+		 *
 		 * @see https://www.glfw.org/docs/latest/group__keys.html
-		*/
+		 */
 		getKey(): number;
 		
-		/** Get mouse button state (GLFW_PRESS/GLFW_RELEASE).
+		/**
+		 * Get mouse button state (GLFW_PRESS/GLFW_RELEASE).
+		 *
 		 * @see https://www.glfw.org/docs/latest/group__buttons.html
-		*/
+		 */
 		getMouseButton(): number;
 		
-		/** Get window attribute.
+		/**
+		 * Get window attribute.
+		 *
 		 * @see https://www.glfw.org/docs/latest/window_guide.html#window_attribs
-		*/
+		 */
 		getWindowAttrib(): number;
 		
 		/** Set input mode option. */
@@ -362,7 +405,9 @@ declare module "glfw-raub" {
 		/** Emit an event on behalf of this window. */
 		emit(name: string, event: TEvent): boolean;
 		
-		/** Add event listener.
+		/**
+		 * Add event listener.
+		 *
 		 * 'blur' - window [focus lost](https://developer.mozilla.org/en-US/docs/Web/Events/blur)
 		 * 'click' - mouse button [clicked](https://developer.mozilla.org/en-US/docs/Web/Events/click)
 		 * 'drop' - drag-[dropped](https://developer.mozilla.org/en-US/docs/Web/Events/drop) some files on the window
@@ -383,7 +428,7 @@ declare module "glfw-raub" {
 		 * 'wheel' - mouse [wheel rotation](https://developer.mozilla.org/en-US/docs/Web/Events/wheel)
 		 * 'move' - window moved `{ x, y }`
 		 * Note: `keypress` event is not supported.
-		*/
+		 */
 		on(name: string, cb: (event: TEvent) => (void | boolean)): this;
 		
 		/** Alias for emit, type is expected inside the event object. */
@@ -422,35 +467,54 @@ declare module "glfw-raub" {
 	
 	
 	export type TDocumentOpts = TWindowOpts & Readonly<Partial<{
-		/** If the window should ignore the default quit signals, e.g. ESC key. */
+		/**
+		 * If the window should ignore the default quit signals.
+		 *
+		 * E.g.: process 'SIGINT', document 'quit', and ESC press if `autoEsc` enabled.
+		 */
 		ignoreQuit: boolean;
 		
-		/** If window has the default key handlers for fullscreen.
-		 * CTRL+F - borderless fullscreen window.
-		 * CTRL+ALT+F - real, exclusive fullscreen mode.
-		 * CTRL+SHIFT+F - back to windowed.
-		*/
+		/**
+		 * If window has the default key handlers for fullscreen.
+		 * 
+		 * * CTRL+F - borderless fullscreen window.
+		 * * CTRL+ALT+F - real, exclusive fullscreen mode.
+		 * * CTRL+SHIFT+F - back to windowed.
+		 */
 		autoFullscreen: boolean;
+		
+		/**
+		 * Handle ESC key to close window automatically.
+		 *
+		 * Does nothing if `ignoreQuit` is enabled.
+		 */
+		autoEsc: boolean;
 	}>>;
 	
-	/** Web-like Document
+	/**
+	 * Web-like Document.
+	 *
 	 * Document extends Window to provide an additional web-style compatibility layer.
 	 * As name suggests, objects of such class will mimic the behavior and properties of
 	 * your typical browser window.document. But also it is a Window, at the same time.
 	 * And it is incomplete at this point: you still have to provide an Image class of
 	 * your choice and WebGL context (implementation).
 	 * Two static methods are designated for this: setImage and setWebgl.
-	*/
+	 */
 	export class Document extends Window {
-		/** Set Image implementation
+		/**
+		 * Set `Image` implementation.
+		 *
 		 * For example, [this Image implementation](https://github.com/raub/node-image).
 		 * Also sets global.HTMLImageElement.
-		*/
+		 */
 		static setImage(Image: unknown): void;
 		
-		/** Set WebGL implementation
+		/**
+		 * Set `WebGL` implementation.
+		 *
 		 * For example, [this WebGL implementation](https://github.com/raub/node-webgl).
-		*/
+		 */
 		static setWebgl(Webgl: unknown): void;
 		
 		constructor(opts?: TDocumentOpts);
@@ -458,9 +522,11 @@ declare module "glfw-raub" {
 		/** Returns `this`. */
 		readonly body: Document;
 		
-		/** Mimic web-element `style` property.
+		/**
+		 * Mimics web-element `style` property.
+		 *
 		 * But only `width` and `height` matters.
-		*/
+		 */
 		readonly style: TSize;
 		
 		/** Returns `Document.webgl`, set through `Document.setWebgl`. */
@@ -481,28 +547,34 @@ declare module "glfw-raub" {
 		/** Returns the result of `createElement(tag)` */
 		createElementNS(unused: unknown, tag: string): void;
 		
-		/** Fake createElement.
+		/**
+		 * Fake createElement.
+		 *
 		 * For `'canvas'` returns `this` for *the first call*,
 		 * then returns new instances of canvas-like object capable of using 2d or 3d context.
 		 * This is done for some web APIs like three.js, which create additional canvases.
-		 * For `'image'` returns `new Document.Image`, set through `Document.setImage`.
-		*/
+		 * For `'image'` returns `new Document.Image`, as per `Document.setImage`.
+		 */
 		createElement(tag: string): Document;
 	}
 
-	/** Hide the terminal window.
+	/**
+	 * Hide the terminal window.
+	 *
 	 * **Windows ONLY** hides the console window, but only in case
 	 * this console window is property of this process. For instance this works if you use
 	 * `pkg` module to bundle your app, and then doubleclick the EXE. But if you are running
 	 * a command, like `node script.js`, then this won't hide the window. **It's safe to call
 	 * this function on all platforms, but it will be ignored, unless the platform is Windows**.
-	*/
+	 */
 	const hideConsole: TCbVoid;
 	
-	/** Show the terminal window.
+	/**
+	 * Show the terminal window.
+	 *
 	 * **Windows ONLY** shows the console window
 	 * if it was previously hidden with `glfw.hideConsole()`.
-	*/
+	 */
 	const showConsole: TCbVoid;
 	
 	/** Draws a test scene, used in examples here. */
@@ -533,7 +605,9 @@ declare module "glfw-raub" {
 	const getJoystickButtons: (id: number) => string;
 	const getJoystickName: (id: number) => string;
 	
-	/** Create a GLFW window.
+	/**
+	 * Create a GLFW window.
+	 *
 	 * This function differs from GLFW Docs signature due to JS specifics.
 	 * Here `emitter` is any object having a **BOUND** `emit()` method.
 	 * It will be used to transmit GLFW events.
