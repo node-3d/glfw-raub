@@ -41,7 +41,7 @@ const glfw = require('glfw-raub');
 Here `glfw` is an API container, where all `glfw*` functions are accessible as
 `glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.setWindowTitle`.
 
-See [TypeSctipt definitions](/index.d.ts) for more details.
+See [TypeScript definitions](/index.d.ts) for more details.
 
 ----------
 
