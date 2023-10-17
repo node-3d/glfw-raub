@@ -1,7 +1,7 @@
 'use strict';
 
+const glfw = require('../core');
 const Window = require('./window');
-
 const {
 	emptyFunction, ESC_KEY, F_KEY,
 } = require('./constants');
@@ -33,6 +33,10 @@ class Document extends Window {
 			Document.webgl.canvas = this;
 		}
 		
+		this.on('mousedown', (e) => { this.emit('pointerdown', e); });
+		this.on('mouseup', (e) => { this.emit('pointerup', e); });
+		this.on('mousemove', (e) => { this.emit('pointermove', e); });
+		
 		if (!opts.ignoreQuit) {
 			const isUnix = process.platform !== 'win32';
 			if ( isUnix && process.listeners('SIGINT').indexOf(Document.exit) < 0 ) {
@@ -41,7 +45,7 @@ class Document extends Window {
 			
 			this.on('quit', () => process.exit(0));
 			
-			if ( opts.autoEsc ) {
+			if (opts.autoEsc) {
 				this.on('keydown', (e) => e.keyCode === ESC_KEY && process.exit(0));
 			}
 		}
@@ -58,6 +62,14 @@ class Document extends Window {
 			});
 		}
 	}
+	
+	setPointerCapture = () => {
+		this.setInputMode(glfw.CURSOR, glfw.CURSOR_DISABLED);
+	};
+	
+	releasePointerCapture = () => {
+		this.setInputMode(glfw.CURSOR, glfw.CURSOR_NORMAL);
+	};
 	
 	makeCurrent() {
 		if (Document.webgl) {

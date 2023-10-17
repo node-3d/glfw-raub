@@ -936,4 +936,19 @@ declare module "glfw-raub" {
 	const COCOA_CHDIR_RESOURCES: number;
 	const COCOA_MENUBAR: number;
 	const DONT_CARE: number;
+	
+	/**
+	 * Human-readable names for keyboard keys.
+	 */
+	const keyNames: Record<number, string>;
+	
+	/**
+	 * Human-readable names for keyboard key codes (includes `keyNames`).
+	 */
+	const codeNames: Record<number, string>;
+	
+	/**
+	 * Additional key codes for keyboard events - conversion from GLFW codes to web.
+	 */
+	const extraCodes: Record<number, number>;
 }

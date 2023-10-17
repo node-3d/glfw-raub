@@ -3,7 +3,6 @@
 const EventEmitter = require('events');
 
 const glfw = require('../core');
-
 const {
 	emptyFunction, keyNames, codeNames, extraCodes,
 } = require('./constants');
@@ -27,9 +26,9 @@ class Window extends EventEmitter {
 		this._modeCache = {};
 		this._pendingKeydown = null;
 		
-		this._width = opts.width || 800;
+		this._width = opts.width || 1280;
 		this._pxWidth = this._width;
-		this._height = opts.height || 600;
+		this._height = opts.height || 720;
 		this._pxHeight = this._height;
 		this._ratio = 1;
 		
