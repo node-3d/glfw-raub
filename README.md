@@ -55,7 +55,7 @@ const { Window } = require('glfw-raub');
 This class helps managing window objects and their events. It can also switch between
 fullscreen, borderless and windowed modes.
 
-See [TypeSctipt definitions](/index.d.ts) for more details.
+See [TypeScript definitions](/index.d.ts) for more details.
 
 ----------
 
@@ -68,4 +68,4 @@ const { Document } = require('glfw-raub');
 It can be used to facilitate the environment for other
 JS libraries, such as [three.js](https://threejs.org/).
 
-See [TypeSctipt definitions](/index.d.ts) for more details.
+See [TypeScript definitions](/index.d.ts) for more details.
