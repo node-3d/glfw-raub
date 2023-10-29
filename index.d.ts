@@ -202,6 +202,15 @@ declare module "glfw-raub" {
 		/** Which OpenGL context is now current. */
 		readonly currentContext: number;
 		
+		/** Platform device (e.g. `wglGetCurrentDC()` or `glfwGetX11Display()`). */
+		readonly platformDevice: number;
+		
+		/** Platform-specific window handle (e.g. Windows HWND). */
+		readonly platformWindow: number;
+		
+		/** Platform OpenGL context ID for this window. */
+		readonly platformContext: number;
+		
 		/**
 		 * Window display mode. Default is 'windowed'.
 		 *
