@@ -56,7 +56,7 @@
 				'MACOSX_DEPLOYMENT_TARGET': '10.9',
 				'defines': ['__APPLE__'],
 				'CLANG_CXX_LIBRARY': 'libc++',
-				'OTHER_CFLAGS': ['-std=c++17', '-fno-exceptions', '-mmacosx-version-min=10.9'],
+				'OTHER_CFLAGS': ['-std=c++17', '-fno-exceptions'],
 			}],
 			['OS=="win"', {
 				'libraries': ['glfw3dll.lib', 'opengl32.lib'],
