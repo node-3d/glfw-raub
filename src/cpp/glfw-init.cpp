@@ -1,11 +1,14 @@
 #include <iostream>
 #include <locale.h>
 
+#if __APPLE__
+	#define GL_SILENCE_DEPRECATION 1
+#endif
+
 #include "glfw-common.hpp"
 #include "glfw-init.hpp"
 #include "glfw-window.hpp"
 #include "glfw-events.hpp"
-
 
 namespace glfw {
 
