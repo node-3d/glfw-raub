@@ -25,8 +25,6 @@ DBG_EXPORT void dropShare() {
 
 
 DBG_EXPORT void forEachWindow(const StatesIterator& fn) {
-	size_t stateNum = states.size();
-	
 	std::for_each(
 		states.begin(),
 		states.end(),

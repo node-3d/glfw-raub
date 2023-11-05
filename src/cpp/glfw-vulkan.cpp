@@ -26,7 +26,7 @@ namespace glfw {
 Napi::Array toStringArray(Napi::Env env, const char **strings, size_t count) {
 	Napi::Array arr = JS_ARRAY;
 	
-	for (auto i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		arr.Set(i, strings[i]);
 	}
 	
@@ -117,7 +117,7 @@ DBG_EXPORT JS_METHOD(vulkanCreateInstance) { NAPI_ENV;
 bool checkDeviceProperties(
 	VkInstance instance,
 	VkPhysicalDevice physical_device,
-	uint32_t queue_family_index
+	uint32_t *queue_family_index
 ) {
 	VK_INSTANCE_LEVEL_FUNCTION(vkGetPhysicalDeviceQueueFamilyProperties);
 	VK_INSTANCE_LEVEL_FUNCTION(vkGetPhysicalDeviceProperties);
@@ -129,11 +129,9 @@ bool checkDeviceProperties(
 	vkGetPhysicalDeviceProperties(physical_device, &device_properties);
 	vkGetPhysicalDeviceFeatures(physical_device, &device_features);
 	
-	uint32_t major_version = VK_VERSION_MAJOR(device_properties.apiVersion);
-	uint32_t minor_version = VK_VERSION_MINOR(device_properties.apiVersion);
-	uint32_t patch_version = VK_VERSION_PATCH(device_properties.apiVersion);
+	uint32_t versionMajor = VK_API_VERSION_MAJOR(device_properties.apiVersion);
 	
-	if ((major_version < 1) && (device_properties.limits.maxImageDimension2D < 4096)) {
+	if ((versionMajor < 1) && (device_properties.limits.maxImageDimension2D < 4096)) {
 		std::cerr << "Device " << physical_device << " doesn't support required parameters." << std::endl;
 		return false;
 	}
@@ -156,7 +154,7 @@ bool checkDeviceProperties(
 			(queue_family_properties[i].queueCount > 0) &&
 			(queue_family_properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		) {
-			queue_family_index = i;
+			*queue_family_index = i;
 			return true;
 		}
 	}
@@ -188,7 +186,7 @@ DBG_EXPORT JS_METHOD(vulkanCreateDevice) { NAPI_ENV; THIS_VULKAN;
 	VkPhysicalDevice selected_physical_device = VK_NULL_HANDLE;
 	uint32_t selected_queue_family_index = UINT32_MAX;
 	for(uint32_t i = 0; i < num_devices; ++i) {
-		if (checkDeviceProperties(instance, physical_devices[i], selected_queue_family_index)) {
+		if (checkDeviceProperties(instance, physical_devices[i], &selected_queue_family_index)) {
 			selected_physical_device = physical_devices[i];
 		}
 	}

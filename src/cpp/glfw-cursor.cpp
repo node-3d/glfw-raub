@@ -25,7 +25,7 @@ DBG_EXPORT JS_METHOD(setCursorPos) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-DBG_EXPORT JS_METHOD(createCursor) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(createCursor) { NAPI_ENV;
 	REQ_OBJ_ARG(0, icon);
 	
 	if (!(icon.Has("width") && icon.Has("height"))) {

@@ -395,7 +395,6 @@ void scrollCB(GLFWwindow *window, double xoffset, double yoffset) {
 void joystickCb(int jid, int event) {
 	// Emit to all windows
 	forEachWindow([jid, event](WinState *state) {
-		GLFWwindow *window = state->window;
 		STATE_ENV; NAPI_HS;
 		Napi::Object evt = JS_OBJECT;
 		evt.Set("type", "joystick");
