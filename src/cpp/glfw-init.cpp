@@ -1,7 +1,7 @@
 #include <iostream>
 #include <locale.h>
 
-#if __APPLE__
+#ifdef __APPLE__
 	#define GL_SILENCE_DEPRECATION 1
 #endif
 
