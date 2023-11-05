@@ -36,6 +36,9 @@ jobs:
       - name: Install Modules
         run: npm ci
 
+      - name: Fix Python
+        run: pip install setuptools
+
       - name: Build Current Binary
         run: npm run build
 
