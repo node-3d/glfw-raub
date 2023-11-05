@@ -339,7 +339,7 @@ declare module "glfw-raub" {
 		 * @see https://github.com/node-3d/image-raub
 		 * @see https://github.com/node-3d/glfw-raub/examples/icon.js
 		 * */
-		icon: TImageData;
+		icon: TImageData | unknown;
 		
 		/** If the window is going to be closed. */
 		shouldClose: boolean;
@@ -411,9 +411,6 @@ declare module "glfw-raub" {
 		/** Show the window, if it is hidden. */
 		show(): void;
 		
-		/** Emit an event on behalf of this window. */
-		emit(name: string, event: TEvent): boolean;
-		
 		/**
 		 * Add event listener.
 		 *
@@ -440,25 +437,24 @@ declare module "glfw-raub" {
 		 */
 		on(name: string, cb: (event: TEvent) => (void | boolean)): this;
 		
-		/** Alias for emit, type is expected inside the event object. */
+		/** Alias for `emit`, type is expected inside the event object. */
 		dispatchEvent(event: TEvent): void;
 		
-		/** Alias for on. */
-		addEventListener(name: string): void;
+		/** Alias for `on`. */
+		addEventListener(name: string, cb: (event: TEvent) => (void | boolean)): this;
 		
-		/** Alia for removeListener. */
+		/** Alias for `removeListener`. */
 		removeEventListener(name: string): void;
 		
-		/** BOUND requestAnimationFrame method, returns id. */
+		/** BOUND `requestAnimationFrame` method, returns id. */
 		requestAnimationFrame(cb: (dateNow: number) => void): number;
 		
-		/** BOUND cancelAnimationFrame method. Cancels by id. */
+		/** BOUND `cancelAnimationFrame` method. Cancels by id. */
 		cancelAnimationFrame(id: number): void;
 		
 		// ------ implements EventEmitter
 		
 		addListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
-		on(eventName: string | symbol, listener: (...args: any[]) => void): this;
 		once(eventName: string | symbol, listener: (...args: any[]) => void): this;
 		removeListener(eventName: string | symbol, listener: (...args: any[]) => void): this;
 		off(eventName: string | symbol, listener: (...args: any[]) => void): this;
@@ -530,6 +526,12 @@ declare module "glfw-raub" {
 		
 		/** Returns `this`. */
 		readonly body: Document;
+		
+		/** Set `glfw.CURSOR` mode to `glfw.CURSOR_DISABLED`. */
+		setPointerCapture(): void;
+		
+		/** Set `glfw.CURSOR` mode to `glfw.CURSOR_NORMAL`. */
+		releasePointerCapture(): void;
 		
 		/**
 		 * Mimics web-element `style` property.

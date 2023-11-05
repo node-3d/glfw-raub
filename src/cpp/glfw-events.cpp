@@ -307,13 +307,6 @@ void charCB(GLFWwindow* window, unsigned codepoint) {
 void cursorPosCB(GLFWwindow* window, double x, double y) {
 	THIS_STATE; STATE_ENV; NAPI_HS;
 	
-	int w, h;
-	glfwGetWindowSize(window, &w, &h);
-	
-	if (x < 0 || x >= w || y < 0 || y >= h) {
-		return;
-	}
-	
 	int newX = static_cast<int>(x);
 	int newY = static_cast<int>(y);
 	
