@@ -1,7 +1,7 @@
 {
 	"author": "Luis Blanco <luisblanco1337@gmail.com>",
 	"name": "glfw-raub",
-	"version": "5.4.0",
+	"version": "5.4.1",
 	"description": "GLFW for Node.js",
 	"license": "MIT",
 	"main": "index.js",
