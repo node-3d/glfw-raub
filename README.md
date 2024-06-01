@@ -19,7 +19,7 @@ step during the `npm i` command.
 
 ![Example](examples/screenshot.jpg)
 
-* **GLFW** version **3.3.8** backend.
+* **GLFW** version **3.4.0** backend.
 * Exposes low-level **GLFW** interface.
 * Multiple windows for a single **Node.js** process.
 * Able to switch to fullscreen and back.
