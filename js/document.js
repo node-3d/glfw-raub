@@ -24,8 +24,12 @@ class Document extends Window {
 		super(opts);
 		
 		if (Document.webgl && !Document.isWebglInited) {
-			if (typeof Document.webgl.init === 'function') {
-				Document.webgl.init();
+			try {
+				if (typeof Document.webgl.init === 'function') {
+					Document.webgl.init();
+				}
+			} catch (_e) {
+				console.warn('WebGL `init()` call failed, but it may still work.');
 			}
 			Document.isWebglInited = true;
 		}
@@ -99,6 +103,8 @@ class Document extends Window {
 		return kind === '2d' ? new Document.Image() : Document.webgl;
 	}
 	
+	
+	getRootNode() { return this; }
 	
 	getElementById() { return this; }
 	
