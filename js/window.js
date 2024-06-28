@@ -359,7 +359,7 @@ class Window extends EventEmitter {
 	
 	get resizable() {
 		const resizable = glfw.getWindowAttrib(this._window, glfw.RESIZABLE);
-		this._resizable = resizable === 1 ? true : false;
+		this._resizable = !!resizable;
 		
 		return this._resizable;
 	}
