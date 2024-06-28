@@ -48,11 +48,13 @@ class Window extends EventEmitter {
 		}
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
+
+		this._resizable = opts.resizable === false ? false : true;
 		
 		glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, this._major);
 		glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, this._minor);
 		
-		glfw.windowHint(glfw.RESIZABLE, glfw.TRUE);
+		glfw.windowHint(glfw.RESIZABLE, this._resizable ? glfw.TRUE : glfw.FALSE);
 		glfw.windowHint(glfw.VISIBLE, glfw.TRUE);
 		glfw.windowHint(glfw.RED_BITS, 8);
 		glfw.windowHint(glfw.GREEN_BITS, 8);
@@ -355,6 +357,17 @@ class Window extends EventEmitter {
 		glfw.setWindowSize(this._window, width, height);
 	}
 	
+	get resizable() {
+		const resizable = glfw.getWindowAttrib(this._window, glfw.RESIZABLE);
+		this._resizable = !!resizable;
+		
+		return this._resizable;
+	}
+
+	set resizable(v) {
+		this._resizable = v;
+		glfw.setWindowAttrib(this._window, glfw.RESIZABLE, this._resizable ? glfw.TRUE : glfw.FALSE);
+	}
 	
 	get scrollX() { return 0; }
 	get scrollY() { return 0; }

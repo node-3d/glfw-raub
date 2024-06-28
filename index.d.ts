@@ -147,6 +147,8 @@ declare module "glfw-raub" {
 		icon: TImageData;
 		/** If window has borders (use `false` for borderless fullscreen). Default is true. */
 		title: string;
+		/** Make window resizable. Default is true. */
+		resizable: boolean;
 		/**
 		 * This callback is called right before the window creation.
 		 *
@@ -322,7 +324,10 @@ declare module "glfw-raub" {
 		
 		/** An Object, containing PHYSICAL width and height of the window. */
 		size: TSize;
-		
+
+		/** Boolean, sets window resizability */
+		resizable: boolean;
+
 		/**
 		 * Alias for .on('keydown', cb).
 		 *
