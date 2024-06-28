@@ -48,11 +48,13 @@ class Window extends EventEmitter {
 		}
 		
 		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
+
+		this._resizable = opts.resizable === false ? false : true;
 		
 		glfw.windowHint(glfw.CONTEXT_VERSION_MAJOR, this._major);
 		glfw.windowHint(glfw.CONTEXT_VERSION_MINOR, this._minor);
 		
-		glfw.windowHint(glfw.RESIZABLE, glfw.TRUE);
+		glfw.windowHint(glfw.RESIZABLE, this._resizable ? glfw.TRUE : glfw.FALSE);
 		glfw.windowHint(glfw.VISIBLE, glfw.TRUE);
 		glfw.windowHint(glfw.RED_BITS, 8);
 		glfw.windowHint(glfw.GREEN_BITS, 8);
