@@ -357,6 +357,17 @@ class Window extends EventEmitter {
 		glfw.setWindowSize(this._window, width, height);
 	}
 	
+	get resizable() {
+		const resizable = glfw.getWindowAttrib(this._window, glfw.RESIZABLE);
+		this._resizable = resizable === 1 ? true : false;
+		
+		return this._resizable;
+	}
+
+	set resizable(v) {
+		this._resizable = v;
+		glfw.setWindowAttrib(this._window, glfw.RESIZABLE, this._resizable ? glfw.TRUE : glfw.FALSE);
+	}
 	
 	get scrollX() { return 0; }
 	get scrollY() { return 0; }

@@ -324,7 +324,10 @@ declare module "glfw-raub" {
 		
 		/** An Object, containing PHYSICAL width and height of the window. */
 		size: TSize;
-		
+
+		/** Boolean, sets window resizability */
+		resizable: boolean;
+
 		/**
 		 * Alias for .on('keydown', cb).
 		 *
