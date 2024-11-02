@@ -5,7 +5,9 @@ require('segfault-raub');
 // Add deps dll dirs
 require('deps-opengl-raub');
 
-const { getBin } = require('addon-tools-raub');
+const { getBin, createLogger } = require('addon-tools-raub');
+
+createLogger({ name: 'glfw' });
 
 const core = require(`./${getBin()}/glfw`);
 

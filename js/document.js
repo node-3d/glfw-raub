@@ -1,11 +1,14 @@
 'use strict';
 
+const { getLogger } = require('addon-tools-raub');
+
 const glfw = require('../core');
 const Window = require('./window');
 const {
 	emptyFunction, ESC_KEY, F_KEY,
 } = require('./constants');
 
+const logger = getLogger('glfw');
 
 class Document extends Window {
 	static setImage(Image) {
@@ -29,7 +32,7 @@ class Document extends Window {
 					Document.webgl.init();
 				}
 			} catch (_e) {
-				console.warn('WebGL `init()` call failed, but it may still work.');
+				logger.warn('WebGL `init()` call failed, but it may still work.');
 			}
 			Document.isWebglInited = true;
 		}
@@ -169,11 +172,11 @@ global.HTMLCanvasElement = Document;
 
 Document.setImage(class FakeImage {
 	get src() {
-		console.error('Document.Image class not set.');
+		logger.error('Document.Image class not set.');
 		return '';
 	}
 	set src(v) {
-		console.error('Document.Image class not set.');
+		logger.error('Document.Image class not set.');
 		v = null;
 	}
 	get complete() { return false; }
