@@ -13,10 +13,6 @@ npm i -s glfw-raub
 
 **Node.js** addon with **GLFW3** bindings.
 
-> Note: this **addon uses N-API**, and therefore is ABI-compatible across different
-Node.js versions. Addon binaries are precompiled and **there is no compilation**
-step during the `npm i` command.
-
 ![Example](examples/screenshot.jpg)
 
 * **GLFW** version **3.4.0** backend.
@@ -25,6 +21,10 @@ step during the `npm i` command.
 * Able to switch to fullscreen and back.
 * Has `Window` class, simplifying low-level interactions.
 * Has `Document` class, capable of tricking other libs, as if we are in a browser.
+
+> Note: this **addon uses N-API**, and therefore is ABI-compatible across different
+Node.js versions. Addon binaries are precompiled and **there is no compilation**
+step during the `npm i` command.
 
 
 ## GLFW

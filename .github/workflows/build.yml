@@ -25,7 +25,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.14.0
+          node-version: 22.9.0
           cache: 'npm'
 
       - name: Get Package Version
@@ -47,7 +47,7 @@ jobs:
     name: Build
     strategy:
         matrix:
-          os: [ubuntu-22.04, windows-2022, macos-12, macos-14, [self-hosted, linux, ARM64]]
+          os: [ubuntu-22.04, windows-2022, macos-14, [self-hosted, linux, ARM64]]
 
     runs-on: ${{ matrix.os }}
 
@@ -61,14 +61,14 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.14.0
+          node-version: 22.9.0
           cache: 'npm'
 
       - name: Install Modules
         run: npm ci
 
       - name: Fix Python
-        if: matrix.os == 'macos-12' || matrix.os == 'macos-14'
+        if: matrix.os == 'macos-14'
         run: pip install setuptools
 
       - name: Build Current Binary
