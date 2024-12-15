@@ -219,11 +219,9 @@ class Window extends EventEmitter {
 				glfw.setWindowPos(this._window, this._x, this._y);
 			}
 		} else if (this._mode === 'borderless') {
-			
 			const monitor = this._monitors[this._display];
 			glfw.setWindowPos(this._window, monitor.pos_x, monitor.pos_y);
 			glfw.setWindowSize(this._window, monitor.width, monitor.height);
-			
 		}
 		
 		this.makeCurrent();

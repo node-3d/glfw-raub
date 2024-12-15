@@ -376,24 +376,24 @@ declare module "glfw-raub" {
 		 *
 		 * @see https://www.glfw.org/docs/latest/group__keys.html
 		 */
-		getKey(): number;
+		getKey(key: number): number;
 		
 		/**
 		 * Get mouse button state (GLFW_PRESS/GLFW_RELEASE).
 		 *
 		 * @see https://www.glfw.org/docs/latest/group__buttons.html
 		 */
-		getMouseButton(): number;
+		getMouseButton(button: number): number;
 		
 		/**
 		 * Get window attribute.
 		 *
 		 * @see https://www.glfw.org/docs/latest/window_guide.html#window_attribs
 		 */
-		getWindowAttrib(): number;
+		getWindowAttrib(attrib: number): number;
 		
 		/** Set input mode option. */
-		setInputMode(mode: number): void;
+		setInputMode(mode: number, value: number): void;
 		
 		/** Swaps the front and back buffers of the window. */
 		swapBuffers(): void;
@@ -594,7 +594,7 @@ declare module "glfw-raub" {
 	const showConsole: TCbVoid;
 	
 	/** Draws a test scene, used in examples here. */
-	const testScene: TCbVoid;
+	const testScene: (w: number, h: number, z: number) => void;
 	
 	/** Draws a test scene, that reacts to a joystick. */
 	const testJoystick: TCbVoid;
@@ -675,8 +675,8 @@ declare module "glfw-raub" {
 	const showWindow: TFnWindow;
 	const windowShouldClose: (window: TWindowPtr) => number;
 	const setWindowShouldClose: (window: TWindowPtr, shouldClose: number) => void;
-	const getWindowAttrib: (window: TWindowPtr) => number;
-	const setWindowAttrib: (window: TWindowPtr, value: number) => void;
+	const getWindowAttrib: (window: TWindowPtr, attrib: number) => number;
+	const setWindowAttrib: (window: TWindowPtr, attrib: number, value: number) => void;
 	const setInputMode: (window: TWindowPtr, mode: number, value: number) => void;
 	const getInputMode: (window: TWindowPtr, mode: number) => number;
 	const pollEvents: TCbVoid;
@@ -946,6 +946,10 @@ declare module "glfw-raub" {
 	const PLATFORM_ERROR: number;
 	const FORMAT_UNAVAILABLE: number;
 	const NO_WINDOW_CONTEXT: number;
+	const CURSOR_UNAVAILABLE: number;
+	const FEATURE_UNAVAILABLE: number;
+	const FEATURE_UNIMPLEMENTED: number;
+	const PLATFORM_UNAVAILABLE: number;
 	const FOCUSED: number;
 	const ICONIFIED: number;
 	const RESIZABLE: number;
@@ -958,6 +962,9 @@ declare module "glfw-raub" {
 	const TRANSPARENT_FRAMEBUFFER: number;
 	const HOVERED: number;
 	const FOCUS_ON_SHOW: number;
+	const MOUSE_PASSTHROUGH: number;
+	const POSITION_X: number;
+	const POSITION_Y: number;
 	const RED_BITS: number;
 	const GREEN_BITS: number;
 	const BLUE_BITS: number;
@@ -980,12 +987,14 @@ declare module "glfw-raub" {
 	const CONTEXT_REVISION: number;
 	const CONTEXT_ROBUSTNESS: number;
 	const OPENGL_FORWARD_COMPAT: number;
+	const CONTEXT_DEBUG: number;
 	const OPENGL_DEBUG_CONTEXT: number;
 	const OPENGL_PROFILE: number;
 	const CONTEXT_RELEASE_BEHAVIOR: number;
 	const CONTEXT_NO_ERROR: number;
 	const CONTEXT_CREATION_API: number;
 	const SCALE_TO_MONITOR: number;
+	const SCALE_FRAMEBUFFER: number;
 	const COCOA_RETINA_FRAMEBUFFER: number;
 	const COCOA_FRAME_NAME: number;
 	const COCOA_GRAPHICS_SWITCHING: number;
@@ -1008,24 +1017,55 @@ declare module "glfw-raub" {
 	const CURSOR_NORMAL: number;
 	const CURSOR_HIDDEN: number;
 	const CURSOR_DISABLED: number;
-	const ANY_RELEASE_BEHAVIOR: number;
-	const RELEASE_BEHAVIOR_FLUSH: number;
-	const RELEASE_BEHAVIOR_NONE: number;
-	const NATIVE_CONTEXT_API: number;
-	const EGL_CONTEXT_API: number;
-	const OSMESA_CONTEXT_API: number;
+	const CURSOR_CAPTURED: number;
 	const ARROW_CURSOR: number;
 	const IBEAM_CURSOR: number;
 	const CROSSHAIR_CURSOR: number;
 	const HAND_CURSOR: number;
 	const HRESIZE_CURSOR: number;
 	const VRESIZE_CURSOR: number;
+	const POINTING_HAND_CURSOR: number;
+	const RESIZE_EW_CURSOR: number;
+	const RESIZE_NS_CURSOR: number;
+	const RESIZE_NWSE_CURSOR: number;
+	const RESIZE_NESW_CURSOR: number;
+	const RESIZE_ALL_CURSOR: number;
+	const NOT_ALLOWED_CURSOR: number;
+	const ANY_RELEASE_BEHAVIOR: number;
+	const RELEASE_BEHAVIOR_FLUSH: number;
+	const RELEASE_BEHAVIOR_NONE: number;
+	const NATIVE_CONTEXT_API: number;
+	const EGL_CONTEXT_API: number;
+	const OSMESA_CONTEXT_API: number;
+	const WIN32_KEYBOARD_MENU: number;
+	const WIN32_SHOWDEFAULT: number;
+	const WAYLAND_APP_ID: number;
+	const ANGLE_PLATFORM_TYPE_NONE: number;
+	const ANGLE_PLATFORM_TYPE_OPENGL: number;
+	const ANGLE_PLATFORM_TYPE_OPENGLES: number;
+	const ANGLE_PLATFORM_TYPE_D3D9: number;
+	const ANGLE_PLATFORM_TYPE_D3D11: number;
+	const ANGLE_PLATFORM_TYPE_VULKAN: number;
+	const ANGLE_PLATFORM_TYPE_METAL: number;
+	const WAYLAND_PREFER_LIBDECOR: number;
+	const WAYLAND_DISABLE_LIBDECOR: number;
+	const ANGLE_PLATFORM_TYPE: number;
+	const PLATFORM: number;
+	const X11_XCB_VULKAN_SURFACE: number;
+	const WAYLAND_LIBDECOR: number;
+	const ANY_PLATFORM: number;
+	const PLATFORM_WIN32: number;
+	const PLATFORM_COCOA: number;
+	const PLATFORM_WAYLAND: number;
+	const PLATFORM_X11: number;
+	const PLATFORM_NULL: number;
 	const CONNECTED: number;
 	const DISCONNECTED: number;
 	const JOYSTICK_HAT_BUTTONS: number;
 	const COCOA_CHDIR_RESOURCES: number;
 	const COCOA_MENUBAR: number;
 	const DONT_CARE: number;
+	const ANY_POSITION: number;
 	
 	/**
 	 * Human-readable names for keyboard keys.

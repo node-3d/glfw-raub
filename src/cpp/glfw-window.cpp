@@ -121,6 +121,13 @@ DBG_EXPORT JS_METHOD(createWindow) { NAPI_ENV;
 			std::cerr << "Error. Ignoring invalid monitor index: " << monitor_idx << "." << std::endl;
 		}
 	}
+
+// WAYLAND fix - will not be needed after 3.5? See: https://github.com/glfw/glfw/issues/2518
+#ifdef __linux__
+	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
+		glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+	}
+#endif
 	
 	if (!isNoApi && !_share) {
 		glfwWindowHint(GLFW_VISIBLE, false);
