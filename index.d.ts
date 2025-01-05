@@ -710,6 +710,8 @@ declare module "glfw-raub" {
 	const platformWindow: (window: TWindowPtr) => number;
 	const platformContext: (window: TWindowPtr) => number;
 	const platformDevice: (window: TWindowPtr) => number;
+	const getPlatform: () => number;
+	const platformSupported: (platform: number) => number;
 	const getJoystickGUID: (id: number) => (null | string);
 	
 	const vulkanSupported: () => boolean;
@@ -1066,7 +1068,7 @@ declare module "glfw-raub" {
 	const COCOA_MENUBAR: number;
 	const DONT_CARE: number;
 	const ANY_POSITION: number;
-	
+
 	/**
 	 * Human-readable names for keyboard keys.
 	 */

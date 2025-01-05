@@ -4,56 +4,35 @@ const glfw = require('../');
 const { Window } = glfw;
 
 
-const w1 = new Window({ title: 'GLFW Simple Test 1', vsync: true });
-const w2 = new Window({ title: 'GLFW Simple Test 2', vsync: true });
-
+const windows = [1, 2, 3, 4, 5].map((i) => (
+	new Window({ title: `GLFW Multiwindow ${i}`, vsync: true, width: 200, height: 200 })
+));
 
 // testing events
-w1.on('mousemove', (e) => console.log(`[#1 mousemove] ${e.x}, ${e.y}`));
-
-w2.on('mousemove', (e) => console.log(`[#2 mousemove] ${e.x}, ${e.y}`));
-
-console.log(w1.version);
+windows.forEach((w, i) => {
+	w.on('mousemove', (e) => console.log(`[#${i + 1} mousemove] ${e.x}, ${e.y}`));
+});
 
 
 const draw = () => {
-	w1.makeCurrent();
-	const wsize1 = w1.framebufferSize;
-	glfw.testScene(wsize1.width, wsize1.height);
-	w1.swapBuffers();
-	
-	w2.makeCurrent();
-	const wsize2 = w2.framebufferSize;
-	glfw.testScene(wsize2.width, wsize2.height);
-	w2.swapBuffers();
-	
 	glfw.pollEvents();
+	windows.forEach((w) => {
+		w.makeCurrent();
+		glfw.testScene(w.width, w.height);
+		w.swapBuffers();
+	});
 };
 
 
-const close = () => {
-	// Close the windows and terminate GLFW
-	w1.destroy();
-	w2.destroy();
-	
-	glfw.terminate();
-	
-	process.exit(0);
-};
-
-
-const animate = () => {
+const loopFunc = () => {
 	if (
-		w1.shouldClose || w2.shouldClose ||
-		w1.getKey(glfw.KEY_ESCAPE) || w2.getKey(glfw.KEY_ESCAPE)
+		windows.some((w) => w.shouldClose || w.getKey(glfw.KEY_ESCAPE))
 	) {
-		close();
+		process.exit(0);
 		return;
 	}
 	
 	draw();
-	setTimeout(animate, 16);
+	setImmediate(loopFunc);
 };
-
-
-animate();
+setImmediate(loopFunc);

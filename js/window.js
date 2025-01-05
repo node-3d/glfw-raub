@@ -47,7 +47,7 @@ class Window extends EventEmitter {
 			this._decorated = opts.decorated;
 		}
 		
-		this._msaa = opts.msaa === undefined ? 2 : opts.msaa;
+		this._msaa = opts.msaa || 0;
 
 		this._resizable = opts.resizable === false ? false : true;
 		
@@ -554,9 +554,11 @@ class Window extends EventEmitter {
 	}
 	
 	_requestAnimationFrame(cb) {
-		this.swapBuffers();
-		glfw.pollEvents();
-		return setImmediate(() => cb(Date.now()));
+		return setImmediate(() => {
+			glfw.pollEvents();
+			cb(Date.now());
+			this.swapBuffers();
+		});
 	}
 	
 	_cancelAnimationFrame(id) { clearImmediate(id); }

@@ -4,7 +4,7 @@ const glfw = require('../');
 const { Window } = glfw;
 
 
-const w1 = new Window({ title: 'GLFW Simple Test 1', vsync: true });
+const w1 = new Window({ title: 'GLFW Icon', vsync: true });
 
 const ICON_SIZE = 32;
 
@@ -28,33 +28,13 @@ const icon = {
 w1.icon = icon;
 
 
-const draw = () => {
-	w1.makeCurrent();
-	const wsize1 = w1.framebufferSize;
-	glfw.testScene(wsize1.width, wsize1.height);
-	w1.swapBuffers();
-	
-	glfw.pollEvents();
-};
-
-
-const close = () => {
-	// Close the window and terminate GLFW
-	w1.destroy();
-	glfw.terminate();
-	process.exit(0);
-};
-
-
-const animate = () => {
+const loopFunc = () => {
 	if (w1.shouldClose || w1.getKey(glfw.KEY_ESCAPE)) {
-		close();
+		process.exit(0);
 		return;
 	}
 	
-	draw();
-	setTimeout(animate, 16);
+	glfw.testScene(w1.width, w1.height);
+	w1.requestAnimationFrame(loopFunc);
 };
-
-
-animate();
+w1.requestAnimationFrame(loopFunc);

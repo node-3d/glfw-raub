@@ -79,7 +79,7 @@ const close = () => {
 };
 
 
-const animate = () => {
+const loopFunc = () => {
 	const shouldClose = glfw.windowShouldClose(windowPtr);
 	const isEscPressed = glfw.getKey(windowPtr, glfw.KEY_ESCAPE);
 	
@@ -89,8 +89,6 @@ const animate = () => {
 	}
 	
 	draw();
-	setTimeout(animate, 16);
+	setImmediate(loopFunc);
 };
-
-
-animate();
+setImmediate(loopFunc);

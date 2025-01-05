@@ -51,7 +51,6 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(getJoystickButtons);
 	JS_GLFW_SET_METHOD(getJoystickName);
 	JS_GLFW_SET_METHOD(createWindow);
-	// JS_GLFW_SET_METHOD(createWindowRaw);
 	JS_GLFW_SET_METHOD(destroyWindow);
 	JS_GLFW_SET_METHOD(setWindowTitle);
 	JS_GLFW_SET_METHOD(setWindowIcon);
@@ -113,6 +112,8 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(platformDevice);
 	JS_GLFW_SET_METHOD(platformWindow);
 	JS_GLFW_SET_METHOD(platformContext);
+	JS_GLFW_SET_METHOD(getPlatform);
+	JS_GLFW_SET_METHOD(platformSupported);
 	
 	JS_GLFW_SET_METHOD(testScene);
 	JS_GLFW_SET_METHOD(testJoystick);

@@ -9,7 +9,7 @@ const { getBin, createLogger } = require('addon-tools-raub');
 
 createLogger({ name: 'glfw' });
 
-const core = require(`./${getBin()}/glfw`);
+const core = require(`./${getBin()}/glfw.node`);
 
 
 // Initialize GLFW
