@@ -38,7 +38,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          draft: true
           tag_name: ${{ steps.package-version.outputs.version }}
           name: Release ${{ steps.package-version.outputs.version }}
           body: Binaries at ${{ github.sha }}
@@ -47,7 +46,7 @@ jobs:
     name: Build
     strategy:
         matrix:
-          os: [ubuntu-22.04, windows-2022, macos-14, [self-hosted, linux, ARM64]]
+          os: [ubuntu-22.04, windows-2022, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -87,7 +86,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          draft: true
           tag_name: ${{ steps.package-version.outputs.version }}
           name: Release ${{ steps.package-version.outputs.version }}
           files: ${{ steps.pack-files.outputs.pack }}
