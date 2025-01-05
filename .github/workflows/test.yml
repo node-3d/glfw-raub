@@ -38,7 +38,7 @@ jobs:
 
       - name: Ubuntu Install Wayland
         if: matrix.os == 'ubuntu-22.04'
-        run: sudo apt-get install -y libwayland-dev
+        run: sudo apt-get install -y libwayland-dev libgles2-mesa-dev
 
       - name: Build Current Binary
         run: npm run build
