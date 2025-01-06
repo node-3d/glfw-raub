@@ -26,7 +26,7 @@ jobs:
       # - run: sudo apt-get install -qq libgl-dev xorg-dev libgl1-mesa-dev
       - run: sudo apt-get update
       - run: sudo apt-get install -qq libwayland-dev
-      - run: XVFB_PIDS=`ps aux | grep xvfb | grep -v grep | awk '{print $2}'` && echo $XVFB_PIDS
+      - run: ps aux | grep xvfb
       - run: sudo apt-get install -qq libgles2-mesa-dev
       - run: npm ci
       - run: npm run build
