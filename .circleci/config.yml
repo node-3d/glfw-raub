@@ -24,8 +24,8 @@ jobs:
           node -p "require('./package').version" > ~/artifacts/pkg-version
 
       # - run: sudo apt-get install -qq libgl-dev xorg-dev libgl1-mesa-dev
-      # - run: sudo apt-get update
-      # - run: sudo apt-get install -qq libwayland-dev
+      - run: sudo apt-get update
+      - run: sudo apt-get install -qq libwayland-dev
       # - run: sudo apt-get install -qq libgles2-mesa-dev
       - run: npm ci
       - run: npm run build
