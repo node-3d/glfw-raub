@@ -21,7 +21,7 @@ const classes = {
 		props: [
 			'handle','width','height','w','h','wh','size','title','icon',
 			'msaa','version','shouldClose','platformWindow','platformContext',
-			'pos','framebufferSize','currentContext','cursorPos',
+			'pos','framebufferSize','currentContext','cursorPos', 'vsync',
 		],
 		methods: [
 			'getKey','getMouseButton','getWindowAttrib','setInputMode','swapBuffers',
@@ -56,7 +56,7 @@ const classes = {
 };
 
 
-describe('GLFW', () => {
+describe('GLFW Interface', () => {
 	it('exports an object', () => {
 		assert.strictEqual(typeof glfw, 'object');
 	});
