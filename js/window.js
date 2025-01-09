@@ -225,13 +225,12 @@ class Window extends EventEmitter {
 		}
 		
 		this.makeCurrent();
-		
-		// Vertical sync (on cards that support it)
 		glfw.swapInterval(this._vsync);
 		
 		this._pxWidth = this._width * this._ratio;
 		this._pxHeight = this._height * this._ratio;
 		
+		this.emit('mode', { mode: this._mode });
 		this.emit('resize', { width: this._pxWidth, height: this._pxHeight });
 	}
 	
@@ -433,6 +432,19 @@ class Window extends EventEmitter {
 		this._x = x;
 		this._y = y;
 		glfw.setWindowPos(this._window, x, y);
+	}
+	
+	get vsync() {
+		return this._vsync;
+	}
+	set vsync(isVsyncEnabled) {
+		if (this._vsync === isVsyncEnabled) {
+			return;
+		}
+		
+		this._vsync = isVsyncEnabled;
+		this.makeCurrent();
+		glfw.swapInterval(this._vsync);
 	}
 	
 	
