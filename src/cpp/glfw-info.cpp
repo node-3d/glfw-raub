@@ -28,9 +28,9 @@ DBG_EXPORT JS_METHOD(getFramebufferSize) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-DBG_EXPORT JS_METHOD(swapBuffers) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(swapBuffers) { THIS_WINDOW;
 	glfwSwapBuffers(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -38,7 +38,7 @@ DBG_EXPORT JS_METHOD(swapInterval) { NAPI_ENV;
 	REQ_INT32_ARG(0, interval);
 	
 	glfwSwapInterval(interval);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 

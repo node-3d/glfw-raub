@@ -1,5 +1,4 @@
-#ifndef _GLFW_JOYSTICK_HPP_
-#define _GLFW_JOYSTICK_HPP_
+#pragma once
 
 #include "glfw-common.hpp"
 
@@ -17,6 +16,3 @@ namespace glfw {
 	DBG_EXPORT JS_METHOD(getGamepadName);
 	DBG_EXPORT JS_METHOD(getGamepadState);
 } // namespace glfw
-
-
-#endif /* _GLFW_JOYSTICK_HPP_ */

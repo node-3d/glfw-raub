@@ -8,7 +8,7 @@ DBG_EXPORT JS_METHOD(setClipboardString) { NAPI_ENV; THIS_WINDOW;
 	REQ_STR_ARG(1, str);
 	
 	glfwSetClipboardString(window, str.c_str());
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 

@@ -42,7 +42,7 @@ DBG_EXPORT JS_METHOD(testJoystick) { NAPI_ENV;
 	glVertex3f(0.f, 0.6f, 0.f);
 	glEnd();
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 

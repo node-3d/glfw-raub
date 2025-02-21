@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Ubuntu Install Wayland
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'ubuntu-22.04-arm'
         run: sudo apt-get install -y libwayland-dev libgles2-mesa-dev
 
       - name: Build Current Binary

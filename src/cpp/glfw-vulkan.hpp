@@ -1,5 +1,4 @@
-#ifndef _GLFW_VULKAN_HPP_
-#define _GLFW_VULKAN_HPP_
+#pragma once
 
 #include "glfw-common.hpp"
 
@@ -16,6 +15,3 @@ namespace glfw {
 	DBG_EXPORT JS_METHOD(vulkanDestroyDevice);
 	DBG_EXPORT JS_METHOD(vulkanDestroyInstance);
 } // namespace glfw
-
-
-#endif /* _GLFW_VULKAN_HPP_ */

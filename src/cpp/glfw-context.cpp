@@ -4,9 +4,9 @@
 
 namespace glfw {
 
-DBG_EXPORT JS_METHOD(makeContextCurrent) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(makeContextCurrent) { THIS_WINDOW;
 	glfwMakeContextCurrent(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 

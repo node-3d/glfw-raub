@@ -80,7 +80,7 @@ DBG_EXPORT JS_METHOD(windowHint) { NAPI_ENV;
 	}
 	
 	glfwWindowHint(hint, value);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -89,13 +89,13 @@ DBG_EXPORT JS_METHOD(windowHintString) { NAPI_ENV;
 	REQ_STR_ARG(1, value);
 	
 	glfwWindowHintString(hint, value.c_str());
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(defaultWindowHints) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(defaultWindowHints) {
 	glfwDefaultWindowHints();
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -186,13 +186,13 @@ DBG_EXPORT JS_METHOD(createWindow) { NAPI_ENV;
 }
 
 
-DBG_EXPORT JS_METHOD(destroyWindow) { NAPI_ENV; THIS_WINDOW; THIS_STATE;
+DBG_EXPORT JS_METHOD(destroyWindow) { THIS_WINDOW; THIS_STATE;
 	glfwDestroyWindow(window);
 	if (state) {
 		state->window = nullptr;
 	}
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -200,7 +200,7 @@ DBG_EXPORT JS_METHOD(setWindowTitle) { NAPI_ENV; THIS_WINDOW;
 	REQ_STR_ARG(1, str);
 	
 	glfwSetWindowTitle(window, str.c_str());
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -208,7 +208,7 @@ DBG_EXPORT JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 	REQ_OBJ_ARG(1, icon);
 	
 	if (!(icon.Has("width") && icon.Has("height"))) {
-		RET_UNDEFINED;
+		RET_GLFW_VOID;
 	}
 	
 	bool noflip = icon.Has("noflip") ? icon.Get("noflip").ToBoolean().Value() : false;
@@ -240,7 +240,7 @@ DBG_EXPORT JS_METHOD(setWindowIcon) { NAPI_ENV; THIS_WINDOW;
 		glfwSetWindowIcon(window, 1, &image);
 	}
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -289,7 +289,7 @@ DBG_EXPORT JS_METHOD(setWindowSize) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(2, h);
 	
 	glfwSetWindowSize(window, w, h);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -300,7 +300,7 @@ DBG_EXPORT JS_METHOD(setWindowSizeLimits) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(4, maxheight);
 	
 	glfwSetWindowSizeLimits(window, minwidth, minheight, maxwidth, maxheight);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -309,7 +309,7 @@ DBG_EXPORT JS_METHOD(setWindowAspectRatio) { NAPI_ENV; THIS_WINDOW;
 	USE_UINT32_ARG(2, denom, GLFW_DONT_CARE);
 	
 	glfwSetWindowAspectRatio(window, numer, denom);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -318,7 +318,7 @@ DBG_EXPORT JS_METHOD(setWindowPos) { NAPI_ENV; THIS_WINDOW;
 	REQ_INT32_ARG(2, y);
 	
 	glfwSetWindowPos(window, x, y);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -344,25 +344,25 @@ DBG_EXPORT JS_METHOD(setWindowOpacity) { NAPI_ENV; THIS_WINDOW;
 	REQ_FLOAT_ARG(1, opacity);
 	
 	glfwSetWindowOpacity(window, opacity);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(maximizeWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(maximizeWindow) { THIS_WINDOW;
 	glfwMaximizeWindow(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(focusWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(focusWindow) { THIS_WINDOW;
 	glfwFocusWindow(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(requestWindowAttention) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(requestWindowAttention) { THIS_WINDOW;
 	glfwRequestWindowAttention(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -379,27 +379,27 @@ DBG_EXPORT JS_METHOD(getWindowMonitor) { NAPI_ENV; THIS_WINDOW;
 }
 
 
-DBG_EXPORT JS_METHOD(iconifyWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(iconifyWindow) { THIS_WINDOW;
 	glfwIconifyWindow(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(restoreWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(restoreWindow) { THIS_WINDOW;
 	glfwRestoreWindow(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(hideWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(hideWindow) { THIS_WINDOW;
 	glfwHideWindow(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(showWindow) { NAPI_ENV; THIS_WINDOW;
+DBG_EXPORT JS_METHOD(showWindow) { THIS_WINDOW;
 	glfwShowWindow(window);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -412,7 +412,7 @@ DBG_EXPORT JS_METHOD(setWindowShouldClose) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(1, value);
 	
 	glfwSetWindowShouldClose(window, value);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -429,7 +429,7 @@ DBG_EXPORT JS_METHOD(setWindowAttrib) { NAPI_ENV; THIS_WINDOW;
 	
 	glfwSetWindowAttrib(window, attrib, value);
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 

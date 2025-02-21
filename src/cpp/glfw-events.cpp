@@ -7,28 +7,28 @@
 
 namespace glfw {
 
-DBG_EXPORT JS_METHOD(pollEvents) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(pollEvents) {
 	glfwPollEvents();
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(waitEvents) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(waitEvents) {
 	glfwWaitEvents();
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
 DBG_EXPORT JS_METHOD(waitEventsTimeout) { NAPI_ENV;
 	REQ_DOUBLE_ARG(0, timeout);
 	glfwWaitEventsTimeout(timeout);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(postEmptyEvent) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(postEmptyEvent) {
 	glfwPostEmptyEvent();
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 const char typeKeyup[] = "keyup";

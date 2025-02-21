@@ -1,5 +1,4 @@
-#ifndef _GLFW_EVENTS_HPP_
-#define _GLFW_EVENTS_HPP_
+#pragma once
 
 #include "glfw-common.hpp"
 
@@ -27,6 +26,3 @@ namespace glfw {
 	DBG_EXPORT void scrollCB(GLFWwindow *window, double xoffset, double yoffset);
 	DBG_EXPORT void joystickCb(int jid, int event);
 } // namespace glfw
-
-
-#endif /* _GLFW_EVENTS_HPP_ */

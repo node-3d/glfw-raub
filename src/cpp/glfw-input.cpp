@@ -9,7 +9,7 @@ DBG_EXPORT JS_METHOD(setInputMode) { NAPI_ENV; THIS_WINDOW;
 	REQ_INT32_ARG(2, value);
 	
 	glfwSetInputMode(window, mode, value);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 

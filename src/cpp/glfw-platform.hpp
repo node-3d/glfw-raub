@@ -1,5 +1,4 @@
-#ifndef _GLFW_PLATFORM_HPP_
-#define _GLFW_PLATFORM_HPP_
+#pragma once
 
 #include "glfw-common.hpp"
 
@@ -26,6 +25,3 @@ namespace glfw {
 	DBG_EXPORT JS_METHOD(getPlatform);
 	DBG_EXPORT JS_METHOD(platformSupported);
 } // namespace glfw
-
-
-#endif /* _GLFW_PLATFORM_HPP_ */

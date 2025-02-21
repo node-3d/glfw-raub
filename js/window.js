@@ -568,7 +568,7 @@ class Window extends EventEmitter {
 	_requestAnimationFrame(cb) {
 		return setImmediate(() => {
 			glfw.pollEvents();
-			cb(Date.now());
+			cb(performance.now());
 			this.swapBuffers();
 		});
 	}

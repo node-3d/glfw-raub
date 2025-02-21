@@ -1,5 +1,4 @@
-#ifndef _GLFW_INIT_HPP_
-#define _GLFW_INIT_HPP_
+#pragma once
 
 #include "glfw-common.hpp"
 
@@ -12,6 +11,3 @@ namespace glfw {
 	DBG_EXPORT JS_METHOD(terminate);
 	DBG_EXPORT JS_METHOD(testScene);
 } // namespace glfw
-
-
-#endif /* _GLFW_INIT_HPP_ */

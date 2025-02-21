@@ -21,7 +21,7 @@ DBG_EXPORT JS_METHOD(setCursorPos) { NAPI_ENV; THIS_WINDOW;
 	REQ_INT32_ARG(2, y);
 	
 	glfwSetCursorPos(window, x, y);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -29,7 +29,7 @@ DBG_EXPORT JS_METHOD(createCursor) { NAPI_ENV;
 	REQ_OBJ_ARG(0, icon);
 	
 	if (!(icon.Has("width") && icon.Has("height"))) {
-		RET_UNDEFINED;
+		RET_GLFW_VOID;
 	}
 	
 	bool noflip = icon.Has("noflip") ? icon.Get("noflip").ToBoolean().Value() : false;
@@ -77,7 +77,7 @@ DBG_EXPORT JS_METHOD(destroyCursor) { NAPI_ENV;
 	REQ_OFFS_ARG(0, cursorPtr);
 	GLFWcursor *cursor = reinterpret_cast<GLFWcursor*>(cursorPtr);
 	glfwDestroyCursor(cursor);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -85,7 +85,7 @@ DBG_EXPORT JS_METHOD(setCursor) { NAPI_ENV; THIS_WINDOW;
 	REQ_OFFS_ARG(1, cursorPtr);
 	GLFWcursor *cursor = reinterpret_cast<GLFWcursor*>(cursorPtr);
 	glfwSetCursor(window, cursor);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 } // namespace glfw

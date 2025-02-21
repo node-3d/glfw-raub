@@ -242,7 +242,7 @@ DBG_EXPORT JS_METHOD(vulkanDestroyDevice) { NAPI_ENV; THIS_VULKAN;
 		vkDestroyDevice(device, nullptr);
 	}
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
@@ -253,7 +253,7 @@ DBG_EXPORT JS_METHOD(vulkanDestroyInstance) { NAPI_ENV; THIS_VULKAN;
 		vkDestroyInstance(instance, nullptr);
 	}
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 } // namespace glfw

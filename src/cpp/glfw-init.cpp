@@ -39,6 +39,8 @@ DBG_EXPORT void deinit() {
 DBG_EXPORT JS_METHOD(init) { NAPI_ENV;
 	setlocale(LC_ALL, "");
 	
+	undefined = env.Undefined();
+	
 	glfwSetErrorCallback(errorCb);
 	
 	isInited = glfwInit() == GLFW_TRUE;
@@ -54,19 +56,19 @@ DBG_EXPORT JS_METHOD(initHint) { NAPI_ENV;
 	REQ_INT32_ARG(1, value);
 	
 	glfwInitHint(hint, value);
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
-DBG_EXPORT JS_METHOD(terminate) { NAPI_ENV;
+DBG_EXPORT JS_METHOD(terminate) {
 	deinit();
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 
 DBG_EXPORT JS_METHOD(testScene) { NAPI_ENV;
-	REQ_UINT32_ARG(0, width);
-	REQ_UINT32_ARG(1, height);
+	WEAK_UINT32_ARG(0, width);
+	WEAK_UINT32_ARG(1, height);
 	LET_FLOAT_ARG(2, z);
 	
 	glViewport(0, 0, width, height);
@@ -90,7 +92,7 @@ DBG_EXPORT JS_METHOD(testScene) { NAPI_ENV;
 	glVertex3f(0.f + z, 0.6f, 0.f);
 	glEnd();
 	
-	RET_UNDEFINED;
+	RET_GLFW_VOID;
 }
 
 } // namespace glfw

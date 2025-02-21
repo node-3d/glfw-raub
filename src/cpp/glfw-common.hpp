@@ -1,5 +1,4 @@
-#ifndef _GLFW_COMMON_HPP_
-#define _GLFW_COMMON_HPP_
+#pragma once
 
 #include <addon-tools.hpp>
 
@@ -34,5 +33,9 @@
 #define STATE_ENV                                                             \
 	Napi::Env env = state->emitter.Env();
 
+#define RET_GLFW_VOID                                                         \
+	return glfw::undefined;
 
-#endif /* _GLFW_COMMON_HPP_ */
+namespace glfw {
+	Napi::Value undefined;
+}
