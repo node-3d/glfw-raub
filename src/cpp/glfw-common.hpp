@@ -24,8 +24,7 @@
 
 
 #define THIS_WINDOW                                                           \
-	REQ_OFFS_ARG(0, __win_handle);                                            \
-	GLFWwindow *window = reinterpret_cast<GLFWwindow*>(__win_handle);
+	GLFWwindow *window = reinterpret_cast<GLFWwindow*>(info[0].As<Napi::Number>().Int64Value());
 
 
 #define THIS_STATE                                                            \

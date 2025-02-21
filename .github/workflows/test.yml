@@ -16,7 +16,7 @@ jobs:
     name: Unit Tests
     strategy:
         matrix:
-          os: [ubuntu-22.04, windows-2022, macos-14]
+          os: [ubuntu-22.04, ubuntu-22.04-arm, windows-2022, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -30,7 +30,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.9.0
+          node-version: 22.14.0
           cache: 'npm'
 
       - name: Install Modules
@@ -44,9 +44,9 @@ jobs:
         run: npm run build
 
       - name: Run Unit Tests - Linux
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-22.04' || matrix.os == 'ubuntu-22.04-arm'
         run: xvfb-run --auto-servernum npm run test-ci
 
-      - name: Run Unit Tests
-        if: matrix.os != 'windows-2022' && matrix.os != 'ubuntu-22.04'
+      - name: Run Unit Tests - Mac
+        if: matrix.os == 'macos-14'
         run: npm run test-ci

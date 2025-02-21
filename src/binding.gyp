@@ -1,11 +1,12 @@
 {
 	'variables': {
-		'bin'        : '<!(node -p "require(\'addon-tools-raub\').getBin()")',
-		'gl_include' : '<!(node -p "require(\'deps-opengl-raub\').include")',
-		'gl_bin'     : '<!(node -p "require(\'deps-opengl-raub\').bin")',
+		'bin': '<!(node -p "require(\'addon-tools-raub\').getBin()")',
+		'gl_include': '<!(node -p "require(\'deps-opengl-raub\').include")',
+		'gl_bin': '<!(node -p "require(\'deps-opengl-raub\').bin")',
 	},
 	'targets': [{
 		'target_name': 'glfw',
+		'includes': ['../node_modules/addon-tools-raub/utils/common.gypi'],
 		'sources': [
 			'cpp/bindings.cpp',
 			'cpp/glfw-clipboard.cpp',
@@ -25,9 +26,6 @@
 			'cpp/glfw-vulkan.cpp',
 			'cpp/glfw-window.cpp',
 		],
-		'defines': ['UNICODE', '_UNICODE'],
-		'cflags_cc': ['-std=c++17', '-fno-exceptions'],
-		'cflags': ['-fno-exceptions'],
 		'include_dirs': [
 			'<(gl_include)',
 			'<!@(node -p "require(\'addon-tools-raub\').getInclude()")',
@@ -44,7 +42,6 @@
 					'<(gl_bin)/libGL.so',
 					'<(gl_bin)/libXrandr.so',
 				],
-				'defines': ['__linux__'],
 			}],
 			['OS=="mac"', {
 				'libraries': [
@@ -53,25 +50,9 @@
 					'-Wl,-rpath,@loader_path/../../deps-opengl-raub/<(bin)',
 					'<(gl_bin)/glfw.dylib',
 				],
-				'MACOSX_DEPLOYMENT_TARGET': '10.9',
-				'defines': ['__APPLE__'],
-				'CLANG_CXX_LIBRARY': 'libc++',
-				'OTHER_CFLAGS': ['-std=c++17', '-fno-exceptions'],
 			}],
 			['OS=="win"', {
 				'libraries': ['glfw3dll.lib', 'opengl32.lib'],
-				'defines': ['WIN32_LEAN_AND_MEAN', 'VC_EXTRALEAN', '_WIN32', '_HAS_EXCEPTIONS=0'],
-				'msvs_settings' : {
-					'VCCLCompilerTool' : {
-						'AdditionalOptions' : [
-							'/O2','/Oy','/GL','/GF','/Gm-', '/std:c++17',
-							'/EHa-s-c-','/MT','/GS','/Gy','/GR-','/Gd',
-						]
-					},
-					'VCLinkerTool' : {
-						'AdditionalOptions' : ['/DEBUG:NONE', '/LTCG', '/OPT:NOREF'],
-					},
-				},
 			}],
 		],
 	}],
