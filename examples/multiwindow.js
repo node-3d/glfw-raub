@@ -4,35 +4,48 @@ const glfw = require('../');
 const { Window } = glfw;
 
 
-const windows = [1, 2, 3, 4, 5].map((i) => (
-	new Window({ title: `GLFW Multiwindow ${i}`, vsync: true, width: 200, height: 200 })
-));
+const windows = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => {
+	const w = new Window({ title: `GLFW Multiwindow ${i}`, vsync: false, width: 200, height: 200 });
+	const render = () => {
+		w.makeCurrent();
+		glfw.testScene(w.width, w.height);
+	};
+	return { w, render };
+});
 
 // testing events
-windows.forEach((w, i) => {
+windows.forEach(({ w }, i) => {
 	w.on('mousemove', (e) => console.log(`[#${i + 1} mousemove] ${e.x}, ${e.y}`));
 });
 
 
-const draw = () => {
-	glfw.pollEvents();
-	windows.forEach((w) => {
-		w.makeCurrent();
-		glfw.testScene(w.width, w.height);
-		w.swapBuffers();
-	});
-};
+let prevTime = Date.now();
+let frames = 0;
+let events = 0;
 
 
 const loopFunc = () => {
-	if (
-		windows.some((w) => w.shouldClose || w.getKey(glfw.KEY_ESCAPE))
-	) {
-		process.exit(0);
-		return;
+	for (let i = 0; i < windows.length; i++) {
+		const { w, render } = windows[i];
+		if (w.shouldClose || w.getKey(glfw.KEY_ESCAPE)) {
+			process.exit(0);
+			return;
+		}
+		w.drawWindow(render);
 	}
 	
-	draw();
 	setImmediate(loopFunc);
+	
+	frames++;
+	const time = Date.now();
+	if (time >= prevTime + 2000) {
+		console.log(
+			'FPS:', Math.floor((frames * 1000) / (time - prevTime)),
+			'Events:', events,
+		);
+		prevTime = time;
+		frames = 0;
+		events = 0;
+	}
 };
 setImmediate(loopFunc);

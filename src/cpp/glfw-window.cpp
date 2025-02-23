@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "glfw-common.hpp"
 #include "glfw-monitors.hpp"
@@ -17,6 +18,13 @@ bool isHintVisible = true;
 
 // The default context for all to share
 GLFWwindow *_share = nullptr;
+
+
+static inline uint64_t getUnixTime() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
 
 
 DBG_EXPORT void dropShare() {
@@ -428,6 +436,20 @@ DBG_EXPORT JS_METHOD(setWindowAttrib) { NAPI_ENV; THIS_WINDOW;
 	REQ_UINT32_ARG(2, value);
 	
 	glfwSetWindowAttrib(window, attrib, value);
+	
+	RET_GLFW_VOID;
+}
+
+
+DBG_EXPORT JS_METHOD(drawWindow) { NAPI_ENV; THIS_WINDOW;
+	REQ_FUN_ARG(1, cb);
+	
+	glfwPollEvents();
+	
+	napi_value args[1] = { JS_NUM(getUnixTime()) };
+	cb.Call(1, args);
+	
+	glfwSwapBuffers(window);
 	
 	RET_GLFW_VOID;
 }

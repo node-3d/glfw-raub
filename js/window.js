@@ -106,12 +106,30 @@ class Window extends EventEmitter {
 			this._pxHeight = height;
 		});
 		
-		this.swapBuffers();
+		this.requestAnimationFrame = (cb) => setImmediate(() => glfw.drawWindow(this._window, cb));
+		this.cancelAnimationFrame = (id) => { clearImmediate(id); };
 		
-		this.requestAnimationFrame = this._requestAnimationFrame.bind(this);
-		this.cancelAnimationFrame = this._cancelAnimationFrame.bind(this);
+		this._rafCb = () => undefined;
+		this._drawWithCb = () => glfw.drawWindow(this._window, this._rafCb);
+		
+		this.frame = (cb) => {
+			this._rafCb = cb;
+			return setImmediate(this._drawWithCb);
+		};
+		
+		this.loop = (cb) => {
+			let next = null;
+			const loopFunc = () => {
+				glfw.drawWindow(this._window, cb);
+				next = setImmediate(loopFunc);
+			};
+			next = setImmediate(loopFunc);
+			return () => clearImmediate(next);
+		};
 		
 		this.event = null;
+		
+		this.swapBuffers();
 	}
 	
 	
@@ -565,15 +583,7 @@ class Window extends EventEmitter {
 		
 	}
 	
-	_requestAnimationFrame(cb) {
-		return setImmediate(() => {
-			glfw.pollEvents();
-			cb(performance.now());
-			this.swapBuffers();
-		});
-	}
-	
-	_cancelAnimationFrame(id) { clearImmediate(id); }
+	drawWindow(cb) { glfw.drawWindow(this._window, cb); }
 	
 	dispatchEvent(event) { this.emit(event.type, event); }
 	

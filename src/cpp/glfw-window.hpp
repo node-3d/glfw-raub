@@ -67,4 +67,5 @@ namespace glfw {
 	DBG_EXPORT JS_METHOD(setWindowShouldClose);
 	DBG_EXPORT JS_METHOD(getWindowAttrib);
 	DBG_EXPORT JS_METHOD(setWindowAttrib);
+	DBG_EXPORT JS_METHOD(drawWindow);
 } // namespace glfw

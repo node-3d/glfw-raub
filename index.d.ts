@@ -451,11 +451,27 @@ declare module "glfw-raub" {
 		/** Alias for `removeListener`. */
 		removeEventListener(name: string): void;
 		
-		/** BOUND `requestAnimationFrame` method, returns id. */
+		/** BOUND `requestAnimationFrame` method, returns a timer id. */
 		requestAnimationFrame(cb: (dateNow: number) => void): number;
 		
 		/** BOUND `cancelAnimationFrame` method. Cancels by id. */
 		cancelAnimationFrame(id: number): void;
+		
+		/**
+		 * BOUND optimized single-frame method, returns a timer id.
+		 *
+		 * This method comes with a limitation that it should only have 1 call per frame.
+		 * Similar to `requestAnimationFrame` it will issue a `setImmediate`, but will not
+		 * need to create a new arrow function for it to run.
+		*/
+		frame(cb: (dateNow: number) => void): number;
+		
+		/**
+		 * BOUND optimized loop method that will continuously generate frames with given `cb`.
+		 *
+		 * The returned function may be called to break the loop.
+		*/
+		loop(cb: (dateNow: number) => void): (() => void);
 		
 		// ------ implements EventEmitter
 		

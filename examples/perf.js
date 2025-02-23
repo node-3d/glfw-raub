@@ -12,18 +12,17 @@ let events = 0;
 
 w1.on('mousemove', () => { events++; });
 
-const loopFunc = () => {
+w1.loop(() => {
 	if (w1.shouldClose || w1.getKey(glfw.KEY_ESCAPE)) {
 		process.exit(0);
 		return;
 	}
 	
 	glfw.testScene(w1.width, w1.height);
-	w1.requestAnimationFrame(loopFunc);
 	
 	frames++;
 	const time = Date.now();
-	if (time >= prevTime + 1000) {
+	if (time >= prevTime + 2000) {
 		console.log(
 			'FPS:', Math.floor((frames * 1000) / (time - prevTime)),
 			'Events:', events,
@@ -32,6 +31,4 @@ const loopFunc = () => {
 		frames = 0;
 		events = 0;
 	}
-};
-
-w1.requestAnimationFrame(loopFunc);
+});

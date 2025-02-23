@@ -76,6 +76,7 @@ Napi::Object initModule(Napi::Env env, Napi::Object exports) {
 	JS_GLFW_SET_METHOD(setWindowShouldClose);
 	JS_GLFW_SET_METHOD(getWindowAttrib);
 	JS_GLFW_SET_METHOD(setWindowAttrib);
+	JS_GLFW_SET_METHOD(drawWindow);
 	JS_GLFW_SET_METHOD(setInputMode);
 	JS_GLFW_SET_METHOD(getInputMode);
 	JS_GLFW_SET_METHOD(pollEvents);
