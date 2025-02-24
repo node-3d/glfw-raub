@@ -32,7 +32,7 @@ DBG_EXPORT JS_METHOD(platformWindow) { NAPI_ENV; THIS_WINDOW;
 	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
 		RET_PTR(glfwGetWaylandWindow(window));
 	} else {
-		RET_PTR(glfwGetX11Window(window));
+		RET_PTR(static_cast<int64_t>(glfwGetX11Window(window)));
 	}
 #elif __APPLE__
 	RET_PTR(glfwGetCocoaWindow(window));
