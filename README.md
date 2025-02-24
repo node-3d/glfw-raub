@@ -22,6 +22,22 @@ npm i -s glfw-raub
 * Has `Window` class, simplifying low-level interactions.
 * Has `Document` class, capable of tricking other libs, as if we are in a browser.
 
+```js
+import glfw from 'glfw-raub';
+const { Window } = glfw;
+
+const wnd = new Window({ title: 'GLFW Test', vsync: true });
+
+wnd.loop(() => {
+	if (wnd.shouldClose || wnd.getKey(glfw.KEY_ESCAPE)) {
+		process.exit(0);
+		return;
+	}
+	
+	glfw.testScene(wnd.width, wnd.height);
+});
+```
+
 > Note: this **addon uses N-API**, and therefore is ABI-compatible across different
 Node.js versions. Addon binaries are precompiled and **there is no compilation**
 step during the `npm i` command.

@@ -1,6 +1,4 @@
-'use strict';
-
-const glfw = require('../');
+import glfw from '../index.js';
 const { Window } = glfw;
 
 

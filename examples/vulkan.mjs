@@ -1,8 +1,5 @@
-'use strict';
-
-const EventEmitter = require('events');
-
-const glfw = require('../');
+import glfw from '../index.js';
+import EventEmitter from 'node:events';
 
 
 const isVulkanSupported = glfw.vulkanSupported();
