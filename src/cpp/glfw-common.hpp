@@ -36,6 +36,15 @@
 #define RET_GLFW_VOID                                                         \
 	return glfw::undefined;
 
+inline Napi::Number NewInt64(napi_env env, int64_t val) {
+	napi_value value;
+	napi_status status = napi_create_double(env, val, &value);
+	NAPI_THROW_IF_FAILED(env, status, Napi::Number());
+	return Napi::Number(env, value);
+}
+
+#define RET_PTR(VAL) return NewInt64(env, reinterpret_cast<int64_t>(VAL))
+	
 namespace glfw {
 	Napi::Value undefined;
 }

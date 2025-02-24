@@ -46,18 +46,28 @@ step during the `npm i` command.
 ## GLFW
 
 This is a low-level interface, where most of the stuff is directly reflecting
-GLFW API. It **does NOT EXPOSE** OpenGL commands.
-See [GLFW Docs](http://www.glfw.org/docs/latest/group__window.html)
-for useful info on what it does and doesn't.
+GLFW API. GLFW **does NOT EXPOSE** OpenGL commands, it only [controls the window-related
+setup and resources](http://www.glfw.org/docs/latest/group__window.html).
+Aside from several additional features, this addon directly exposes the GLFW API to JS. E.g.:
 
-```js
-const glfw = require('glfw-raub');
+```cpp
+DBG_EXPORT JS_METHOD(pollEvents) {
+	glfwPollEvents();
+	RET_GLFW_VOID;
+}
 ```
 
-Here `glfw` is an API container, where all `glfw*` functions are accessible as
-`glfw.*`. E.g. `glfwSetWindowTitle` -> `glfw.setWindowTitle`.
+Nothing is added between you and GLFW, unless necessary or explicitly mentioned.
 
-See [TypeScript definitions](/index.d.ts) for more details.
+* All `glfw*` functions are accessible as
+    `glfw.*`. E.g. `glfwPollEvents` -> `glfw.pollEvents`.
+* All `GLFW_*` constants are accessible as
+    `glfw.*`. E.g. `GLFW_TRUE` -> `glfw.TRUE`.
+
+
+See [this example](/examples/vulkan.mjs) for raw GLFW calls.
+
+See [TS declarations](/index.d.ts) for more details.
 
 ----------
 
@@ -65,23 +75,48 @@ See [TypeScript definitions](/index.d.ts) for more details.
 ### class Window
 
 ```js
-const { Window } = require('glfw-raub');
+const { Window } = glfw;
+const wnd = new Window({ title: 'GLFW Test', vsync: true });
 ```
 
 This class helps managing window objects and their events. It can also switch between
 fullscreen, borderless and windowed modes.
 
-See [TypeScript definitions](/index.d.ts) for more details.
+The first window creates an additional invisible root-window for context sharing.
+(so that you can also close any window and still keep the root context).
+The platform context (pointers/handles) for sharing may be obtained when necessary.
+
+See [TS declarations](/index.d.ts) for more details.
 
 ----------
 
 ### class Document
 
 ```js
-const { Document } = require('glfw-raub');
+const { Document } = glfw;
+const doc = new Document({ title: 'GLFW Test', vsync: true });
 ```
 
-It can be used to facilitate the environment for other
-JS libraries, such as [three.js](https://threejs.org/).
+Document inherits from `Window` and has the same features in general.
+It exposes additional APIs to mimic the content of web `document`.
+There are some tricks to provide WebGL libraries with necessary environment.
+Document is specifically designed for compatibility with [three.js](https://threejs.org/).
+Other web libraries may work too, but may require additional tweaking.
 
-See [TypeScript definitions](/index.d.ts) for more details.
+See [TS declarations](/index.d.ts) for more details.
+
+----------
+
+### Extras
+
+* `glfw.hideConsole(): void` - tries to hide the console window on Windows.
+* `glfw.showConsole(): void` - shows the console window if it has been hidden.
+* `glfw.drawWindow(w: number, cb: (dateNow: number) => void): void` - this is a shortcut
+    to call `pollEvents`, then `cb`, and then `swapBuffers`, where you only supply `cb`
+    and C++ side does the rest.
+* `glfw.platformDevice(w: number): number` - returns the window HDC on Windows,
+    or whatever is similar on other systems.
+* `glfw.platformWindow(w: number): number` - returns the window HWND on Windows,
+    or whatever is similar on other systems.
+* `glfw.platformContext(w: number): number` - returns the window WGL Context on Windows,
+    or whatever is similar on other systems.

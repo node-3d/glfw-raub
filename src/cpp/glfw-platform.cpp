@@ -11,46 +11,46 @@ namespace glfw {
 
 DBG_EXPORT JS_METHOD(platformDevice) { NAPI_ENV;
 #ifdef _WIN32
-	RET_NUM(reinterpret_cast<uint64_t>(wglGetCurrentDC()));
+	RET_PTR(wglGetCurrentDC());
 #elif __linux__
 	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
-		RET_NUM(reinterpret_cast<uint64_t>(glfwGetWaylandDisplay()));
+		RET_PTR(glfwGetWaylandDisplay());
 	} else {
-		RET_NUM(reinterpret_cast<uint64_t>(glfwGetX11Display()));
+		RET_PTR(glfwGetX11Display());
 	}
 #elif __APPLE__
 	CGLContextObj kCGLContext = CGLGetCurrentContext();
-	RET_NUM(reinterpret_cast<uint64_t>(CGLGetShareGroup(kCGLContext)));
+	RET_PTR(CGLGetShareGroup(kCGLContext));
 #endif
 }
 
 
 DBG_EXPORT JS_METHOD(platformWindow) { NAPI_ENV; THIS_WINDOW;
 #ifdef _WIN32
-	RET_NUM(reinterpret_cast<uint64_t>(glfwGetWin32Window(window)));
+	RET_PTR(glfwGetWin32Window(window));
 #elif __linux__
 	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
-		RET_NUM(reinterpret_cast<uint64_t>(glfwGetWaylandWindow(window)));
+		RET_PTR(glfwGetWaylandWindow(window));
 	} else {
-		RET_NUM(reinterpret_cast<uint64_t>(glfwGetX11Window(window)));
+		RET_PTR(glfwGetX11Window(window));
 	}
 #elif __APPLE__
-	RET_NUM(reinterpret_cast<uint64_t>(glfwGetCocoaWindow(window)));
+	RET_PTR(glfwGetCocoaWindow(window));
 #endif
 }
 
 
 DBG_EXPORT JS_METHOD(platformContext) { NAPI_ENV; THIS_WINDOW;
 #ifdef _WIN32
-	RET_NUM(reinterpret_cast<uint64_t>(glfwGetWGLContext(window)));
+	RET_PTR(glfwGetWGLContext(window));
 #elif __linux__
 	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND) {
-		RET_NUM(reinterpret_cast<uint64_t>(glfwGetEGLContext(window)));
+		RET_PTR(glfwGetEGLContext(window));
 	} else {
-		RET_NUM(reinterpret_cast<uint64_t>(glfwGetGLXContext(window)));
+		RET_PTR(glfwGetGLXContext(window));
 	}
 #elif __APPLE__
-	RET_NUM(reinterpret_cast<uint64_t>(glfwGetNSGLContext(window)));
+	RET_PTR(glfwGetNSGLContext(window));
 #endif
 }
 
