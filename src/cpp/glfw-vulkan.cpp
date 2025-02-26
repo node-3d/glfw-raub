@@ -78,7 +78,7 @@ DBG_EXPORT JS_METHOD(createWindowSurface) { NAPI_ENV; THIS_VULKAN;
 		RET_NULL;
 	}
 	
-	RET_NUM(reinterpret_cast<uint64_t>(surface));
+	RET_PTR(surface);
 }
 
 
@@ -110,7 +110,7 @@ DBG_EXPORT JS_METHOD(vulkanCreateInstance) { NAPI_ENV;
 		RET_NULL;
 	}
 	
-	RET_NUM(reinterpret_cast<uint64_t>(instance));
+	RET_PTR(instance);
 }
 
 

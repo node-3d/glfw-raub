@@ -12,7 +12,7 @@ DBG_EXPORT JS_METHOD(makeContextCurrent) { THIS_WINDOW;
 
 DBG_EXPORT JS_METHOD(getCurrentContext) { NAPI_ENV;
 	GLFWwindow *window = glfwGetCurrentContext();
-	RET_NUM(reinterpret_cast<uint64_t>(window));
+	RET_PTR(window);
 }
 
 } // namespace glfw

@@ -48,6 +48,9 @@ step during the `npm i` command.
 This is a low-level interface, where most of the stuff is directly reflecting
 GLFW API. GLFW **does NOT EXPOSE** OpenGL commands, it only [controls the window-related
 setup and resources](http://www.glfw.org/docs/latest/group__window.html).
+To access OpenGL/WebGL API you can use [webgl-raub](https://github.com/node-3d/webgl-raub)
+or any other similar addon.
+
 Aside from several additional features, this addon directly exposes the GLFW API to JS. E.g.:
 
 ```cpp
@@ -63,7 +66,12 @@ Nothing is added between you and GLFW, unless necessary or explicitly mentioned.
     `glfw.*`. E.g. `glfwPollEvents` -> `glfw.pollEvents`.
 * All `GLFW_*` constants are accessible as
     `glfw.*`. E.g. `GLFW_TRUE` -> `glfw.TRUE`.
-
+* Method `glfw.createWindow` takes some additional arguments. This is mostly related to
+    JS events being generated from GLFW callbacks,
+    and here's where you provide an Emitter object.
+* Pointers are directly exposed as numbers to JS and are expected as
+    arguments in specific methods. Such as, `glfw.createWindow` returns a number
+    (pointer), and then you provide it back to e.g. `glfw.setWindowTitle`.
 
 See [this example](/examples/vulkan.mjs) for raw GLFW calls.
 
@@ -82,7 +90,7 @@ const wnd = new Window({ title: 'GLFW Test', vsync: true });
 This class helps managing window objects and their events. It can also switch between
 fullscreen, borderless and windowed modes.
 
-The first window creates an additional invisible root-window for context sharing.
+The first window creates an additional invisible root-window for context sharing
 (so that you can also close any window and still keep the root context).
 The platform context (pointers/handles) for sharing may be obtained when necessary.
 

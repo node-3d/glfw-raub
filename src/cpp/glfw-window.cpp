@@ -190,7 +190,7 @@ DBG_EXPORT JS_METHOD(createWindow) { NAPI_ENV;
 	glfwSetCursorEnterCallback(window, cursorEnterCB);
 	glfwSetScrollCallback(window, scrollCB);
 	
-	RET_NUM(reinterpret_cast<uint64_t>(window));
+	RET_PTR(window);
 }
 
 

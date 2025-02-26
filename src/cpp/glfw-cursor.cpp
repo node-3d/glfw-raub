@@ -63,13 +63,13 @@ DBG_EXPORT JS_METHOD(createCursor) { NAPI_ENV;
 		cursor = glfwCreateCursor(&image, image.width / 2, image.height / 2);
 	}
 	
-	RET_NUM(reinterpret_cast<uint64_t>(cursor));
+	RET_PTR(cursor);
 }
 
 DBG_EXPORT JS_METHOD(createStandardCursor) { NAPI_ENV;
 	REQ_INT32_ARG(0, shape);
 	GLFWcursor *cursor = glfwCreateStandardCursor(shape);
-	RET_NUM(reinterpret_cast<uint64_t>(cursor));
+	RET_PTR(cursor);
 }
 
 
